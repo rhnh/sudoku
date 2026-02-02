@@ -1,3 +1,5 @@
+export const TOTAL_FILE = 9;
+export const TOTAL_RANK = 9;
 export const ranks = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
 export const files = ["a", "b", "c", "d", "e", "f", "g", "h", "i"] as const;
 export type File = (typeof files)[number];
@@ -20,13 +22,20 @@ export interface Memo<A> {
   (): A;
   clear: () => void;
 }
+export type Digits = Map<BaseKey, Value>;
 
-export interface State {
+export interface HeadlessState {
   gameState: GameState;
   cells: Cells;
   hints: Hints;
+  digits: Digits;
+  selected: Key[];
+}
+
+export interface State extends HeadlessState {
   board: HTMLElement;
   container: HTMLElement;
+  numPad: HTMLElement;
   bounds: Memo<DOMRectReadOnly>;
 }
 

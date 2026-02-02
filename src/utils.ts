@@ -1,6 +1,8 @@
 import {
   files,
   ranks,
+  TOTAL_FILE,
+  TOTAL_RANK,
   type CellElement,
   type Cells,
   type Hint,
@@ -8,8 +10,9 @@ import {
   type Memo,
   type MouchEvent,
   type Position,
-  type State,
+  type HeadlessState,
   type Value,
+  type State,
 } from "./types";
 
 export type Box<T> = {
@@ -55,27 +58,14 @@ export function memo<A>(f: () => A): Memo<A> {
 }
 
 export const initState = (): State => {
-  const container = document.getElementById("container")!;
-  const bounds = memo(() => container.getBoundingClientRect());
-  return {
+  const state = {
     gameState: "isInitialed",
     cells: getCells(),
-    container,
-    board: document.createElement("board"),
-    bounds,
-    hints: [
-      "a11",
-      "a12",
-      "a13",
-      "a19",
-      "a14",
-      "a15",
-      "a16",
-      "a17",
-      "a18",
-      "a21",
-    ],
-  };
+    selected: [],
+    digits: getDigits(),
+    hints: [],
+  } as unknown as HeadlessState as State;
+  return state;
 };
 
 export const isHint = (k: Hint | Key): boolean => k.length <= 3;
@@ -123,16 +113,31 @@ export const eventPosition = (e: MouchEvent): Position | undefined => {
 };
 export function getKeyFromPosition(pos: Position): Key | undefined {
   const k = (9 * pos[0] + pos[1]) as number;
-  return pos.every((x) => x >= 0 && x <= 7) ? keys[k] : undefined;
+  return pos.every((x) => x >= 0 && x <= 9) ? keys[k] : undefined;
+}
+export const allDigits = files.map((f, i) => `${f}${i + 1}` as Key);
+
+export function getDigitFromPosition(pos: Position): Key | undefined {
+  const k = (pos[1] + pos[0]) as number;
+  return pos.every((x) => x >= 0 && x <= 9) ? allDigits[k] : undefined;
 }
 
-export function getKeyAtDomPos(
-  pos: Position,
-  bounds: DOMRectReadOnly
-): Key | undefined {
-  let file = Math.floor((9 * (pos[0] - bounds.left)) / bounds.width);
-  let rank = 8 - Math.floor((9 * (pos[1] - bounds.top)) / bounds.height);
-  return file >= 0 && file < 9 && rank >= 0 && rank < 9
-    ? getKeyFromPosition([file, rank])
-    : undefined;
+export const getPositionKeyAtDom =
+  (bounds: DOMRectReadOnly) =>
+  (pos: Position, xSize = 9, ySize = 9): Position => {
+    let file = Math.floor((xSize * (pos[0] - bounds.left)) / bounds.width);
+    let rank = Math.floor((ySize * (pos[1] - bounds.top)) / bounds.height);
+    return file >= 0 && file < xSize && rank >= 0 && rank <= ySize
+      ? [file, rank]
+      : [-1, -1];
+  };
+
+export const id = <T>(x: T) => x;
+export function getDigits() {
+  const m = new Map();
+  allDigits.map((k, i) => {
+    m.set(k, i + 1);
+  });
+
+  return m;
 }
