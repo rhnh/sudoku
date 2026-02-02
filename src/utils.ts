@@ -1,8 +1,6 @@
 import {
   files,
   ranks,
-  TOTAL_FILE,
-  TOTAL_RANK,
   type CellElement,
   type Cells,
   type Hint,
@@ -58,14 +56,16 @@ export function memo<A>(f: () => A): Memo<A> {
 }
 
 export const initState = (): State => {
-  const state = {
+  const headlessState: HeadlessState = {
     gameState: "isInitialed",
     cells: getCells(),
     selected: [],
     digits: getDigits(),
-    hints: [],
-  } as unknown as HeadlessState as State;
-  return state;
+    hints: ["b11", "b12"],
+    isHint: true,
+  };
+
+  return headlessState as unknown as State;
 };
 
 export const isHint = (k: Hint | Key): boolean => k.length <= 3;

@@ -1,9 +1,8 @@
 import { renderCells } from "./render";
-import type { BaseKey, Key, Rank, State } from "./types";
+import type { BaseKey, Hint, Key, Rank, State } from "./types";
 import {
   getPositionKeyAtDom,
   getKeyFromPosition,
-  getElementByKey,
   getDigitFromPosition,
 } from "./utils";
 
@@ -18,6 +17,8 @@ export const events = (state: State): State => {
       renderCells(state);
       return state;
     }
+
+    console.log(key);
     if (key) state.selected.push(key);
     renderCells(state);
   });
@@ -33,12 +34,22 @@ export const numPadEvents = (state: State): State => {
     const t = getPositionKeyAtDom(numPad.getBoundingClientRect())([x, y], 9, 1);
     const key = getDigitFromPosition(t) as unknown as BaseKey;
     const value = state.digits.get(key) as unknown as Rank;
+    if (state.isHint) {
+      state.selected.map((s) => {
+        const h = `${s.slice(0, 2)}${value}` as unknown as Hint;
+        console.log(h, s);
+        state.hints.push(h);
 
-    state.selected.map((s) => {
-      state.cells.set(s, value);
-    });
-    renderCells(state);
-    state.selected = [];
+        state.selected = [];
+      });
+      renderCells(state);
+    } else {
+      state.selected.map((s) => {
+        state.cells.set(s, value);
+      });
+      renderCells(state);
+      state.selected = [];
+    }
   });
 
   return state;

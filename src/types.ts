@@ -30,6 +30,7 @@ export interface HeadlessState {
   hints: Hints;
   digits: Digits;
   selected: Key[];
+  isHint: boolean;
 }
 
 export interface State extends HeadlessState {
