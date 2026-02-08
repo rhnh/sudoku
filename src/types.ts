@@ -36,6 +36,10 @@ export interface HeadlessState {
   selected: Key[]
   buttons: Buttons
   isHint: boolean
+  forceRerender: boolean
+  isHold?: boolean
+  draggingValue?: Rank
+  originKey?: Key
 }
 
 export interface State extends HeadlessState {
@@ -44,6 +48,7 @@ export interface State extends HeadlessState {
   numPad: HTMLElement
   bounds: Memo<DOMRectReadOnly>
   panel: HTMLElement
+  draggingElement?: HTMLElement
 }
 
 export interface CellElement extends HTMLElement {

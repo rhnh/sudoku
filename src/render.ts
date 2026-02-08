@@ -1,11 +1,5 @@
 import {numPadEvents} from "./events"
-import {
-  type CellElement,
-  type File,
-  type Key,
-  type Rank,
-  type State,
-} from "./types"
+import {type CellElement, type Key, type State} from "./types"
 import {
   getPositionFromBound,
   keyToPosition,
@@ -60,11 +54,11 @@ export function renderCells(state: State): State {
     cellElem.style.height = `${state.bounds().height / 9}px`
     cellElem.style.width = `${state.bounds().width / 9}px`
     const selectedEl = state.selected.find((x) => k == x)
+    cellElem.dataset.key = `${k}`
+    cellElem.dataset.value = `${v}`
     if (selectedEl) {
       cellElem.classList.add("selected")
     }
-    cellElem.dataset.key = `${k}`
-    cellElem.dataset.value = `${v}`
 
     if (k.startsWith("c") || k.startsWith("f") || k.startsWith("i")) {
       cellElem.classList.add("horizontal-lines")
@@ -91,6 +85,7 @@ export function renderCells(state: State): State {
 
 export function renderHints(state: State, el: CellElement): State {
   const {hints} = state
+
   hints.map((h) => {
     const value = +h.slice(-1)
     const key = h.slice(0, 2) as unknown as Key
@@ -100,14 +95,19 @@ export function renderHints(state: State, el: CellElement): State {
     hint.style.gridColumn = `${y} / 3`
     hint.style.gridRow = `${x} / 3`
     hint.innerHTML = `${value}`
+
     el?.appendChild(hint)
   })
   return state
 }
 
-export const render = (state: State): State =>
-  Box(state).map(renderCells).map(renderPanel).map(renderNumpad).fold(id)
-
+export const render = (state: State): State => {
+  if (state.forceRerender)
+    requestAnimationFrame(() => {
+      render(state)
+    })
+  return Box(state).map(renderCells).map(renderNumpad).fold(id)
+}
 export const createNumPad = (state: State): State => {
   const {bounds, numPad} = state
   numPad.innerHTML = ""

@@ -94,7 +94,6 @@ export const getRow = (state: State) => (rowNumber: string) => {
   const t = keys.filter((r) => {
     return r.startsWith(rowNumber)
   })
-  console.log(t)
   return res
 }
 
@@ -104,7 +103,6 @@ export const getColumn = (status: State) => (rowNumber: number) => {
     // console.log(t, rowNumber, k.slice(1));
     return t
   })
-  console.log(t)
 }
 
 export const initState = (): State => {
@@ -115,7 +113,8 @@ export const initState = (): State => {
     digits: getDigits(),
     hints: ["b11", "b12", "b13", "b14", "b15", "b16", "b17", "b18", "b19"],
     buttons: getButtonKeys(),
-    isHint: true,
+    isHint: false,
+    forceRerender: false,
   }
   return headlessState as unknown as State
 }

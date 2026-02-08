@@ -61,6 +61,12 @@ cell > p {
   font-size: 25px;
   margin: auto;
   width: 100%;
+  align-self: stretch;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  /* height: 100%; */
+  background-color: red;
 }
 
 numpad {
