@@ -1,48 +1,53 @@
-export const TOTAL_FILE = 9;
-export const TOTAL_RANK = 9;
-export const ranks = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
-export const files = ["a", "b", "c", "d", "e", "f", "g", "h", "i"] as const;
-export type File = (typeof files)[number];
-export type Rank = (typeof ranks)[number] | "0";
-export type Position = [number, number];
+export const TOTAL_FILE = 9
+export const TOTAL_RANK = TOTAL_FILE
+export const ranks = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const
+export const files = ["a", "b", "c", "d", "e", "f", "g", "h", "i"] as const
 
-export type BaseKey = `${File}${Rank}`;
+export type File = (typeof files)[number]
+export type Rank = (typeof ranks)[number] | "0"
+export type Position = [number, number]
+export type BaseKey = `${File}${Rank}`
 
-export type Hint = `${BaseKey}${Rank}`;
-export type Hints = Hint[];
-export type Key = `${BaseKey}${Rank}${Rank}${Rank}`;
+export const buttons = ["restart", "removeDigit", "showHint"] as const
+export type ButtonTexts = (typeof buttons)[number]
 
-export type GameState = "isInitialed" | "isPaused" | "isPlaying" | "isOvered";
+export type Buttons = Map<BaseKey, ButtonTexts>
+export type Hint = `${BaseKey}${Rank}`
+export type Hints = Hint[]
+export type Key = `${BaseKey}${Rank}${Rank}`
 
-export type Value = Rank;
+export type GameState = "isInitialed" | "isPaused" | "isPlaying" | "isOvered"
 
-export type Cells = Map<Key, Value>;
+export type Value = Rank
+
+export type Cells = Map<Key, Value>
 
 export interface Memo<A> {
-  (): A;
-  clear: () => void;
+  (): A
+  clear: () => void
 }
-export type Digits = Map<BaseKey, Value>;
+export type Digits = Map<BaseKey, Value>
 
 export interface HeadlessState {
-  gameState: GameState;
-  cells: Cells;
-  hints: Hints;
-  digits: Digits;
-  selected: Key[];
-  isHint: boolean;
+  gameState: GameState
+  cells: Cells
+  hints: Hints
+  digits: Digits
+  selected: Key[]
+  buttons: Buttons
+  isHint: boolean
 }
 
 export interface State extends HeadlessState {
-  board: HTMLElement;
-  container: HTMLElement;
-  numPad: HTMLElement;
-  bounds: Memo<DOMRectReadOnly>;
+  board: HTMLElement
+  container: HTMLElement
+  numPad: HTMLElement
+  bounds: Memo<DOMRectReadOnly>
+  panel: HTMLElement
 }
 
 export interface CellElement extends HTMLElement {
-  key: Key;
-  value: Value;
-  isReadOnly: boolean;
+  key: Key
+  value: Value
+  isReadOnly: boolean
 }
-export type MouchEvent = Event & Partial<MouseEvent & TouchEvent>;

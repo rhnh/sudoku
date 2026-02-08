@@ -1,5 +1,9 @@
 :root {
   box-sizing: border-box;
+  --thick: 3px;
+  --size: 600px;
+  --fontSize: 40px;
+  --hintMargin: 10px;
 }
 *,
 ::before,
@@ -14,9 +18,8 @@
   height: 100vh;
 }
 #container {
-  width: 500px;
-  height: 500px;
-  margin-top: 10px;
+  width: var(--size);
+  height: var(--size);
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -48,23 +51,16 @@ cell {
 }
 
 hint {
-  margin-left: 5px;
-  margin-top: 7px;
-  color: gray;
+  color: rgb(43, 102, 212);
+  font-size-adjust: 0.545;
+  margin-top: 10px;
+  margin-left: 3px;
 }
 
 cell > p {
   font-size: 25px;
   margin: auto;
   width: 100%;
-}
-
-.cell-top-row {
-  border-top: 1px solid black;
-}
-.cell-right-row {
-  border-right: 1px solid black;
-  height: 100%;
 }
 
 numpad {
@@ -75,7 +71,7 @@ numpad {
   user-select: none;
   clear: both;
   width: 100%;
-  gap: 1em;
+  margin-top: 1em;
 }
 
 numpad > * {
@@ -83,8 +79,44 @@ numpad > * {
   width: 100%;
   background-color: bisque;
   text-align: center;
+  aspect-ratio: 1/1;
+  border: 1px solid black;
+  margin: auto;
 }
 
 .selected {
-  background-color: rgb(212, 212, 255);
+  background-color: rgba(42, 42, 255, 0.288);
+}
+
+.panel {
+  width: 100%;
+  display: flex;
+  align-content: center;
+  margin-bottom: 1em;
+  padding: 0;
+  margin-top: 0;
+}
+#hintBTN {
+  background-color: rebeccapurple;
+}
+#hintBTN.clicked {
+  background-color: red;
+}
+
+.buttons {
+  text-transform: capitalize;
+}
+.horizontal-lines {
+  border-right: var(--thick) solid black;
+}
+.vertical-lines {
+  border-top: var(--thick) solid black;
+  margin-top: -2px;
+}
+.last-line {
+  border-bottom: var(--thick) solid black;
+}
+.first-line {
+  border-left: var(--thick) solid black;
+  margin-left: -2px;
 }
