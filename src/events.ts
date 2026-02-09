@@ -1,5 +1,5 @@
-import {renderCells, renderHints} from "./render"
-import type {BaseKey, CellElement, Hint, Key, Rank, State, Value} from "./types"
+import {fill, renderCells} from "./render"
+import type {BaseKey, CellElement, Key, Rank, State, Value} from "./types"
 import {
   getPositionKeyAtDom,
   getKeyFromPosition,
@@ -52,14 +52,19 @@ export const events = (state: State): State => {
   board.addEventListener("pointerup", (e) => {
     const {clientX: x, clientY: y} = e
     const t = getPositionKeyAtDom(state.bounds())([x, y])
-    const key = getKeyFromPosition(t) as unknown as Key
+    let key = getKeyFromPosition(t) as unknown as Key | undefined
     const p = state.draggingElement?.firstChild as unknown as HTMLElement
-    console.log(state.originKey)
+    if (!key || !state.originKey) return
+
     if (state.isHint) {
-      const selected = state.selected[0].replace(
-        state.selected[0][0],
-        key[0],
-      ) as Key
+      if (!state.draggingValue || !state.originKey) return
+      //Take first 2 chars of target to get main destination.
+      const firstChar = key.substring(0, 2)
+      //get last 2 chars of origin to determine Hint position
+      const lastCharOfTargetKey = state.originKey.substring(1)
+
+      const selected = (firstChar + lastCharOfTargetKey) as Key
+
       state.selected.push(selected)
       if (!state.draggingValue) return
       fill(state, state.draggingValue)
@@ -81,7 +86,6 @@ export const events = (state: State): State => {
 
 export const numPadEvents = (state: State): State => {
   const {numPad} = state
-
   numPad.addEventListener("pointerdown", (e) => {
     const {clientX: x, clientY: y} = e
     const t = getPositionKeyAtDom(numPad.getBoundingClientRect())([x, y], 9, 1)
@@ -109,28 +113,4 @@ export function keyEvents(state: State): State {
     }
   })
   return state
-}
-
-export function fill(state: State, value: Value) {
-  console.log(state.hints, state.selected, value)
-  if (state.isHint) {
-    state.selected.map((s) => {
-      const hint = `${s.slice(0, 2)}${value}` as unknown as Hint
-      //check if already exist.
-      const alreadyHint = state.hints.filter((h) => h === hint)
-      if (alreadyHint.length > 0) {
-        state.hints = state.hints.filter((i) => i !== hint)
-        return state
-      } else {
-        state.hints.push(hint)
-        return state
-      }
-    })
-  } else {
-    state.selected.map((selectedKey) => {
-      state.cells.set(selectedKey, value)
-      return state
-    })
-  }
-  renderCells(state)
 }

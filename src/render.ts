@@ -49,6 +49,7 @@ export function renderPanel(state: State) {
 }
 
 export function fill(state: State, value: Value) {
+  console.log(value)
   if (state.isHint) {
     state.selected.map((s) => {
       const hint = `${s.slice(0, 2)}${value}` as unknown as Hint
@@ -58,6 +59,7 @@ export function fill(state: State, value: Value) {
         state.hints = state.hints.filter((i) => i !== hint)
         return state
       } else {
+        console.log(hint)
         state.hints.push(hint)
         return state
       }
