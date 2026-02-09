@@ -1,4 +1,4 @@
-import {renderCells} from "./render"
+import {renderCells, renderHints} from "./render"
 import type {BaseKey, CellElement, Hint, Key, Rank, State, Value} from "./types"
 import {
   getPositionKeyAtDom,
@@ -11,16 +11,16 @@ export const events = (state: State): State => {
   const {board} = state
   board.addEventListener("pointerdown", (e) => {
     const {clientX: x, clientY: y} = e
-    const t = getPositionKeyAtDom(state.bounds())([x, y])
-    const key = getKeyFromPosition(t) as unknown as Key
+    const position = getPositionKeyAtDom(state.bounds())([x, y])
+    const key = getKeyFromPosition(position) as unknown as Key
     board.querySelector(".selected")?.classList.remove("selected")
-
+    state.originKey = key
     if (state.selected.find((k) => k === key)) {
       state.selected = [key]
       state.forceRerender = false
     }
     const el = getElementByKey(state)(key) as unknown as CellElement
-
+    if (!el) return
     state.draggingElement = el
     el.classList.add("selected")
     state.draggingValue = el.innerText as Rank
@@ -39,12 +39,6 @@ export const events = (state: State): State => {
   board.addEventListener("pointermove", (e) => {
     const {clientX: x, clientY: y} = e
     const p = state.draggingElement?.firstChild as unknown as HTMLElement
-    const isHint = p && p.innerText === ""
-
-    if (isHint) {
-      p.style.transform = "unset"
-      return
-    }
 
     if (state.draggingElement && p) {
       p.style.transform = `translate(${
@@ -57,16 +51,19 @@ export const events = (state: State): State => {
 
   board.addEventListener("pointerup", (e) => {
     const {clientX: x, clientY: y} = e
-    if (state.isHint) return
     const t = getPositionKeyAtDom(state.bounds())([x, y])
     const key = getKeyFromPosition(t) as unknown as Key
     const p = state.draggingElement?.firstChild as unknown as HTMLElement
-    const isHint = p && p.innerText === ""
-    if (isHint) {
-      state.draggingElement = undefined
-      state.draggingValue = undefined
-      state.isHold = false
-      p.style.transform = "unset"
+    console.log(state.originKey)
+    if (state.isHint) {
+      const selected = state.selected[0].replace(
+        state.selected[0][0],
+        key[0],
+      ) as Key
+      state.selected.push(selected)
+      if (!state.draggingValue) return
+      fill(state, state.draggingValue)
+
       return
     }
 
@@ -115,6 +112,7 @@ export function keyEvents(state: State): State {
 }
 
 export function fill(state: State, value: Value) {
+  console.log(state.hints, state.selected, value)
   if (state.isHint) {
     state.selected.map((s) => {
       const hint = `${s.slice(0, 2)}${value}` as unknown as Hint

@@ -1,5 +1,11 @@
 import {numPadEvents} from "./events"
-import {type CellElement, type Key, type State} from "./types"
+import {
+  type CellElement,
+  type Hint,
+  type Key,
+  type State,
+  type Value,
+} from "./types"
 import {
   getPositionFromBound,
   keyToPosition,
@@ -41,6 +47,30 @@ export function renderPanel(state: State) {
   }
   return state
 }
+
+export function fill(state: State, value: Value) {
+  if (state.isHint) {
+    state.selected.map((s) => {
+      const hint = `${s.slice(0, 2)}${value}` as unknown as Hint
+      //check if already exist.
+      const alreadyHint = state.hints.filter((h) => h === hint)
+      if (alreadyHint.length > 0) {
+        state.hints = state.hints.filter((i) => i !== hint)
+        return state
+      } else {
+        state.hints.push(hint)
+        return state
+      }
+    })
+  } else {
+    state.selected.map((selectedKey) => {
+      state.cells.set(selectedKey, value)
+      return state
+    })
+  }
+  renderCells(state)
+}
+
 export function renderCells(state: State): State {
   const {board, cells} = state
   board.innerHTML = ""

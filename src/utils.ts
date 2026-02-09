@@ -113,7 +113,7 @@ export const initState = (): State => {
     digits: getDigits(),
     hints: ["b11", "b12", "b13", "b14", "b15", "b16", "b17", "b18", "b19"],
     buttons: getButtonKeys(),
-    isHint: false,
+    isHint: true,
     forceRerender: false,
   }
   return headlessState as unknown as State
