@@ -1,5 +1,5 @@
 import {fill, renderCells} from "./render"
-import type {BaseKey, CellElement, Key, Rank, State, Value} from "./types"
+import type {BaseKey, CellElement, Hint, Key, Rank, State, Value} from "./types"
 import {
   getPositionKeyAtDom,
   getKeyFromPosition,
@@ -53,12 +53,13 @@ export const events = (state: State): State => {
     const {clientX: x, clientY: y} = e
     const t = getPositionKeyAtDom(state.bounds())([x, y])
     let key = getKeyFromPosition(t) as unknown as Key | undefined
+
     const p = state.draggingElement?.firstChild as unknown as HTMLElement
     if (!key || !state.originKey) return
 
     if (state.isHint) {
       if (!state.draggingValue || !state.originKey) return
-      //Take first 2 chars of target to get main destination.
+      //Take first 2 chars of target to get Cell position.
       const firstChar = key.substring(0, 2)
       //get last 2 chars of origin to determine Hint position
       const lastCharOfTargetKey = state.originKey.substring(1)
@@ -73,10 +74,11 @@ export const events = (state: State): State => {
     }
 
     p.style.transform = "unset"
+    if (state.draggingElement?.childElementCount === 1)
+      if (state.draggingValue)
+        state.cells.set(key, state.draggingValue! as Value)
 
-    if (state.draggingValue) state.cells.set(key, state.draggingValue! as Value)
-
-    state.draggingElement = undefined
+    // state.draggingElement = undefined
     state.draggingValue = undefined
     state.isHold = false
     renderCells(state)
@@ -88,13 +90,40 @@ export const numPadEvents = (state: State): State => {
   const {numPad} = state
   numPad.addEventListener("pointerdown", (e) => {
     const {clientX: x, clientY: y} = e
-    const t = getPositionKeyAtDom(numPad.getBoundingClientRect())([x, y], 9, 1)
-    const key = getDigitFromPosition(t) as unknown as BaseKey
+    const position = getPositionKeyAtDom(numPad.getBoundingClientRect())(
+      [x, y],
+      9,
+      1,
+    )
+    const numKey = getDigitFromPosition(position) as unknown as BaseKey
+    let value = state.digits.get(numKey) as unknown as Rank
 
-    const value = state.digits.get(key) as unknown as Rank
-    fill(state, value)
+    if (state.isHint) {
+      const key = state.originKey?.slice(0, 2)
+
+      const found = state.hints.find((r) => {
+        return r === `${key}${value}`
+      })
+
+      if (found) {
+        state.hints = state.hints.filter((r) => r !== found)
+        return state
+      } else {
+        state.hints.push(`${key}${value}` as Hint)
+      }
+    } else {
+      state.selected.map((selectedKey) => {
+        state.cells.set(selectedKey, value)
+        return state
+      })
+    }
   })
-
+  numPad.addEventListener("pointermove", (e) => {
+    return
+  })
+  numPad.addEventListener("pointerup", (e) => {
+    renderCells(state)
+  })
   return state
 }
 

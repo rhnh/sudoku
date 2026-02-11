@@ -1,4 +1,3 @@
-import {numPadEvents} from "./events"
 import {
   type CellElement,
   type Hint,
@@ -49,7 +48,6 @@ export function renderPanel(state: State) {
 }
 
 export function fill(state: State, value: Value) {
-  console.log(value)
   if (state.isHint) {
     state.selected.map((s) => {
       const hint = `${s.slice(0, 2)}${value}` as unknown as Hint
@@ -57,9 +55,9 @@ export function fill(state: State, value: Value) {
       const alreadyHint = state.hints.filter((h) => h === hint)
       if (alreadyHint.length > 0) {
         state.hints = state.hints.filter((i) => i !== hint)
+
         return state
       } else {
-        console.log(hint)
         state.hints.push(hint)
         return state
       }
@@ -70,6 +68,7 @@ export function fill(state: State, value: Value) {
       return state
     })
   }
+  //This rerender is needed
   renderCells(state)
 }
 
@@ -157,5 +156,5 @@ export const createNumPad = (state: State): State => {
   return state
 }
 export const renderNumpad = (state: State): State => {
-  return Box(createNumPad(state)).map(numPadEvents).fold(id)
+  return Box(createNumPad(state)).fold(id)
 }
