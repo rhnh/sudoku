@@ -14,14 +14,15 @@ export const events = (state: State): State => {
     const position = getPositionKeyAtDom(state.bounds())([x, y])
     const key = getKeyFromPosition(position) as unknown as Key
     console.log(state.selected)
-    state.isHold = !state.isHold
 
-    if (state.isHold)
+    if (state.isSelected)
       state.board.querySelectorAll(".selected")?.forEach((item) => {
         item.classList.remove("selected")
       })
-    if (e.ctrlKey) state.originKeys.push(key)
-    else {
+    if (e.ctrlKey) {
+      state.isHint = true
+      state.originKeys.push(key)
+    } else {
       state.originKeys = [key]
       state.board.querySelectorAll(".selected")?.forEach((item) => {
         item.classList.remove("selected")
@@ -133,15 +134,12 @@ export const numPadEvents = (state: State): State => {
         return state
       })
     }
+    renderCells(state)
   })
   numPad.addEventListener("drag", (e) => {
     return
   })
-  numPad.addEventListener("pointerup", (e) => {
-    state.board.querySelector(".selected")?.classList.remove("selected")
-
-    renderCells(state)
-  })
+  numPad.addEventListener("pointerup", (e) => {})
   return state
 }
 
