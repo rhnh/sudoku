@@ -39,7 +39,7 @@ export interface HeadlessState {
   forceRerender: boolean
   isHold?: boolean
   draggingValue?: Rank
-  originKey?: Key
+  originKeys: Key[]
 }
 
 export interface State extends HeadlessState {

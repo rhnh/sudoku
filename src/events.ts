@@ -13,8 +13,20 @@ export const events = (state: State): State => {
     const {clientX: x, clientY: y} = e
     const position = getPositionKeyAtDom(state.bounds())([x, y])
     const key = getKeyFromPosition(position) as unknown as Key
-    board.querySelector(".selected")?.classList.remove("selected")
-    state.originKey = key
+    console.log(state.selected)
+    state.isHold = !state.isHold
+
+    if (state.isHold)
+      state.board.querySelectorAll(".selected")?.forEach((item) => {
+        item.classList.remove("selected")
+      })
+    if (e.ctrlKey) state.originKeys.push(key)
+    else {
+      state.originKeys = [key]
+      state.board.querySelectorAll(".selected")?.forEach((item) => {
+        item.classList.remove("selected")
+      })
+    }
     if (state.selected.find((k) => k === key)) {
       state.selected = [key]
       state.forceRerender = false
@@ -55,21 +67,24 @@ export const events = (state: State): State => {
     let key = getKeyFromPosition(t) as unknown as Key | undefined
 
     const p = state.draggingElement?.firstChild as unknown as HTMLElement
-    if (!key || !state.originKey) return
+    if (!key || !state.originKeys) return
 
     if (state.isHint) {
-      if (!state.draggingValue || !state.originKey) return
-      //Take first 2 chars of target to get Cell position.
-      const firstChar = key.substring(0, 2)
-      //get last 2 chars of origin to determine Hint position
-      const lastCharOfTargetKey = state.originKey.substring(1)
+      if (!state.draggingValue || !state.originKeys) return
 
-      const selected = (firstChar + lastCharOfTargetKey) as Key
+      state.originKeys.map((originKey) => {
+        //Take first 2 chars of target to get Cell position.
+        const firstChar = key.substring(0, 2)
+        //get last 2 chars of origin to determine Hint position
 
-      state.selected.push(selected)
-      if (!state.draggingValue) return
-      fill(state, state.draggingValue)
+        const lastCharOfTargetKey = originKey.substring(1)
 
+        const selected = (firstChar + lastCharOfTargetKey) as Key
+
+        state.selected.push(selected)
+        if (!state.draggingValue) return
+        fill(state, state.draggingValue)
+      })
       return
     }
 
@@ -78,9 +93,9 @@ export const events = (state: State): State => {
       if (state.draggingValue)
         state.cells.set(key, state.draggingValue! as Value)
 
-    // state.draggingElement = undefined
+    state.draggingElement = undefined
     state.draggingValue = undefined
-    state.isHold = false
+    state.originKeys = []
     renderCells(state)
   })
   return state
@@ -88,6 +103,7 @@ export const events = (state: State): State => {
 
 export const numPadEvents = (state: State): State => {
   const {numPad} = state
+
   numPad.addEventListener("pointerdown", (e) => {
     const {clientX: x, clientY: y} = e
     const position = getPositionKeyAtDom(numPad.getBoundingClientRect())(
@@ -99,18 +115,18 @@ export const numPadEvents = (state: State): State => {
     let value = state.digits.get(numKey) as unknown as Rank
 
     if (state.isHint) {
-      const key = state.originKey?.slice(0, 2)
+      state.originKeys?.map((originKey) => {
+        const key = originKey.slice(0, 2)
 
-      const found = state.hints.find((r) => {
-        return r === `${key}${value}`
+        const found = state.hints.find((r) => r === `${key}${value}`)
+
+        if (found) {
+          state.hints = state.hints.filter((r) => r !== found)
+          return state
+        } else {
+          state.hints.push(`${key}${value}` as Hint)
+        }
       })
-
-      if (found) {
-        state.hints = state.hints.filter((r) => r !== found)
-        return state
-      } else {
-        state.hints.push(`${key}${value}` as Hint)
-      }
     } else {
       state.selected.map((selectedKey) => {
         state.cells.set(selectedKey, value)
@@ -118,10 +134,12 @@ export const numPadEvents = (state: State): State => {
       })
     }
   })
-  numPad.addEventListener("pointermove", (e) => {
+  numPad.addEventListener("drag", (e) => {
     return
   })
   numPad.addEventListener("pointerup", (e) => {
+    state.board.querySelector(".selected")?.classList.remove("selected")
+
     renderCells(state)
   })
   return state

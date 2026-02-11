@@ -1,4 +1,3 @@
-import {dragBoard} from "./drag"
 import {events, keyEvents, numPadEvents, panelEvent} from "./events"
 import {render, renderNumpad, renderBase} from "./render"
 import "./style.css"
@@ -12,4 +11,3 @@ Box(initState())
   .map(events)
   .map(panelEvent)
   .map(keyEvents)
-  .fold(dragBoard)
