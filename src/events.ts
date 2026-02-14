@@ -1,5 +1,5 @@
-import {fill, renderCells} from "./render"
-import type {BaseKey, CellElement, Hint, Key, Rank, State, Value} from "./types"
+import {fill, render} from "./render"
+import type {BaseKey, CellElement, Rank, State, Value} from "./types"
 import {
   getPositionKeyAtDom,
   getKeyFromPosition,
@@ -9,97 +9,55 @@ import {
 
 export const events = (state: State): State => {
   const {board} = state
-  board.addEventListener("pointerdown", (e) => {
-    const {clientX: x, clientY: y} = e
-    const position = getPositionKeyAtDom(state.bounds())([x, y])
-    const key = getKeyFromPosition(position) as unknown as Key
-    console.log(state.selected)
+  board.addEventListener("pointerdown", pointerDown(state))
+  board.addEventListener("drag", pointerMove(state))
+  board.addEventListener("pointerup", pointerUp(state))
+}
+export const pointerUp = (state: State) => (e: MouseEvent) => {}
+export const pointerMove = (state: State) => (e: MouseEvent) => {
+  const {clientX: x, clientY: y} = e
 
-    if (state.isSelected)
-      state.board.querySelectorAll(".selected")?.forEach((item) => {
-        item.classList.remove("selected")
-      })
-    if (e.ctrlKey) {
-      state.isHint = true
-      state.originKeys.push(key)
-    } else {
-      state.originKeys = [key]
-      state.board.querySelectorAll(".selected")?.forEach((item) => {
-        item.classList.remove("selected")
-      })
-    }
-    if (state.selected.find((k) => k === key)) {
-      state.selected = [key]
+  if (!state.draggingElement || !state.isDraggable) return
+  const p = state.draggingElement?.querySelector(
+    ".main-value",
+  ) as unknown as HTMLParagraphElement
+  console.log(p)
+  p.style.position = "absolute"
+  p.style.transform = `translate(${
+    x -
+    state.draggingElement?.getBoundingClientRect().left -
+    state.draggingElement?.getBoundingClientRect().width / 3
+  }px, ${y - state.draggingElement?.getBoundingClientRect().top - state.draggingElement?.getBoundingClientRect().height / 3}px)`
+}
+export const pointerDown = (state: State) => (e: MouseEvent) => {
+  const {clientX: x, clientY: y} = e
+  console.log(state.isDraggable, state.draggingElement, state.forceRerender)
+
+  const {bounds} = state
+  const pos = getPositionKeyAtDom(bounds())([x, y])
+  const key = getKeyFromPosition(pos)
+  if (!key) return
+  state.startX = e.pageX
+  state.startY = e.pageY
+  let selected
+  if (e.ctrlKey) {
+    selected = new Set([...state.selected, key])
+  } else {
+    state.isSelected = true
+    selected = new Set([key])
+  }
+  state.selected = [...selected]
+  state.selected.map((selected) => {
+    const found = state.cells.get(selected)
+    if (found !== "0") {
+      const el = getElementByKey(state)(key) as unknown as CellElement
+      if (!el) return
+      state.draggingElement = el
+      state.draggingValue = el.innerText as Rank
+      state.isDraggable = true
       state.forceRerender = false
     }
-    const el = getElementByKey(state)(key) as unknown as CellElement
-    if (!el) return
-    state.draggingElement = el
-    el.classList.add("selected")
-    state.draggingValue = el.innerText as Rank
-
-    if (state.selected.find((k) => k === key)) {
-      state.selected = [key]
-    }
-
-    if (e.ctrlKey) {
-      state.selected.push(key)
-    } else {
-      state.selected = [key]
-    }
   })
-
-  board.addEventListener("pointermove", (e) => {
-    const {clientX: x, clientY: y} = e
-    const p = state.draggingElement?.firstChild as unknown as HTMLElement
-
-    if (state.draggingElement && p) {
-      p.style.transform = `translate(${
-        x -
-        state.draggingElement?.getBoundingClientRect().left -
-        state.draggingElement?.getBoundingClientRect().width / 3
-      }px, ${y - state.draggingElement?.getBoundingClientRect().top - state.draggingElement?.getBoundingClientRect().height / 3}px)`
-    }
-  })
-
-  board.addEventListener("pointerup", (e) => {
-    const {clientX: x, clientY: y} = e
-    const t = getPositionKeyAtDom(state.bounds())([x, y])
-    let key = getKeyFromPosition(t) as unknown as Key | undefined
-
-    const p = state.draggingElement?.firstChild as unknown as HTMLElement
-    if (!key || !state.originKeys) return
-
-    if (state.isHint) {
-      if (!state.draggingValue || !state.originKeys) return
-
-      state.originKeys.map((originKey) => {
-        //Take first 2 chars of target to get Cell position.
-        const firstChar = key.substring(0, 2)
-        //get last 2 chars of origin to determine Hint position
-
-        const lastCharOfTargetKey = originKey.substring(1)
-
-        const selected = (firstChar + lastCharOfTargetKey) as Key
-
-        state.selected.push(selected)
-        if (!state.draggingValue) return
-        fill(state, state.draggingValue)
-      })
-      return
-    }
-
-    p.style.transform = "unset"
-    if (state.draggingElement?.childElementCount === 1)
-      if (state.draggingValue)
-        state.cells.set(key, state.draggingValue! as Value)
-
-    state.draggingElement = undefined
-    state.draggingValue = undefined
-    state.originKeys = []
-    renderCells(state)
-  })
-  return state
 }
 
 export const numPadEvents = (state: State): State => {
@@ -114,32 +72,8 @@ export const numPadEvents = (state: State): State => {
     )
     const numKey = getDigitFromPosition(position) as unknown as BaseKey
     let value = state.digits.get(numKey) as unknown as Rank
-
-    if (state.isHint) {
-      state.originKeys?.map((originKey) => {
-        const key = originKey.slice(0, 2)
-
-        const found = state.hints.find((r) => r === `${key}${value}`)
-
-        if (found) {
-          state.hints = state.hints.filter((r) => r !== found)
-          return state
-        } else {
-          state.hints.push(`${key}${value}` as Hint)
-        }
-      })
-    } else {
-      state.selected.map((selectedKey) => {
-        state.cells.set(selectedKey, value)
-        return state
-      })
-    }
-    renderCells(state)
+    fill(state, value)
   })
-  numPad.addEventListener("drag", (e) => {
-    return
-  })
-  numPad.addEventListener("pointerup", (e) => {})
   return state
 }
 

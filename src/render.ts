@@ -68,8 +68,6 @@ export function fill(state: State, value: Value) {
       return state
     })
   }
-  //This rerender is needed
-  renderCells(state)
 }
 
 export function renderCells(state: State): State {
@@ -84,13 +82,12 @@ export function renderCells(state: State): State {
     cellElem.style.position = "absolute"
     cellElem.style.height = `${state.bounds().height / 9}px`
     cellElem.style.width = `${state.bounds().width / 9}px`
-    const selectedEl = state.selected.find((x) => k == x)
     cellElem.dataset.key = `${k}`
     cellElem.dataset.value = `${v}`
-    if (selectedEl) {
-      cellElem.classList.add("selected")
-    }
 
+    state.selected.map((selected) => {
+      if (selected === k) cellElem.classList.add("selected")
+    })
     if (k.startsWith("c") || k.startsWith("f") || k.startsWith("i")) {
       cellElem.classList.add("horizontal-lines")
     }
@@ -103,10 +100,11 @@ export function renderCells(state: State): State {
     if (k.endsWith("999")) {
       cellElem.classList.add("last-line")
     }
-    const c = document.createElement("p")
-    c.style.gridArea = "2 / 2 / 3 / 3"
-    if (v !== "0") c.innerHTML = `${v}`
-    cellElem.appendChild(c)
+    const mainValue = document.createElement("p")
+    mainValue.style.gridArea = "2 / 2 / 3 / 3"
+    mainValue.classList.add("main-value")
+    if (v !== "0") mainValue.innerHTML = `${v}`
+    cellElem.appendChild(mainValue)
     board.appendChild(cellElem)
     renderHints(state, cellElem)
   }
