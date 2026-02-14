@@ -36,14 +36,8 @@ export interface HeadlessState {
   selected: Key[]
   buttons: Buttons
   isHint: boolean
-  forceRerender: boolean
-  isSelected?: boolean
   draggingValue?: Rank
-  isDraggable: boolean
-  // //https://stackoverflow.com/questions/6042202/how-to-distinguish-mouse-click-and-drag
-  delta: 6
-  startX?: number
-  startY?: number
+  isDragging: boolean
 }
 
 export interface State extends HeadlessState {
