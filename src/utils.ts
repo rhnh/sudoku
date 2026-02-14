@@ -114,8 +114,8 @@ export const initState = (): State => {
     hints: ["b11", "b12", "b13", "b14", "b15", "b16", "b17", "b18", "b19"],
     buttons: getButtonKeys(),
     isHint: true,
+    isDragging: false,
     forceRerender: false,
-    originKeys: [],
   }
   return headlessState as unknown as State
 }

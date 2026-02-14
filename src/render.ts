@@ -73,50 +73,52 @@ export function fill(state: State, value: Value) {
 }
 
 export function renderCells(state: State): State {
-  const {board, cells} = state
-  board.innerHTML = ""
+  requestAnimationFrame(() => {
+    const {board, cells} = state
+    board.innerHTML = ""
 
-  for (const [k, v] of cells) {
-    const cellElem = document.createElement("cell") as CellElement
-    const p = keyToPosition(k as Key)
-    const pos = getPositionFromBound(state, p)
-    cellElem.style.transform = `translate(${pos[0]}px, ${pos[1]}px)`
-    cellElem.style.position = "absolute"
-    cellElem.style.height = `${state.bounds().height / 9}px`
-    cellElem.style.width = `${state.bounds().width / 9}px`
-    const selectedEl = state.selected.find((x) => k == x)
-    cellElem.dataset.key = `${k}`
-    cellElem.dataset.value = `${v}`
-    if (selectedEl) {
-      cellElem.classList.add("selected")
-    }
+    for (const [k, v] of cells) {
+      const cellElem = document.createElement("cell") as CellElement
+      const p = keyToPosition(k as Key)
+      const pos = getPositionFromBound(state, p)
+      cellElem.style.transform = `translate(${pos[0]}px, ${pos[1]}px)`
+      cellElem.style.position = "absolute"
+      cellElem.style.height = `${state.bounds().height / 9}px`
+      cellElem.style.width = `${state.bounds().width / 9}px`
+      state.selected.map((selectedKey) => {
+        if (selectedKey === k) {
+          cellElem.classList.add("selected")
+        }
+      })
+      cellElem.dataset.key = `${k}`
+      cellElem.dataset.value = `${v}`
 
-    if (k.startsWith("c") || k.startsWith("f") || k.startsWith("i")) {
-      cellElem.classList.add("horizontal-lines")
+      if (k.startsWith("c") || k.startsWith("f") || k.startsWith("i")) {
+        cellElem.classList.add("horizontal-lines")
+      }
+      if (k.endsWith("444") || k.endsWith("777") || k.endsWith("111")) {
+        cellElem.classList.add("vertical-lines")
+      }
+      if (k.startsWith("a")) {
+        cellElem.classList.add("first-line")
+      }
+      if (k.endsWith("999")) {
+        cellElem.classList.add("last-line")
+      }
+      const c = document.createElement("p")
+      c.style.gridArea = "2 / 2 / 3 / 3"
+      if (v !== "0") c.innerHTML = `${v}`
+      cellElem.appendChild(c)
+      board.appendChild(cellElem)
+      renderHints(state, cellElem)
     }
-    if (k.endsWith("444") || k.endsWith("777") || k.endsWith("111")) {
-      cellElem.classList.add("vertical-lines")
-    }
-    if (k.startsWith("a")) {
-      cellElem.classList.add("first-line")
-    }
-    if (k.endsWith("999")) {
-      cellElem.classList.add("last-line")
-    }
-    const c = document.createElement("p")
-    c.style.gridArea = "2 / 2 / 3 / 3"
-    if (v !== "0") c.innerHTML = `${v}`
-    cellElem.appendChild(c)
-    board.appendChild(cellElem)
-    renderHints(state, cellElem)
-  }
-
+  })
   return state
 }
 
 export function renderHints(state: State, el: CellElement): State {
-  const {hints} = state
-
+  let {hints} = state
+  hints = [...new Set(hints)]
   hints.map((h) => {
     const value = +h.slice(-1)
     const key = h.slice(0, 2) as unknown as Key
@@ -133,10 +135,6 @@ export function renderHints(state: State, el: CellElement): State {
 }
 
 export const render = (state: State): State => {
-  if (state.forceRerender)
-    requestAnimationFrame(() => {
-      render(state)
-    })
   return Box(state).map(renderCells).map(renderNumpad).fold(id)
 }
 export const createNumPad = (state: State): State => {

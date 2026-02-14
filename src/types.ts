@@ -37,9 +37,8 @@ export interface HeadlessState {
   buttons: Buttons
   isHint: boolean
   forceRerender: boolean
-  isSelected?: boolean
   draggingValue?: Rank
-  originKeys: Key[]
+  isDragging: boolean
 }
 
 export interface State extends HeadlessState {

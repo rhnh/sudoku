@@ -13,95 +13,77 @@ export const events = (state: State): State => {
     const {clientX: x, clientY: y} = e
     const position = getPositionKeyAtDom(state.bounds())([x, y])
     const key = getKeyFromPosition(position) as unknown as Key
-    console.log(state.selected)
-
-    if (state.isSelected)
-      state.board.querySelectorAll(".selected")?.forEach((item) => {
-        item.classList.remove("selected")
-      })
-    if (e.ctrlKey) {
-      state.isHint = true
-      state.originKeys.push(key)
-    } else {
-      state.originKeys = [key]
-      state.board.querySelectorAll(".selected")?.forEach((item) => {
-        item.classList.remove("selected")
-      })
-    }
-    if (state.selected.find((k) => k === key)) {
-      state.selected = [key]
-      state.forceRerender = false
-    }
+    if (!key) return
     const el = getElementByKey(state)(key) as unknown as CellElement
-    if (!el) return
-    state.draggingElement = el
-    el.classList.add("selected")
-    state.draggingValue = el.innerText as Rank
-
-    if (state.selected.find((k) => k === key)) {
-      state.selected = [key]
-    }
-
-    if (e.ctrlKey) {
-      state.selected.push(key)
+    if (el.dataset.value === "0") {
+      //don't drag this square
+      if (e.ctrlKey) {
+        state.selected = [...new Set(state.selected), key]
+      } else {
+        state.selected = [key]
+      }
+      renderCells(state)
     } else {
-      state.selected = [key]
+      if (e.ctrlKey) {
+        state.isDragging = true
+        state.draggingElement = el
+        state.selected = [key]
+        state.draggingElement.classList.add("selected")
+        const value = state.draggingElement.dataset.value
+        if (!value) return
+        state.draggingValue = value as unknown as Rank
+      }
     }
   })
-
-  board.addEventListener("pointermove", (e) => {
-    const {clientX: x, clientY: y} = e
-    const p = state.draggingElement?.firstChild as unknown as HTMLElement
-
-    if (state.draggingElement && p) {
-      p.style.transform = `translate(${
-        x -
-        state.draggingElement?.getBoundingClientRect().left -
-        state.draggingElement?.getBoundingClientRect().width / 3
-      }px, ${y - state.draggingElement?.getBoundingClientRect().top - state.draggingElement?.getBoundingClientRect().height / 3}px)`
-    }
-  })
-
   board.addEventListener("pointerup", (e) => {
     const {clientX: x, clientY: y} = e
     const t = getPositionKeyAtDom(state.bounds())([x, y])
     let key = getKeyFromPosition(t) as unknown as Key | undefined
+    if (!key) return
+    if (state.isDragging && state.draggingElement && e.ctrlKey) {
+      const p = state.draggingElement?.firstChild as unknown as HTMLElement
+      if (state.draggingElement && p) {
+        p.style.position = "unset"
+        p.style.transform = "unset"
+      }
+      state.draggingElement.classList.remove("selected")
+      board
+        .querySelectorAll(".selected")
+        .forEach((s) => s.classList.remove("selected"))
+      const value = state.draggingValue as unknown as Rank
 
-    const p = state.draggingElement?.firstChild as unknown as HTMLElement
-    if (!key || !state.originKeys) return
-
-    if (state.isHint) {
-      if (!state.draggingValue || !state.originKeys) return
-
-      state.originKeys.map((originKey) => {
-        //Take first 2 chars of target to get Cell position.
-        const firstChar = key.substring(0, 2)
-        //get last 2 chars of origin to determine Hint position
-
-        const lastCharOfTargetKey = originKey.substring(1)
-
-        const selected = (firstChar + lastCharOfTargetKey) as Key
-
-        state.selected.push(selected)
-        if (!state.draggingValue) return
-        fill(state, state.draggingValue)
-      })
-      return
+      if (state.isHint) {
+        const hintKey = `${key.slice(0, 2)}${value}` as unknown as Hint
+        const found = state.hints.find((h) => hintKey === h)
+        if (found) {
+          state.hints = [...new Set(state.hints.filter((r) => r !== hintKey))]
+        } else state.hints = [...new Set(state.hints), hintKey]
+      } else {
+        state.cells.set(key, value)
+      }
     }
-
-    p.style.transform = "unset"
-    if (state.draggingElement?.childElementCount === 1)
-      if (state.draggingValue)
-        state.cells.set(key, state.draggingValue! as Value)
-
     state.draggingElement = undefined
+    state.isDragging = false
     state.draggingValue = undefined
-    state.originKeys = []
     renderCells(state)
   })
+  board.addEventListener("pointermove", (e) => {
+    const {clientX: x, clientY: y} = e
+    if (state.isDragging && e.ctrlKey) {
+      const p = state.draggingElement?.firstChild as unknown as HTMLElement
+      if (state.draggingElement && p) {
+        p.style.position = "absolute"
+        p.style.transform = `translate(${
+          x -
+          state.draggingElement?.getBoundingClientRect().left -
+          state.draggingElement?.getBoundingClientRect().width / 3
+        }px, ${y - state.draggingElement?.getBoundingClientRect().top - state.draggingElement?.getBoundingClientRect().height / 3}px)`
+      }
+    }
+  })
+
   return state
 }
-
 export const numPadEvents = (state: State): State => {
   const {numPad} = state
 
@@ -114,9 +96,8 @@ export const numPadEvents = (state: State): State => {
     )
     const numKey = getDigitFromPosition(position) as unknown as BaseKey
     let value = state.digits.get(numKey) as unknown as Rank
-
     if (state.isHint) {
-      state.originKeys?.map((originKey) => {
+      state.selected?.map((originKey) => {
         const key = originKey.slice(0, 2)
 
         const found = state.hints.find((r) => r === `${key}${value}`)
