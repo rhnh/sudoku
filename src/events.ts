@@ -133,6 +133,7 @@ export function keyEvents(state: State): State {
     if (e.key === "h") {
       state.isHint = !state.isHint
     }
+    renderCells(state)
   })
   return state
 }
