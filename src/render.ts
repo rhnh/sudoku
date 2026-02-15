@@ -49,6 +49,7 @@ export function renderPanel(state: State) {
 
 export function fill(state: State, value: Value) {
   if (state.isHint) {
+    //this need to be refactored
     state.selected.map((s) => {
       const hint = `${s.slice(0, 2)}${value}` as unknown as Hint
       //check if already exist.
@@ -90,7 +91,13 @@ export function renderCells(state: State): State {
       })
       cellElem.dataset.key = `${k}`
       cellElem.dataset.value = `${v}`
-
+      // cellElem.innerText = `${k}`
+      if (k.endsWith("e")) {
+        cellElem.classList.add("error")
+      }
+      if (k.endsWith("x")) {
+        cellElem.classList.add("selected")
+      }
       if (k.startsWith("c") || k.startsWith("f") || k.startsWith("i")) {
         cellElem.classList.add("horizontal-lines")
       }
