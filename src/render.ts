@@ -92,22 +92,17 @@ export function renderCells(state: State): State {
       cellElem.dataset.key = `${k}`
       cellElem.dataset.value = `${v}`
       // cellElem.innerText = `${k}`
-      if (k.endsWith("e")) {
-        cellElem.classList.add("error")
-      }
-      if (k.endsWith("x")) {
-        cellElem.classList.add("selected")
-      }
+
       if (k.startsWith("c") || k.startsWith("f") || k.startsWith("i")) {
         cellElem.classList.add("horizontal-lines")
       }
-      if (k.endsWith("444") || k.endsWith("777") || k.endsWith("111")) {
+      if (k.endsWith("11") || k.endsWith("44") || k.endsWith("77")) {
         cellElem.classList.add("vertical-lines")
       }
       if (k.startsWith("a")) {
         cellElem.classList.add("first-line")
       }
-      if (k.endsWith("999")) {
+      if (k.endsWith("99")) {
         cellElem.classList.add("last-line")
       }
       const c = document.createElement("p")

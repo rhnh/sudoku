@@ -33,7 +33,7 @@ export const keyToPosition = (k: Key): Position => [
 ]
 
 export const keys = files
-  .map((f) => ranks.map((r) => `${f}${r}${r}${r}` as Key))
+  .map((f) => ranks.map((r) => `${f}${r}${r}` as Key))
   .flat()
 
 export const getCells = (): Cells => {
@@ -41,38 +41,38 @@ export const getCells = (): Cells => {
   keys.map((k) => {
     cells.set(k as Key, "0")
   })
-  cells.set("a111", "3")
-  cells.set("e111", "4")
-  cells.set("f111", "9")
-  cells.set("d222", "6")
-  cells.set("g222", "5")
-  cells.set("i222", "1")
-  cells.set("a333", "7")
-  cells.set("b333", "5")
-  cells.set("c333", "2")
-  cells.set("f333", "1")
-  cells.set("c444", "1")
-  cells.set("g444", "7")
+  cells.set("a11", "3")
+  cells.set("e11", "4")
+  cells.set("f11", "9")
+  cells.set("d22", "6")
+  cells.set("g22", "5")
+  cells.set("i22", "1")
+  cells.set("a33", "7")
+  cells.set("b33", "5")
+  cells.set("c33", "2")
+  cells.set("f33", "1")
+  cells.set("c44", "1")
+  cells.set("g44", "7")
 
-  cells.set("a555", "5")
-  cells.set("d555", "3")
-  cells.set("e555", "9")
-  cells.set("f555", "6")
-  cells.set("c666", "8")
-  cells.set("d666", "1")
-  cells.set("e666", "5")
-  cells.set("h666", "9")
-  cells.set("i666", "6")
+  cells.set("a55", "5")
+  cells.set("d55", "3")
+  cells.set("e55", "9")
+  cells.set("f55", "6")
+  cells.set("c66", "8")
+  cells.set("d66", "1")
+  cells.set("e66", "5")
+  cells.set("h66", "9")
+  cells.set("i66", "6")
 
-  cells.set("c777", "3")
-  cells.set("e777", "1")
-  cells.set("h777", "6")
+  cells.set("c77", "3")
+  cells.set("e77", "1")
+  cells.set("h77", "6")
 
-  cells.set("c888", "4")
-  cells.set("g888", "1")
+  cells.set("c88", "4")
+  cells.set("g88", "1")
 
-  cells.set("e999", "2")
-  cells.set("f999", "8")
+  cells.set("e99", "2")
+  cells.set("f99", "8")
 
   return cells
 }
@@ -89,25 +89,22 @@ export function memo<A>(f: () => A): Memo<A> {
   return ret
 }
 
-export const getRow = (state: State) => (key: Key) => {
+export const getCellBy = (state: State) => (key: Key) => (n: number) => {
   const s = new Map()
   for (const [k, v] of state.cells) {
-    if (k[0] === key[0]) {
+    if (k[n] === key[n]) {
       s.set(k, v)
     }
   }
   return s
 }
+export const getRow = (state: State) => (key: Key) => getCellBy(state)(key)(0)
 
-export const getColumn = (state: State) => (key: Key) => {
-  const s = new Map()
-  for (const [k, v] of state.cells) {
-    if (k[1] === key[1]) {
-      s.set(k, v)
-    }
-  }
-  return s
-}
+export const getColumn = (state: State) => (key: Key) =>
+  getCellBy(state)(key)(1)
+
+export const getSquare = (state: State) => (key: Key) =>
+  getCellBy(state)(key)(2)
 
 export const initState = (): State => {
   const headlessState: HeadlessState = {
