@@ -89,20 +89,24 @@ export function memo<A>(f: () => A): Memo<A> {
   return ret
 }
 
-export const getRow = (state: State) => (rowNumber: string) => {
-  const res = new Map()
-  const t = keys.filter((r) => {
-    return r.startsWith(rowNumber)
-  })
-  return res
+export const getRow = (state: State) => (key: Key) => {
+  const s = new Map()
+  for (const [k, v] of state.cells) {
+    if (k[0] === key[0]) {
+      s.set(k, v)
+    }
+  }
+  return s
 }
 
-export const getColumn = (status: State) => (rowNumber: number) => {
-  const t = keys.filter((k) => {
-    const t = k.slice(1).startsWith(rowNumber.toString())
-    // console.log(t, rowNumber, k.slice(1));
-    return t
-  })
+export const getColumn = (state: State) => (key: Key) => {
+  const s = new Map()
+  for (const [k, v] of state.cells) {
+    if (k[1] === key[1]) {
+      s.set(k, v)
+    }
+  }
+  return s
 }
 
 export const initState = (): State => {
