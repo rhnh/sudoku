@@ -14,7 +14,7 @@ export const events = (state: State): State => {
     const position = getPositionKeyAtDom(state.bounds())([x, y])
     const key = getKeyFromPosition(position) as unknown as Key
     if (!key) return
-    state.isHold = true
+
     const el = getElementByKey(state)(key) as unknown as CellElement
     if (el.dataset.value === "0") {
       //don't drag this square
@@ -23,17 +23,16 @@ export const events = (state: State): State => {
       } else {
         state.selected = [key]
       }
+      state.isHold = true
       renderCells(state)
     } else {
-      if (e.ctrlKey) {
-        state.isDragging = true
-        state.draggingElement = el
-        state.selected = [key]
-        state.draggingElement.classList.add("selected")
-        const value = state.draggingElement.dataset.value
-        if (!value) return
-        state.draggingValue = value as unknown as Rank
-      }
+      state.isDragging = true
+      state.draggingElement = el
+      state.selected = [key]
+      state.draggingElement.classList.add("selected")
+      const value = state.draggingElement.dataset.value
+      if (!value) return
+      state.draggingValue = value as unknown as Rank
     }
   })
   board.addEventListener("pointerup", (e) => {
@@ -43,7 +42,7 @@ export const events = (state: State): State => {
     const t = getPositionKeyAtDom(state.bounds())([x, y])
     let key = getKeyFromPosition(t) as unknown as Key | undefined
     if (!key) return
-    if (state.isDragging && state.draggingElement && e.ctrlKey) {
+    if (state.isDragging && state.draggingElement) {
       const p = state.draggingElement?.firstChild as unknown as HTMLElement
       if (state.draggingElement && p) {
         p.style.position = "unset"
@@ -81,7 +80,7 @@ export const events = (state: State): State => {
       renderCells(state)
     }
 
-    if (state.isDragging && e.ctrlKey) {
+    if (state.isDragging) {
       const p = state.draggingElement?.firstChild as unknown as HTMLElement
       if (state.draggingElement && p) {
         p.style.position = "absolute"
