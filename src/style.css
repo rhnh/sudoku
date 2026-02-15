@@ -91,7 +91,7 @@ numpad > * {
 }
 
 .selected {
-  background-color: rgba(42, 42, 255, 0.288);
+  background-color: rgba(42, 42, 255, 0.137);
 }
 
 .panel {
@@ -113,6 +113,10 @@ numpad > * {
   text-transform: capitalize;
 }
 .horizontal-lines {
+  border-left: var(--thick) solid black;
+  margin-left: -3px;
+}
+.end-line {
   border-right: var(--thick) solid black;
 }
 .vertical-lines {
