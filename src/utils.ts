@@ -1,4 +1,4 @@
-import {sudokuGenerator} from "./sudoku"
+import {sudokuGenerator} from "./sudoku.temp"
 import {
   files,
   ranks,
