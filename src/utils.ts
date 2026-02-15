@@ -36,8 +36,12 @@ export const keys = files
   .map((f) => ranks.map((r) => `${f}${r}${r}` as Key))
   .flat()
 
+export const positionToKey = (p: Position): Key | undefined =>
+  p.every((x) => x >= 0 && x <= 8) ? keys[9 * p[0] + p[1]] : undefined
+
 export const getCells = (): Cells => {
   const cells: Cells = new Map()
+  const sortedCells: Cells = new Map()
   keys.map((k) => {
     cells.set(k as Key, "0")
   })
@@ -127,7 +131,7 @@ export const getPositionFromBound = (state: State, p: Position): Position => {
   return [x, y]
 }
 
-export const hValueToPosition = (n: number) => {
+export const getSquareNr = (n: number) => {
   const x = Math.ceil(n / 3)
   const y = ((n - 1) % 3) + 1
   return [x, y]

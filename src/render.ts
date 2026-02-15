@@ -8,7 +8,7 @@ import {
 import {
   getPositionFromBound,
   keyToPosition,
-  hValueToPosition,
+  getSquareNr,
   Box,
   memo,
   id,
@@ -93,16 +93,19 @@ export function renderCells(state: State): State {
       cellElem.dataset.value = `${v}`
       // cellElem.innerText = `${k}`
 
-      if (k.startsWith("c") || k.startsWith("f") || k.startsWith("i")) {
+      if (k.startsWith("d") || k.startsWith("g")) {
         cellElem.classList.add("horizontal-lines")
       }
-      if (k.endsWith("11") || k.endsWith("44") || k.endsWith("77")) {
+      if (k.startsWith("i")) {
+        cellElem.classList.add("end-line")
+      }
+      if (k.endsWith("1") || k.endsWith("4") || k.endsWith("7")) {
         cellElem.classList.add("vertical-lines")
       }
       if (k.startsWith("a")) {
         cellElem.classList.add("first-line")
       }
-      if (k.endsWith("99")) {
+      if (k.endsWith("9")) {
         cellElem.classList.add("last-line")
       }
       const c = document.createElement("p")
@@ -123,7 +126,7 @@ export function renderHints(state: State, el: CellElement): State {
     const value = +h.slice(-1)
     const key = h.slice(0, 2) as unknown as Key
     if (!el.dataset.key?.startsWith(key) || el.dataset.value !== "0") return
-    const [x, y] = hValueToPosition(value)
+    const [x, y] = getSquareNr(value)
     const hint = document.createElement("hint") as CellElement
     hint.style.gridColumn = `${y} / 3`
     hint.style.gridRow = `${x} / 3`
