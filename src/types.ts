@@ -38,6 +38,7 @@ export interface HeadlessState {
   isHint: boolean
   draggingValue?: Rank
   isDragging: boolean
+  isHold: boolean
 }
 
 export interface State extends HeadlessState {

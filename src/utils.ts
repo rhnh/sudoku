@@ -116,6 +116,7 @@ export const initState = (): State => {
     buttons: getButtonKeys(),
     isHint: true,
     isDragging: false,
+    isHold: false,
   }
   return headlessState as unknown as State
 }

@@ -14,6 +14,7 @@ export const events = (state: State): State => {
     const position = getPositionKeyAtDom(state.bounds())([x, y])
     const key = getKeyFromPosition(position) as unknown as Key
     if (!key) return
+    state.isHold = true
     const el = getElementByKey(state)(key) as unknown as CellElement
     if (el.dataset.value === "0") {
       //don't drag this square
@@ -37,6 +38,8 @@ export const events = (state: State): State => {
   })
   board.addEventListener("pointerup", (e) => {
     const {clientX: x, clientY: y} = e
+
+    state.isHold = false
     const t = getPositionKeyAtDom(state.bounds())([x, y])
     let key = getKeyFromPosition(t) as unknown as Key | undefined
     if (!key) return
@@ -69,6 +72,15 @@ export const events = (state: State): State => {
   })
   board.addEventListener("pointermove", (e) => {
     const {clientX: x, clientY: y} = e
+    if (state.isHold) {
+      const t = getPositionKeyAtDom(state.bounds())([x, y])
+      let key = getKeyFromPosition(t) as unknown as Key | undefined
+      if (!key) return
+      state.selected = [...new Set(state.selected), key]
+      state.selected = [...new Set(state.selected)]
+      renderCells(state)
+    }
+
     if (state.isDragging && e.ctrlKey) {
       const p = state.draggingElement?.firstChild as unknown as HTMLElement
       if (state.draggingElement && p) {
