@@ -1,3 +1,4 @@
+import {sudokuGenerator} from "./sudoku"
 import {
   files,
   ranks,
@@ -31,52 +32,39 @@ export const keyToPosition = (k: Key): Position => [
   k.charCodeAt(0) - 97,
   k.charCodeAt(1) - 49,
 ]
+export const getKeys = () => {
+  let i = 0
+  return files
+    .map((f) =>
+      ranks.map((r) => {
+        const row = Math.floor(i / 9)
+        const col = i % 9
 
-export const keys = files
-  .map((f) => ranks.map((r) => `${f}${r}${r}` as Key))
-  .flat()
+        const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1
+        i++
+        return `${f}${r}${block}` as Key
+      }),
+    )
+    .flat()
+}
 
-export const positionToKey = (p: Position): Key | undefined =>
-  p.every((x) => x >= 0 && x <= 8) ? keys[9 * p[0] + p[1]] : undefined
-
+export const positionToKey = (p: Position): Key | undefined => {
+  const keys = getKeys()
+  return p.every((x) => x >= 0 && x <= 8) ? keys[9 * p[0] + p[1]] : undefined
+}
 export const getCells = (): Cells => {
   const cells: Cells = new Map()
-  const sortedCells: Cells = new Map()
-  keys.map((k) => {
-    cells.set(k as Key, "0")
+  const s = sudokuGenerator(50).flat()
+
+  getKeys().map((key, i) => {
+    // Calculate square number (1–9)
+    const row = Math.floor(i / 9)
+    const col = i % 9
+
+    const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1
+    let k = key.replace(/.$/, `${block}`) as Key
+    cells.set(k, `${s[i]}` as Value)
   })
-  cells.set("a11", "3")
-  cells.set("e11", "4")
-  cells.set("f11", "9")
-  cells.set("d22", "6")
-  cells.set("g22", "5")
-  cells.set("i22", "1")
-  cells.set("a33", "7")
-  cells.set("b33", "5")
-  cells.set("c33", "2")
-  cells.set("f33", "1")
-  cells.set("c44", "1")
-  cells.set("g44", "7")
-
-  cells.set("a55", "5")
-  cells.set("d55", "3")
-  cells.set("e55", "9")
-  cells.set("f55", "6")
-  cells.set("c66", "8")
-  cells.set("d66", "1")
-  cells.set("e66", "5")
-  cells.set("h66", "9")
-  cells.set("i66", "6")
-
-  cells.set("c77", "3")
-  cells.set("e77", "1")
-  cells.set("h77", "6")
-
-  cells.set("c88", "4")
-  cells.set("g88", "1")
-
-  cells.set("e99", "2")
-  cells.set("f99", "8")
 
   return cells
 }
@@ -161,7 +149,7 @@ export const createCellElement =
   }
 export function getKeyFromPosition(pos: Position): Key | undefined {
   const k = (9 * pos[0] + pos[1]) as number
-  return pos.every((x) => x >= 0 && x <= 9) ? keys[k] : undefined
+  return pos.every((x) => x >= 0 && x <= 9) ? getKeys()[k] : undefined
 }
 export const allDigits = files.map((f, i) => `${f}${i + 1}` as Key)
 
@@ -194,7 +182,7 @@ export function getDigits() {
 }
 
 export const getButtonKeys = () => {
-  const buttonKeys = keys.slice(0, 3)
+  const buttonKeys = getKeys().slice(0, 3)
   const m: Buttons = new Map()
   buttons.map((b, i) => {
     const k: BaseKey = buttonKeys[i] as unknown as BaseKey

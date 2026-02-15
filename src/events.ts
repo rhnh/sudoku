@@ -16,6 +16,7 @@ export const events = (state: State): State => {
     if (!key) return
 
     const el = getElementByKey(state)(key) as unknown as CellElement
+    if (!el) return
     if (el.dataset.value === "0") {
       //don't drag this square
       if (e.ctrlKey) {

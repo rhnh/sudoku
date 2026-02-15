@@ -112,21 +112,24 @@ numpad > * {
 .buttons {
   text-transform: capitalize;
 }
-.horizontal-lines {
+.horizontal-lines-top {
+  border-top: var(--thick) solid black;
+  margin-top: -3px;
+}
+.horizontal-lines-bottom {
+  border-bottom: var(--thick) solid black;
+  margin-bottom: -3px;
+}
+
+.vertical-lines-left {
   border-left: var(--thick) solid black;
   margin-left: -3px;
 }
-.end-line {
+.vertical-lines-right {
   border-right: var(--thick) solid black;
+  margin-right: -3px;
 }
-.vertical-lines {
-  border-top: var(--thick) solid black;
-  margin-top: -2px;
-}
-.last-line {
-  border-bottom: var(--thick) solid black;
-}
-.first-line {
-  border-left: var(--thick) solid black;
-  margin-left: -2px;
+
+.hinting {
+  background-color: azure;
 }

@@ -91,23 +91,19 @@ export function renderCells(state: State): State {
       })
       cellElem.dataset.key = `${k}`
       cellElem.dataset.value = `${v}`
-      // cellElem.innerText = `${k}`
 
-      if (k.startsWith("d") || k.startsWith("g")) {
-        cellElem.classList.add("horizontal-lines")
+      if (k.startsWith("a") || k.startsWith("d") || k.startsWith("g")) {
+        cellElem.classList.add("vertical-lines-left")
+      } else if (k.startsWith("i")) {
+        cellElem.classList.add("vertical-lines-right")
       }
-      if (k.startsWith("i")) {
-        cellElem.classList.add("end-line")
+      if (k[1] === "1" || k[1] === "4" || k[1] === "7") {
+        cellElem.classList.add("horizontal-lines-top")
       }
-      if (k.endsWith("1") || k.endsWith("4") || k.endsWith("7")) {
-        cellElem.classList.add("vertical-lines")
+      if (k[1] === "9") {
+        cellElem.classList.add("horizontal-lines-bottom")
       }
-      if (k.startsWith("a")) {
-        cellElem.classList.add("first-line")
-      }
-      if (k.endsWith("9")) {
-        cellElem.classList.add("last-line")
-      }
+
       const c = document.createElement("p")
       c.style.gridArea = "2 / 2 / 3 / 3"
       if (v !== "0") c.innerHTML = `${v}`
