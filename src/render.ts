@@ -25,13 +25,18 @@ export function renderBase(state: State): State {
   container.appendChild(board)
 
   const numPad = document.createElement("numpad")
-  container.appendChild(numPad)
+  numPad.id = "numpad"
+  const aside = document.createElement("aside")
+  aside.id = "aside"
   const panel = document.createElement("article")
   panel.classList.add("panel")
   panel.id = "panel"
+  aside.appendChild(panel)
+  aside.appendChild(numPad)
+  container.appendChild(aside)
+
   container.appendChild(panel)
-  container.appendChild(panel)
-  state = {...state, board, numPad, bounds, container, panel}
+  state = {...state, board, numPad, bounds, container, panel, aside}
 
   return state
 }
@@ -84,8 +89,14 @@ export function renderCells(state: State): State {
       cellElem.style.position = "absolute"
       cellElem.style.height = `${state.bounds().height / 9}px`
       cellElem.style.width = `${state.bounds().width / 9}px`
+      for (const [kh, _] of state.highlight) {
+        if (kh === k) {
+          cellElem.classList.add("highlighted")
+        }
+      }
       state.selected.map((selectedKey) => {
         if (selectedKey === k) {
+          cellElem.classList.remove("highlighted")
           cellElem.classList.add("selected")
         }
       })
@@ -134,7 +145,7 @@ export function renderHints(state: State, el: CellElement): State {
 }
 
 export const render = (state: State): State => {
-  return Box(state).map(renderCells).map(renderNumpad).fold(id)
+  return Box(state).map(renderCells).map(renderNumpad).map(renderAside).fold(id)
 }
 export const createNumPad = (state: State): State => {
   const {bounds, numPad} = state
@@ -154,4 +165,13 @@ export const createNumPad = (state: State): State => {
 }
 export const renderNumpad = (state: State): State => {
   return Box(createNumPad(state)).fold(id)
+}
+
+export const renderAside = (state: State) => {
+  const {aside} = state
+  // const hintBtn = document.createElement("hint")
+
+  // hintBtn.innerHTML = "Hint"
+  // aside.append(hintBtn)
+  return state
 }

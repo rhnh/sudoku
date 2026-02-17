@@ -1,6 +1,7 @@
+import "./style.css"
+import "./media-queries.css"
 import {events, keyEvents, numPadEvents} from "./events"
 import {render, renderBase} from "./render"
-import "./style.css"
 import {Box, initState} from "./utils"
 
 Box(initState())

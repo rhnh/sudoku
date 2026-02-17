@@ -39,12 +39,14 @@ export interface HeadlessState {
   draggingValue?: Rank
   isDragging: boolean
   isHold: boolean
+  highlight: Cells
 }
 
 export interface State extends HeadlessState {
   board: HTMLElement
   container: HTMLElement
   numPad: HTMLElement
+  aside: HTMLElement
   bounds: Memo<DOMRectReadOnly>
   panel: HTMLElement
   draggingElement?: HTMLElement

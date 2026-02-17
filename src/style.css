@@ -58,7 +58,7 @@ hint {
 }
 
 cell > p {
-  font-size: 25px;
+  font-size: 50px;
   margin: auto;
   width: 100%;
   align-self: stretch;
@@ -67,6 +67,7 @@ cell > p {
   align-content: center;
   /* height: 100%; */
   background-color: red;
+  font-weight: 400;
 }
 
 numpad {
@@ -83,15 +84,22 @@ numpad {
 numpad > * {
   font-size: 32px;
   width: 100%;
-  background-color: bisque;
+  background-color: rgb(93, 162, 226);
   text-align: center;
   aspect-ratio: 1/1;
-  border: 1px solid black;
+  border: 1px solid rgb(255, 255, 255);
   margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: aliceblue;
 }
 
 .selected {
-  background-color: rgba(42, 42, 255, 0.137);
+  background-color: rgba(6, 6, 172, 0.288);
+}
+.highlighted {
+  background-color: rgba(6, 6, 172, 0.11);
 }
 
 .panel {
@@ -132,4 +140,24 @@ numpad > * {
 
 .hinting {
   background-color: azure;
+}
+
+#aside {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+#aside > * {
+  font-size: 32px;
+
+  background-color: rgb(93, 162, 226);
+  text-align: center;
+  aspect-ratio: 1/1;
+  border: 1px solid rgb(255, 255, 255);
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: aliceblue;
 }

@@ -5,6 +5,9 @@ import {
   getKeyFromPosition,
   getDigitFromPosition,
   getElementByKey,
+  getRow,
+  getColumn,
+  getSquare,
 } from "./utils"
 
 export const events = (state: State): State => {
@@ -14,6 +17,12 @@ export const events = (state: State): State => {
     const position = getPositionKeyAtDom(state.bounds())([x, y])
     const key = getKeyFromPosition(position) as unknown as Key
     if (!key) return
+    const rows = new Map([
+      ...getRow(state)(key),
+      ...getColumn(state)(key),
+      ...getSquare(state)(key),
+    ])
+    state.highlight = rows
 
     const el = getElementByKey(state)(key) as unknown as CellElement
     if (!el) return
@@ -131,7 +140,13 @@ export const numPadEvents = (state: State): State => {
   })
   return state
 }
-
+// export const asideEvents = (state: State) => {
+//   const {aside} = state
+//   aside.firstChild.addEventListener("pointerdown", () => {
+//     state.isHint == !state.isHint
+//   })
+//   return state
+// }
 export function panelEvent(state: State): State {
   return state
 }

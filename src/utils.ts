@@ -90,10 +90,15 @@ export const getCellBy = (state: State) => (key: Key) => (n: number) => {
   }
   return s
 }
-export const getRow = (state: State) => (key: Key) => getCellBy(state)(key)(0)
+export const getRow =
+  (state: State) =>
+  (key: Key): Cells =>
+    getCellBy(state)(key)(0)
 
-export const getColumn = (state: State) => (key: Key) =>
-  getCellBy(state)(key)(1)
+export const getColumn =
+  (state: State) =>
+  (key: Key): Cells =>
+    getCellBy(state)(key)(1)
 
 export const getSquare = (state: State) => (key: Key) =>
   getCellBy(state)(key)(2)
@@ -104,11 +109,12 @@ export const initState = (): State => {
     cells: getCells(),
     selected: [],
     digits: getDigits(),
-    hints: ["b11", "b12", "b13", "b14", "b15", "b16", "b17", "b18", "b19"],
+    hints: [],
     buttons: getButtonKeys(),
     isHint: true,
     isDragging: false,
     isHold: false,
+    highlight: new Map(),
   }
   return headlessState as unknown as State
 }
