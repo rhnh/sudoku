@@ -103,6 +103,13 @@ export const getColumn =
 export const getSquare = (state: State) => (key: Key) =>
   getCellBy(state)(key)(2)
 
+export const getCommons = (state: State) => (key: Key) =>
+  new Map([
+    ...getRow(state)(key),
+    ...getColumn(state)(key),
+    ...getSquare(state)(key),
+  ])
+
 export const initState = (): State => {
   const headlessState: HeadlessState = {
     gameState: "isInitialed",

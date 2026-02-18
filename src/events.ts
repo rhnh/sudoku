@@ -8,6 +8,7 @@ import {
   getRow,
   getColumn,
   getSquare,
+  getCommons,
 } from "./utils"
 
 export const events = (state: State): State => {
@@ -17,12 +18,8 @@ export const events = (state: State): State => {
     const position = getPositionKeyAtDom(state.bounds())([x, y])
     const key = getKeyFromPosition(position) as unknown as Key
     if (!key) return
-    const rows = new Map([
-      ...getRow(state)(key),
-      ...getColumn(state)(key),
-      ...getSquare(state)(key),
-    ])
-    state.highlight = rows
+
+    state.highlight = getCommons(state)(key)
 
     const el = getElementByKey(state)(key) as unknown as CellElement
     if (!el) return
