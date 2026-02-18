@@ -2,7 +2,8 @@ import "./style.css"
 import "./media-queries.css"
 import {events, keyEvents, numPadEvents} from "./events"
 import {render, renderBase} from "./render"
-import {Box, initState} from "./utils"
+import {Box} from "./utils"
+import {initState} from "./game"
 
 Box(initState())
   .map(renderBase)

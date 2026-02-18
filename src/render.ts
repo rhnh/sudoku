@@ -12,6 +12,8 @@ import {
   Box,
   memo,
   id,
+  getCommons,
+  setSelected,
 } from "./utils"
 
 export function renderBase(state: State): State {
@@ -61,7 +63,6 @@ export function fill(state: State, value: Value) {
       const alreadyHint = state.hints.filter((h) => h === hint)
       if (alreadyHint.length > 0) {
         state.hints = state.hints.filter((i) => i !== hint)
-
         return state
       } else {
         state.hints.push(hint)
@@ -69,10 +70,7 @@ export function fill(state: State, value: Value) {
       }
     })
   } else {
-    state.selected.map((selectedKey) => {
-      state.cells.set(selectedKey, value)
-      return state
-    })
+    setSelected(state, value)
   }
 }
 
@@ -100,6 +98,14 @@ export function renderCells(state: State): State {
           cellElem.classList.add("selected")
         }
       })
+
+      for (const [kd, value] of state.duplicates) {
+        if (k === kd) {
+          cellElem.classList.remove("highlighted")
+          cellElem.classList.remove("selected")
+          cellElem.classList.add("duplicates")
+        }
+      }
       cellElem.dataset.key = `${k}`
       cellElem.dataset.value = `${v}`
 

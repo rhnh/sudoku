@@ -161,3 +161,6 @@ numpad > * {
   align-items: center;
   color: aliceblue;
 }
+.duplicates {
+  background-color: rgba(226, 93, 93, 0.219);
+}

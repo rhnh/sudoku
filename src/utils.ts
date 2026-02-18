@@ -1,3 +1,4 @@
+import {renderCells} from "./render"
 import {sudokuGenerator} from "./sudoku.temp"
 import {
   files,
@@ -7,7 +8,6 @@ import {
   type Key,
   type Memo,
   type Position,
-  type HeadlessState,
   type Value,
   type State,
   type Digits,
@@ -48,25 +48,26 @@ export const getKeys = () => {
     .flat()
 }
 
+export const setSelected = (state: State, value: Value) => {
+  state.duplicates = new Map()
+  state.selected.map((selectedKey) => {
+    state.cells.set(selectedKey, value)
+    let f
+    for (const [k, v] of state.highlight) {
+      console.log(v.toString(), value.toString())
+      if (v.toString() === value.toString()) {
+        state.duplicates.set(selectedKey, value)
+        state.duplicates.set(k, value)
+      }
+    }
+
+    return state
+  })
+  console.log("duplicates", state.duplicates)
+}
 export const positionToKey = (p: Position): Key | undefined => {
   const keys = getKeys()
   return p.every((x) => x >= 0 && x <= 8) ? keys[9 * p[0] + p[1]] : undefined
-}
-export const getCells = (): Cells => {
-  const cells: Cells = new Map()
-  const s = sudokuGenerator(50).flat()
-
-  getKeys().map((key, i) => {
-    // Calculate square number (1–9)
-    const row = Math.floor(i / 9)
-    const col = i % 9
-
-    const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1
-    let k = key.replace(/.$/, `${block}`) as Key
-    cells.set(k, `${s[i]}` as Value)
-  })
-
-  return cells
 }
 
 export function memo<A>(f: () => A): Memo<A> {
@@ -103,28 +104,14 @@ export const getColumn =
 export const getSquare = (state: State) => (key: Key) =>
   getCellBy(state)(key)(2)
 
-export const getCommons = (state: State) => (key: Key) =>
-  new Map([
-    ...getRow(state)(key),
-    ...getColumn(state)(key),
-    ...getSquare(state)(key),
-  ])
-
-export const initState = (): State => {
-  const headlessState: HeadlessState = {
-    gameState: "isInitialed",
-    cells: getCells(),
-    selected: [],
-    digits: getDigits(),
-    hints: [],
-    buttons: getButtonKeys(),
-    isHint: true,
-    isDragging: false,
-    isHold: false,
-    highlight: new Map(),
-  }
-  return headlessState as unknown as State
-}
+export const getCommons =
+  (state: State) =>
+  (key: Key): Cells =>
+    new Map([
+      ...getRow(state)(key),
+      ...getColumn(state)(key),
+      ...getSquare(state)(key),
+    ])
 
 export const getPositionFromBound = (state: State, p: Position): Position => {
   const x = (state.bounds().width * p[0]) / TOTAL_FILE
@@ -182,17 +169,6 @@ export const getPositionKeyAtDom =
   }
 
 export const id = <T>(x: T) => x
-
-export function getDigits() {
-  const m: Digits = new Map()
-  allDigits.map((k, i) => {
-    const key: BaseKey = k as unknown as BaseKey
-    const value: Value = +(i + 1) as unknown as Rank
-    m.set(key, value)
-  })
-
-  return m
-}
 
 export const getButtonKeys = () => {
   const buttonKeys = getKeys().slice(0, 3)

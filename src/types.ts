@@ -40,6 +40,7 @@ export interface HeadlessState {
   isDragging: boolean
   isHold: boolean
   highlight: Cells
+  duplicates: Cells
 }
 
 export interface State extends HeadlessState {

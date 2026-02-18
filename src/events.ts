@@ -5,10 +5,8 @@ import {
   getKeyFromPosition,
   getDigitFromPosition,
   getElementByKey,
-  getRow,
-  getColumn,
-  getSquare,
   getCommons,
+  setSelected,
 } from "./utils"
 
 export const events = (state: State): State => {
@@ -20,7 +18,6 @@ export const events = (state: State): State => {
     if (!key) return
 
     state.highlight = getCommons(state)(key)
-
     const el = getElementByKey(state)(key) as unknown as CellElement
     if (!el) return
     if (el.dataset.value === "0") {
@@ -113,7 +110,7 @@ export const numPadEvents = (state: State): State => {
       1,
     )
     const numKey = getDigitFromPosition(position) as unknown as BaseKey
-    let value = state.digits.get(numKey) as unknown as Rank
+    let value = state.digits.get(numKey) as unknown as Value
     if (state.isHint) {
       state.selected?.map((originKey) => {
         const key = originKey.slice(0, 2)
@@ -128,10 +125,7 @@ export const numPadEvents = (state: State): State => {
         }
       })
     } else {
-      state.selected.map((selectedKey) => {
-        state.cells.set(selectedKey, value)
-        return state
-      })
+      setSelected(state, value)
     }
     renderCells(state)
   })
@@ -152,11 +146,12 @@ export function keyEvents(state: State): State {
     const value: Value = e.key as Value
     const regex = value.match(/\d/)
     if (regex) {
-      fill(state, value)
+      setSelected(state, value)
     }
     if (e.key === "h") {
       state.isHint = !state.isHint
     }
+
     renderCells(state)
   })
   return state
