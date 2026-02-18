@@ -66,6 +66,13 @@ export const events = (state: State): State => {
         } else state.hints = [...new Set(state.hints), hintKey]
       } else {
         state.cells.set(key, value)
+        state.highlight = getCommons(state)(key)
+        for (const [kh, vh] of state.highlight) {
+          if (vh === value && kh !== key) {
+            state.duplicates.set(key, vh)
+            state.duplicates.set(kh, vh)
+          }
+        }
       }
     }
     state.draggingElement = undefined

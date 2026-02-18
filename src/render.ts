@@ -87,6 +87,7 @@ export function renderCells(state: State): State {
       cellElem.style.position = "absolute"
       cellElem.style.height = `${state.bounds().height / 9}px`
       cellElem.style.width = `${state.bounds().width / 9}px`
+
       for (const [kh, _] of state.highlight) {
         if (kh === k) {
           cellElem.classList.add("highlighted")
@@ -99,7 +100,7 @@ export function renderCells(state: State): State {
         }
       })
 
-      for (const [kd, value] of state.duplicates) {
+      for (const [kd, _] of state.duplicates) {
         if (k === kd) {
           cellElem.classList.remove("highlighted")
           cellElem.classList.remove("selected")

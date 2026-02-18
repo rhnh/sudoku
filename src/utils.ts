@@ -52,18 +52,14 @@ export const setSelected = (state: State, value: Value) => {
   state.duplicates = new Map()
   state.selected.map((selectedKey) => {
     state.cells.set(selectedKey, value)
-    let f
     for (const [k, v] of state.highlight) {
-      console.log(v.toString(), value.toString())
       if (v.toString() === value.toString()) {
         state.duplicates.set(selectedKey, value)
         state.duplicates.set(k, value)
       }
     }
-
     return state
   })
-  console.log("duplicates", state.duplicates)
 }
 export const positionToKey = (p: Position): Key | undefined => {
   const keys = getKeys()
