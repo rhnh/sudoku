@@ -49,17 +49,17 @@ export const getKeys = () => {
 }
 
 export const setSelected = (state: State, value: Value) => {
-  state.duplicates = new Map()
   state.selected.map((selectedKey) => {
     state.cells.set(selectedKey, value)
+    state.highlight = getCommons(state)(selectedKey)
     for (const [k, v] of state.highlight) {
       if (v.toString() === value.toString()) {
         state.duplicates.set(selectedKey, value)
         state.duplicates.set(k, value)
       }
     }
-    return state
   })
+  renderCells(state)
 }
 export const positionToKey = (p: Position): Key | undefined => {
   const keys = getKeys()
