@@ -99,14 +99,14 @@ export function renderCells(state: State): State {
           cellElem.classList.add("selected")
         }
       })
-
-      for (const [kd, _] of state.duplicates) {
-        if (k === kd) {
-          cellElem.classList.remove("highlighted")
-          cellElem.classList.remove("selected")
-          cellElem.classList.add("duplicates")
+      if (state.duplicates.size > 1)
+        for (const [kd, _] of state.duplicates) {
+          if (k === kd) {
+            cellElem.classList.remove("highlighted")
+            cellElem.classList.remove("selected")
+            cellElem.classList.add("duplicates")
+          }
         }
-      }
       cellElem.dataset.key = `${k}`
       cellElem.dataset.value = `${v}`
 
