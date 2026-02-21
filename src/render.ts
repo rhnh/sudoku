@@ -12,8 +12,7 @@ import {
   Box,
   memo,
   id,
-  getCommons,
-  setSelected,
+  addNew,
 } from "./utils"
 
 export function renderBase(state: State): State {
@@ -52,26 +51,6 @@ export function renderPanel(state: State) {
     panel.append(btn)
   }
   return state
-}
-
-export function fill(state: State, value: Value) {
-  if (state.isHint) {
-    //this need to be refactored
-    state.selected.map((s) => {
-      const hint = `${s.slice(0, 2)}${value}` as unknown as Hint
-      //check if already exist.
-      const alreadyHint = state.hints.filter((h) => h === hint)
-      if (alreadyHint.length > 0) {
-        state.hints = state.hints.filter((i) => i !== hint)
-        return state
-      } else {
-        state.hints.push(hint)
-        return state
-      }
-    })
-  } else {
-    setSelected(state, value)
-  }
 }
 
 export function renderCells(state: State): State {

@@ -48,17 +48,67 @@ export const getKeys = () => {
     .flat()
 }
 
-export const setSelected = (state: State, value: Value) => {
-  state.selected.map((selectedKey) => {
-    state.cells.set(selectedKey, value)
-    state.highlight = getCommons(state)(selectedKey)
-    for (const [k, v] of state.highlight) {
-      if (v.toString() === value.toString()) {
-        state.duplicates.set(selectedKey, value)
-        state.duplicates.set(k, value)
-      }
+function getKeysWithDuplicateValues<K, V>(map: Map<K, V>): K[] {
+  const valueMap = new Map<V, K[]>()
+
+  for (const [key, value] of map.entries()) {
+    if (!valueMap.has(value)) {
+      valueMap.set(value, [])
     }
+    valueMap.get(value)!.push(key)
+  }
+
+  const result: K[] = []
+
+  for (const keys of valueMap.values()) {
+    if (keys.length > 1) {
+      result.push(...keys)
+    }
+  }
+
+  return result
+}
+export const addNew = (state: State, value: Value) => {
+  state.duplicates = new Map()
+  if (!state.targetKey) return
+  state.cells.set(state.targetKey, `${value}`)
+  state.highlight = getCommons(state)(state.targetKey)
+  getKeys().map((key) => {
+    const rows = getRow(state)(key, true)
+
+    getKeysWithDuplicateValues(rows).map((r) => {
+      if (r) {
+        const value = state.cells.get(r) as unknown as Value
+        state.duplicates.set(r, `${value}`)
+      } else {
+        state.duplicates.delete(r)
+      }
+    })
   })
+  getKeys().map((key) => {
+    const rows = getColumn(state)(key, true)
+    getKeysWithDuplicateValues(rows).map((r) => {
+      if (r) {
+        const value = state.cells.get(r) as unknown as Value
+        state.duplicates.set(r, `${value}`)
+      } else {
+        state.duplicates.delete(r)
+      }
+    })
+  })
+
+  getKeys().map((key) => {
+    const rows = getSquare(state)(key, true)
+    getKeysWithDuplicateValues(rows).map((r) => {
+      if (r) {
+        const value = state.cells.get(r) as unknown as Value
+        state.duplicates.set(r, value)
+      } else {
+        state.duplicates.delete(r)
+      }
+    })
+  })
+
   renderCells(state)
 }
 export const positionToKey = (p: Position): Key | undefined => {
@@ -78,35 +128,41 @@ export function memo<A>(f: () => A): Memo<A> {
   return ret
 }
 
-export const getCellBy = (state: State) => (key: Key) => (n: number) => {
-  const s = new Map()
-  for (const [k, v] of state.cells) {
-    if (k[n] === key[n]) {
-      s.set(k, v)
+export const getCellBy =
+  (state: State) =>
+  (key: Key, noZero = false) =>
+  (n: number) => {
+    const s = new Map()
+    for (const [k, v] of state.cells) {
+      if (k[n] === key[n]) {
+        if (noZero && v === "0") continue
+        s.set(k, v)
+      }
     }
+    return s
   }
-  return s
-}
 export const getRow =
   (state: State) =>
-  (key: Key): Cells =>
-    getCellBy(state)(key)(0)
+  (key: Key, noZero = false): Cells =>
+    getCellBy(state)(key, noZero)(0)
 
 export const getColumn =
   (state: State) =>
-  (key: Key): Cells =>
-    getCellBy(state)(key)(1)
+  (key: Key, noZero = false): Cells =>
+    getCellBy(state)(key, noZero)(1)
 
-export const getSquare = (state: State) => (key: Key) =>
-  getCellBy(state)(key)(2)
+export const getSquare =
+  (state: State) =>
+  (key: Key, noZero = false) =>
+    getCellBy(state)(key, noZero)(2)
 
 export const getCommons =
   (state: State) =>
-  (key: Key): Cells =>
+  (key: Key, noZero = false): Cells =>
     new Map([
-      ...getRow(state)(key),
-      ...getColumn(state)(key),
-      ...getSquare(state)(key),
+      ...getRow(state)(key, noZero),
+      ...getColumn(state)(key, noZero),
+      ...getSquare(state)(key, noZero),
     ])
 
 export const getPositionFromBound = (state: State, p: Position): Position => {

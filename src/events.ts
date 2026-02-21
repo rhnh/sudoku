@@ -1,4 +1,4 @@
-import {fill, renderCells} from "./render"
+import {renderCells} from "./render"
 import type {BaseKey, CellElement, Hint, Key, Rank, State, Value} from "./types"
 import {
   getPositionKeyAtDom,
@@ -6,7 +6,7 @@ import {
   getDigitFromPosition,
   getElementByKey,
   getCommons,
-  setSelected,
+  addNew,
 } from "./utils"
 
 export const events = (state: State): State => {
@@ -46,6 +46,8 @@ export const events = (state: State): State => {
     const t = getPositionKeyAtDom(state.bounds())([x, y])
     let key = getKeyFromPosition(t) as unknown as Key | undefined
     if (!key) return
+    state.targetKey = key
+    state.selected.push(key)
     if (state.isDragging && state.draggingElement) {
       const p = state.draggingElement?.firstChild as unknown as HTMLElement
       if (state.draggingElement && p) {
@@ -61,18 +63,17 @@ export const events = (state: State): State => {
       if (state.isHint) {
         const hintKey = `${key.slice(0, 2)}${value}` as unknown as Hint
         const found = state.hints.find((h) => hintKey === h)
+
         if (found) {
           state.hints = [...new Set(state.hints.filter((r) => r !== hintKey))]
-        } else state.hints = [...new Set(state.hints), hintKey]
-      } else {
-        state.cells.set(key, value)
-        state.highlight = getCommons(state)(key)
-        for (const [kh, vh] of state.highlight) {
-          if (vh === value && kh !== key) {
-            state.duplicates.set(key, vh)
-            state.duplicates.set(kh, vh)
-          }
+        } else {
+          state.selected.map((r) => {
+            const hint = (r.slice(0, 2) + value) as unknown as Hint
+            state.hints = [...new Set([...state.hints, hint])]
+          })
         }
+      } else {
+        addNew(state, value)
       }
     }
     state.draggingElement = undefined
@@ -118,25 +119,27 @@ export const numPadEvents = (state: State): State => {
     )
     const numKey = getDigitFromPosition(position) as unknown as BaseKey
     let value = state.digits.get(numKey) as unknown as Value
-    if (state.isHint) {
-      state.selected?.map((originKey) => {
-        const key = originKey.slice(0, 2)
-
-        const found = state.hints.find((r) => r === `${key}${value}`)
-
-        if (found) {
-          state.hints = state.hints.filter((r) => r !== found)
-          return state
-        } else {
-          state.hints.push(`${key}${value}` as Hint)
-        }
-      })
-    } else {
-      setSelected(state, value)
-    }
+    if (!value) return
+    if (state.isHint) addHint(state)(value)
+    else addNew(state, value)
     renderCells(state)
   })
   return state
+}
+export const addHint = (state: State) => (value: Value) => {
+  const hints = state.selected?.map((k) => `${k.slice(0, 2)}${value}` as Hint)
+  const f = new Set([...hints])
+  const found = state.hints.filter((r) => f.has(r))
+  if (found) {
+    state.hints = state.hints.filter((r) => !f.has(r))
+    return
+  }
+  state.hints = [...new Set([...state.hints, ...hints])]
+  state.hints = [...new Set([...state.hints])]
+  state.hints = [
+    ...state.hints,
+    ...new Set(hints.filter((h, i) => state.hints[i] == h)),
+  ]
 }
 // export const asideEvents = (state: State) => {
 //   const {aside} = state
@@ -145,15 +148,26 @@ export const numPadEvents = (state: State): State => {
 //   })
 //   return state
 // }
-export function panelEvent(state: State): State {
-  return state
-}
+
 export function keyEvents(state: State): State {
   document.addEventListener("keydown", (e) => {
-    const value: Value = e.key as Value
+    const value: Value = e.key[0] as Value
     const regex = value.match(/\d/)
     if (regex) {
-      setSelected(state, value)
+      if (state.isHint) {
+        if (!state.targetKey) return
+        const hintKey =
+          `${state.targetKey.slice(0, 2)}${value}` as unknown as Hint
+        const found = state.hints.find((h) => hintKey === h)
+        if (found) {
+          state.hints = [...new Set(state.hints.filter((r) => r !== hintKey))]
+        } else {
+          state.selected.map((r) => {
+            const hint = (r.slice(0, 2) + value) as unknown as Hint
+            state.hints = [...new Set([...state.hints, hint])]
+          })
+        }
+      } else addNew(state, `${value}`)
     }
     if (e.key === "h") {
       state.isHint = !state.isHint

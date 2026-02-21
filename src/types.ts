@@ -41,6 +41,7 @@ export interface HeadlessState {
   isHold: boolean
   highlight: Cells
   duplicates: Cells
+  targetKey?: Key
 }
 
 export interface State extends HeadlessState {
