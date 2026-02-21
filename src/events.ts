@@ -130,7 +130,7 @@ export const addHint = (state: State) => (value: Value) => {
   const hints = state.selected?.map((k) => `${k.slice(0, 2)}${value}` as Hint)
   const f = new Set([...hints])
   const found = state.hints.filter((r) => f.has(r))
-  if (found) {
+  if (found.length > 0) {
     state.hints = state.hints.filter((r) => !f.has(r))
     return
   }
