@@ -39,7 +39,6 @@ export const getKeys = () => {
       ranks.map((r) => {
         const row = Math.floor(i / 9)
         const col = i % 9
-
         const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1
         i++
         return `${f}${r}${block}` as Key
@@ -48,7 +47,7 @@ export const getKeys = () => {
     .flat()
 }
 
-function getKeysWithDuplicateValues<K, V>(map: Map<K, V>): K[] {
+function getDuplicateKeys<K, V>(map: Map<K, V>): K[] {
   const valueMap = new Map<V, K[]>()
 
   for (const [key, value] of map.entries()) {
@@ -68,47 +67,36 @@ function getKeysWithDuplicateValues<K, V>(map: Map<K, V>): K[] {
 
   return result
 }
+
+export const showDuplicate =
+  (state: State) => (f: (key: Key, noZero: boolean) => Cells) => {
+    getKeys().map((key) => {
+      getDuplicateKeys(f(key, true)).map((r) => {
+        if (r) {
+          const value = state.cells.get(r) as unknown as Value
+          state.duplicates.set(r, `${value}`)
+        } else {
+          state.duplicates.delete(r)
+        }
+      })
+    })
+  }
+
+export const showAllDuplicates = (state: State) => {
+  showDuplicate(state)(getRow(state))
+  showDuplicate(state)(getColumn(state))
+  showDuplicate(state)(getSquare(state))
+}
+
 export const addNew = (state: State, value: Value) => {
   state.duplicates = new Map()
   if (!state.targetKey) return
-  state.cells.set(state.targetKey, `${value}`)
+  state.selected.map((s) => {
+    state.cells.set(s, `${value}`)
+  })
+
   state.highlight = getCommons(state)(state.targetKey)
-  getKeys().map((key) => {
-    const rows = getRow(state)(key, true)
-
-    getKeysWithDuplicateValues(rows).map((r) => {
-      if (r) {
-        const value = state.cells.get(r) as unknown as Value
-        state.duplicates.set(r, `${value}`)
-      } else {
-        state.duplicates.delete(r)
-      }
-    })
-  })
-  getKeys().map((key) => {
-    const rows = getColumn(state)(key, true)
-    getKeysWithDuplicateValues(rows).map((r) => {
-      if (r) {
-        const value = state.cells.get(r) as unknown as Value
-        state.duplicates.set(r, `${value}`)
-      } else {
-        state.duplicates.delete(r)
-      }
-    })
-  })
-
-  getKeys().map((key) => {
-    const rows = getSquare(state)(key, true)
-    getKeysWithDuplicateValues(rows).map((r) => {
-      if (r) {
-        const value = state.cells.get(r) as unknown as Value
-        state.duplicates.set(r, value)
-      } else {
-        state.duplicates.delete(r)
-      }
-    })
-  })
-
+  showAllDuplicates(state)
   renderCells(state)
 }
 export const positionToKey = (p: Position): Key | undefined => {
