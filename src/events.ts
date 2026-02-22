@@ -1,9 +1,8 @@
 import {renderCells} from "./render"
-import type {BaseKey, CellElement, Hint, Key, Rank, State, Value} from "./types"
+import type {CellElement, Hint, Key, Rank, State, Value} from "./types"
 import {
   getPositionKeyAtDom,
   getKeyFromPosition,
-  getDigitFromPosition,
   getElementByKey,
   getCommons,
   addNew,

@@ -1,5 +1,4 @@
 import {renderCells} from "./render"
-import {sudokuGenerator} from "./sudoku.temp"
 import {
   files,
   ranks,
@@ -10,9 +9,7 @@ import {
   type Position,
   type Value,
   type State,
-  type Digits,
   type BaseKey,
-  type Rank,
   TOTAL_FILE,
   type Buttons,
   buttons,
