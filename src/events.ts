@@ -110,20 +110,17 @@ export const events = (state: State): State => {
 export const numPadEvents = (state: State): State => {
   const {numPad} = state
 
-  numPad.addEventListener("pointerdown", (e) => {
-    const {clientX: x, clientY: y} = e
-    const position = getPositionKeyAtDom(numPad.getBoundingClientRect())(
-      [x, y],
-      9,
-      1,
-    )
-    const numKey = getDigitFromPosition(position) as unknown as BaseKey
-    let value = state.digits.get(numKey) as unknown as Value
-    if (!value) return
-    if (state.isHint) addHint(state)(value)
-    else addNew(state, value)
-    renderCells(state)
+  numPad.querySelectorAll("*").forEach((button) => {
+    const btn = button as unknown as HTMLButtonElement
+    btn.addEventListener("click", () => {
+      const value = btn.dataset.value as unknown as Value
+      if (!value) return
+      if (state.isHint) addHint(state)(value)
+      else addNew(state, value)
+      renderCells(state)
+    })
   })
+
   return state
 }
 export const addHint = (state: State) => (value: Value) => {
@@ -193,7 +190,7 @@ export function panelEvents(state: State) {
   remove.addEventListener("pointerdown", () => {
     if (!state.isHint)
       state.selected.map((r) => {
-        if (state.originCell.get(r)) {
+        if (state.originCell.get(r) !== "0") {
         } else {
           state.cells.set(r, "0")
         }

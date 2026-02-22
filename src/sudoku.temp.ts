@@ -7,6 +7,8 @@
  * @returns
  */
 
+import {positionToKey} from "./utils"
+
 // https://www.geeksforgeeks.org/dsa/program-sudoku-generator/
 
 // JavaScript program to generate a valid sudoku
@@ -121,6 +123,7 @@ function fillRemaining(grid: number[][], i: number, j: number) {
 // Remove K digits randomly from the grid
 // This will create a Sudoku puzzle by removing digits
 function removeKDigits(grid: number[][], k: number) {
+  const removed = new Map()
   while (k > 0) {
     // Pick a random cell
     let cellId = Math.floor(Math.random() * 81)
@@ -133,6 +136,7 @@ function removeKDigits(grid: number[][], k: number) {
 
     // Remove the digit if the cell is not already empty
     if (grid[i][j] !== 0) {
+      removed.set(positionToKey([i, j]), grid[i][j])
       // Empty the cell
       grid[i][j] = 0
 
@@ -140,6 +144,7 @@ function removeKDigits(grid: number[][], k: number) {
       k--
     }
   }
+  return removed
 }
 
 // Generate a Sudoku grid with K empty cells
@@ -156,9 +161,8 @@ export function sudokuGenerator(k: number) {
   fillRemaining(grid, 0, 0)
 
   // Remove K digits randomly to create the puzzle
-  removeKDigits(grid, k)
 
-  return grid
+  return {grid, removed: removeKDigits(grid, k)}
 }
 
 // let k = 20;

@@ -24,12 +24,15 @@ export function getDigits() {
 
 export const initState = (): State => {
   const originalCells = getCells()
-  const cells = new Map([...originalCells])
+  const cells = new Map([...originalCells.cells])
+  const userInput = new Map()
+  const userInputKeys = [...originalCells.solutions.keys()]
+  userInputKeys.map((r) => userInput.set(r, "0"))
 
   const headlessState: HeadlessState = {
     gameState: "isInitialed",
     cells: cells,
-    originCell: originalCells,
+    originCell: originalCells.cells,
     selected: [],
     digits: getDigits(),
     hints: [],
@@ -39,12 +42,16 @@ export const initState = (): State => {
     isHold: false,
     highlight: new Map(),
     duplicates: new Map(),
+    solutions: originalCells.solutions,
+    userInput, //TODO: After every click it should scan if this not empty and if it filled and has the correct answers
   }
   return headlessState as unknown as State
 }
-export const getCells = (): Cells => {
+export const getCells = (): {cells: Cells; solutions: Map<Key, Value>} => {
   const cells: Cells = new Map()
-  const s = sudokuGenerator(60).flat()
+  const sudokuGenerated = sudokuGenerator(30)
+  const sudoku = sudokuGenerated.grid.flat()
+  const solutions = sudokuGenerated.removed
 
   getKeys().map((key, i) => {
     // Calculate square number (1–9)
@@ -53,8 +60,8 @@ export const getCells = (): Cells => {
 
     const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1
     let k = key.replace(/.$/, `${block}`) as Key
-    cells.set(k, `${s[i]}` as Value)
+    cells.set(k, `${sudoku[i]}` as Value)
   })
 
-  return cells
+  return {cells, solutions}
 }

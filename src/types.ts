@@ -43,6 +43,8 @@ export interface HeadlessState {
   highlight: Cells
   duplicates: Cells
   targetKey?: Key
+  solutions: Cells
+  userInput: Cells
 }
 
 export interface State extends HeadlessState {

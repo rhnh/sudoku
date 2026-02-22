@@ -1,4 +1,4 @@
-import {panelEvents} from "./events"
+import {numPadEvents, panelEvents} from "./events"
 import {type CellElement, type Key, type State} from "./types"
 import {
   getPositionFromBound,
@@ -21,7 +21,7 @@ export function renderBase(state: State): State {
 
   const numPad = document.createElement("numpad")
   numPad.id = "numpad"
-  const aside = document.createElement("aside")
+  const aside = document.createElement("section")
   aside.id = "aside"
   const panel = document.createElement("article")
   panel.classList.add("panel")
@@ -143,7 +143,7 @@ export const createNumPad = (state: State): State => {
   numPad.style.height = `${bounds().height / 9}px`
   numPad.style.maxWidth = `${bounds().width}px`
   for (const [k, i] of state.digits) {
-    const el = document.createElement("div")
+    const el = document.createElement("button")
     el.classList.add("num")
     el.dataset.value = `${i}`
     el.innerHTML = `${i}`
@@ -154,7 +154,7 @@ export const createNumPad = (state: State): State => {
   return state
 }
 export const renderNumpad = (state: State): State => {
-  return Box(createNumPad(state)).fold(id)
+  return Box(createNumPad(state)).map(numPadEvents).fold(id)
 }
 
 export const renderAside = (state: State) => {

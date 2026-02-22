@@ -38,8 +38,8 @@ board {
 }
 
 cell {
-  border-left: 1px solid black;
-  border-bottom: 1px solid black;
+  border-left: 1px solid rgb(28, 63, 95);
+  border-bottom: 1px solid rgb(28, 63, 95);
   width: 100%;
   height: 100%;
   display: grid;
@@ -66,7 +66,6 @@ cell > p {
   justify-content: center;
   align-content: center;
   /* height: 100%; */
-  background-color: red;
   font-weight: 400;
 }
 
@@ -123,18 +122,18 @@ numpad > * {
 }
 
 .horizontal-lines-top {
-  border-top: var(--thick) solid black;
+  border-top: var(--thick) solid rgb(28, 63, 95);
 }
 .horizontal-lines-bottom {
-  border-bottom: var(--thick) solid black;
+  border-bottom: var(--thick) solid rgb(28, 63, 95);
 }
 
 .vertical-lines-left {
-  border-left: var(--thick) solid black;
+  border-left: var(--thick) solid rgb(28, 63, 95);
   margin-left: -3px;
 }
 .vertical-lines-right {
-  border-right: var(--thick) solid black;
+  border-right: var(--thick) solid rgb(28, 63, 95);
   margin-right: -3px;
 }
 
