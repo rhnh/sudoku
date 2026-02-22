@@ -69,18 +69,22 @@ function getDuplicateKeys<K, V>(map: Map<K, V>): K[] {
 }
 
 export const showDuplicate =
-  (state: State) => (f: (key: Key, noZero: boolean) => Cells) => {
-    getKeys().map((key) => {
-      getDuplicateKeys(f(key, true)).map((r) => {
-        if (r) {
-          const value = state.cells.get(r) as unknown as Value
-          state.duplicates.set(r, `${value}`)
-        } else {
-          state.duplicates.delete(r)
-        }
-      })
-    })
-  }
+  (state: State) => (f: (key: Key, noZero: boolean) => Cells) =>
+    getKeys()
+      .map((key) =>
+        getDuplicateKeys(f(key, true))
+          .map((r) => {
+            if (r) {
+              const value = state.cells.get(r) as unknown as Value
+              state.duplicates.set(r, `${value}`)
+            } else {
+              state.duplicates.delete(r)
+            }
+            return state.duplicates
+          })
+          .flat(),
+      )
+      .flat()
 
 export const showAllDuplicates = (state: State) => {
   showDuplicate(state)(getRow(state))
@@ -92,6 +96,7 @@ export const addNew = (state: State, value: Value) => {
   state.duplicates = new Map()
   if (!state.targetKey) return
   state.selected.map((s) => {
+    if (state.originCell.get(s) !== "0" && state.originCell.get(s)) return
     state.cells.set(s, `${value}`)
   })
 

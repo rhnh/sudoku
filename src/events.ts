@@ -141,13 +141,6 @@ export const addHint = (state: State) => (value: Value) => {
     ...new Set(hints.filter((h, i) => state.hints[i] == h)),
   ]
 }
-// export const asideEvents = (state: State) => {
-//   const {aside} = state
-//   aside.firstChild.addEventListener("pointerdown", () => {
-//     state.isHint == !state.isHint
-//   })
-//   return state
-// }
 
 export function keyEvents(state: State): State {
   document.addEventListener("keydown", (e) => {
@@ -175,5 +168,45 @@ export function keyEvents(state: State): State {
 
     renderCells(state)
   })
+  return state
+}
+
+export function panelEvents(state: State) {
+  const {panel} = state
+  const reset = panel.querySelector("#restart") as HTMLButtonElement
+  reset.addEventListener("pointerdown", () => {
+    document.location.reload()
+  })
+
+  const hint = panel.querySelector("#hint") as HTMLButtonElement
+
+  hint.addEventListener("pointerdown", () => {
+    state.isHint = !state.isHint
+    if (state.isHint) {
+      hint.classList.add("btn-pressed")
+    } else {
+      hint.classList.remove("btn-pressed")
+    }
+  })
+
+  const remove = panel.querySelector("#remove") as HTMLButtonElement
+  remove.addEventListener("pointerdown", () => {
+    if (!state.isHint)
+      state.selected.map((r) => {
+        if (state.originCell.get(r)) {
+        } else {
+          state.cells.set(r, "0")
+        }
+      })
+
+    const found = state.selected
+      .map((r) => state.hints.filter((h) => r.slice(0, 2) === h.slice(0, 2)))
+      .flat() as unknown as Hint[]
+
+    state.hints = state.hints.filter((item) => !found.includes(item))
+
+    renderCells(state)
+  })
+
   return state
 }

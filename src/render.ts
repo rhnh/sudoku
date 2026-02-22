@@ -1,10 +1,5 @@
-import {
-  type CellElement,
-  type Hint,
-  type Key,
-  type State,
-  type Value,
-} from "./types"
+import {panelEvents} from "./events"
+import {type CellElement, type Key, type State} from "./types"
 import {
   getPositionFromBound,
   keyToPosition,
@@ -12,7 +7,6 @@ import {
   Box,
   memo,
   id,
-  addNew,
 } from "./utils"
 
 export function renderBase(state: State): State {
@@ -36,17 +30,21 @@ export function renderBase(state: State): State {
   aside.appendChild(numPad)
   container.appendChild(aside)
 
-  container.appendChild(panel)
   state = {...state, board, numPad, bounds, container, panel, aside}
 
   return state
 }
 export function renderPanel(state: State) {
-  const {panel, buttons} = state
+  const {panel, buttons, bounds} = state
   for (const [k, v] of buttons) {
     const btn = document.createElement("button")
-    btn.innerText = `${v.replace(/([a-z])([A-Z])/g, "$1 $2")}`
+    btn.style.height = `${bounds().height / 9}px`
+    btn.style.width = `${bounds().width / 3 - 1}px`
+    btn.id = `${v.replace(/\s/g, "-")}`.toLowerCase()
     btn.classList.add(k)
+
+    btn.innerText = `${v.replace(/\s/g, "-")}`
+    btn.style.aspectRatio = `1 / 1`
     btn.classList.add("buttons")
     panel.append(btn)
   }
@@ -106,6 +104,12 @@ export function renderCells(state: State): State {
       if (v !== "0") c.innerHTML = `${v}`
       cellElem.appendChild(c)
       board.appendChild(cellElem)
+      if (state.originCell.get(k) !== "0" && state.originCell.get(k)) {
+        cellElem.classList.add("origin-cells")
+      } else {
+        cellElem.classList.remove("origin-cells")
+        cellElem.classList.add("new-cells")
+      }
       renderHints(state, cellElem)
     }
   })
@@ -131,7 +135,7 @@ export function renderHints(state: State, el: CellElement): State {
 }
 
 export const render = (state: State): State => {
-  return Box(state).map(renderCells).map(renderNumpad).map(renderAside).fold(id)
+  return Box(state).map(renderCells).map(renderAside).fold(id)
 }
 export const createNumPad = (state: State): State => {
   const {bounds, numPad} = state
@@ -154,10 +158,5 @@ export const renderNumpad = (state: State): State => {
 }
 
 export const renderAside = (state: State) => {
-  const {aside} = state
-  // const hintBtn = document.createElement("hint")
-
-  // hintBtn.innerHTML = "Hint"
-  // aside.append(hintBtn)
-  return state
+  return Box(state).map(renderNumpad).map(renderPanel).map(panelEvents).fold(id)
 }

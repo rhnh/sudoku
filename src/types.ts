@@ -8,7 +8,7 @@ export type Rank = (typeof ranks)[number] | "0"
 export type Position = [number, number]
 export type BaseKey = `${File}${Rank}`
 
-export const buttons = ["restart", "removeDigit", "showHint"] as const
+export const buttons = ["restart", "remove", "Hint"] as const
 export type ButtonTexts = (typeof buttons)[number]
 
 export type Buttons = Map<BaseKey, ButtonTexts>
@@ -31,6 +31,7 @@ export type Digits = Map<BaseKey, Value>
 export interface HeadlessState {
   gameState: GameState
   cells: Cells
+  originCell: Cells
   hints: Hints
   digits: Digits
   selected: Key[]

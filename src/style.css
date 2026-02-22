@@ -78,7 +78,6 @@ numpad {
   user-select: none;
   clear: both;
   width: 100%;
-  margin-top: 1em;
 }
 
 numpad > * {
@@ -103,30 +102,31 @@ numpad > * {
 }
 
 .panel {
-  width: 100%;
   display: flex;
-  align-content: center;
-  margin-bottom: 1em;
-  padding: 0;
-  margin-top: 0;
+  justify-content: center;
+  justify-content: space-between;
+  margin-top: 0.3em;
 }
-#hintBTN {
-  background-color: rebeccapurple;
-}
-#hintBTN.clicked {
-  background-color: red;
+.buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: capitalize;
+  background-color: rgb(28, 63, 95);
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
 }
 
-.buttons {
-  text-transform: capitalize;
-}
 .horizontal-lines-top {
   border-top: var(--thick) solid black;
-  margin-top: -3px;
 }
 .horizontal-lines-bottom {
   border-bottom: var(--thick) solid black;
-  margin-bottom: -3px;
 }
 
 .vertical-lines-left {
@@ -148,19 +148,16 @@ numpad > * {
   width: 100%;
 }
 
-#aside > * {
-  font-size: 32px;
-
-  background-color: rgb(93, 162, 226);
-  text-align: center;
-  aspect-ratio: 1/1;
-  border: 1px solid rgb(255, 255, 255);
-  margin: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: aliceblue;
-}
 .duplicates {
   background-color: rgba(226, 93, 93, 0.219);
+}
+.btn-pressed {
+  opacity: 0.5;
+}
+
+.origin-cells {
+  color: rgba(53, 19, 146, 0.637);
+}
+.new-cells {
+  color: rgb(55, 57, 65);
 }

@@ -23,9 +23,13 @@ export function getDigits() {
 }
 
 export const initState = (): State => {
+  const originalCells = getCells()
+  const cells = new Map([...originalCells])
+
   const headlessState: HeadlessState = {
     gameState: "isInitialed",
-    cells: getCells(),
+    cells: cells,
+    originCell: originalCells,
     selected: [],
     digits: getDigits(),
     hints: [],
