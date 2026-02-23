@@ -95,6 +95,10 @@ export const addNew = (state: State, value: Value) => {
   state.selected.map((s) => {
     if (state.originCell.get(s) !== "0" && state.originCell.get(s)) return
     state.cells.set(s, `${value}`)
+    state.userInput.set(s, `${value}`)
+    if (hasCompleted(state)) {
+      state.gameState = "isOvered"
+    }
   })
 
   state.highlight = getCommons(state)(state.targetKey)
@@ -220,4 +224,15 @@ export const getButtonKeys = () => {
     m.set(k, b)
   })
   return m
+}
+
+export const hasCompleted = (state: State) => {
+  const {userInput, solutions} = state
+  const keySolutions = solutions.keys()
+  let result = false
+  for (const k of keySolutions) {
+    if (userInput.get(k) === "0") return false
+    else result = true
+  }
+  return result
 }

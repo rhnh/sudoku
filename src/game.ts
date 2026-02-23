@@ -49,7 +49,7 @@ export const initState = (): State => {
 }
 export const getCells = (): {cells: Cells; solutions: Map<Key, Value>} => {
   const cells: Cells = new Map()
-  const sudokuGenerated = sudokuGenerator(30)
+  const sudokuGenerated = sudokuGenerator(40)
   const sudoku = sudokuGenerated.grid.flat()
   const solutions = sudokuGenerated.removed
 

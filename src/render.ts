@@ -1,5 +1,5 @@
 import {numPadEvents, panelEvents} from "./events"
-import {type CellElement, type Key, type State} from "./types"
+import {type CellElement, type Cells, type Key, type State} from "./types"
 import {
   getPositionFromBound,
   keyToPosition,
@@ -7,6 +7,7 @@ import {
   Box,
   memo,
   id,
+  positionToKey,
 } from "./utils"
 
 export function renderBase(state: State): State {
@@ -50,11 +51,29 @@ export function renderPanel(state: State) {
   }
   return state
 }
+export function renderGameOver(state: State) {
+  const {board} = state
+  // board.innerHTML = ""
+  // board.style.position = "unset"
+  // board.style.display = "flex"
+  // board.style.justifyContent = "center"
+  // board.style.alignItems = "center"
+  const h1 = document.createElement("h1")
+  h1.innerText = "Game Over"
+  h1.style.width = `50%`
+
+  h1.style.height = `50%`
+  h1.style.transform = `translate(${state.bounds().width / 2 - 90}px,${state.bounds().height / 2 + 20}px)`
+  h1.style.position = "absolute"
+
+  board.appendChild(h1)
+}
 
 export function renderCells(state: State): State {
   requestAnimationFrame(() => {
     const {board, cells} = state
     board.innerHTML = ""
+    if (state.gameState === "isOvered") renderGameOver(state)
 
     for (const [k, v] of cells) {
       const cellElem = document.createElement("cell") as CellElement
@@ -110,9 +129,12 @@ export function renderCells(state: State): State {
         cellElem.classList.remove("origin-cells")
         cellElem.classList.add("new-cells")
       }
+      if (state.gameState === "isOvered" || state.gameState === "isPaused")
+        cellElem.style.opacity = "0.3"
       renderHints(state, cellElem)
     }
   })
+
   return state
 }
 
