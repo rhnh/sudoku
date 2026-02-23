@@ -8,7 +8,7 @@ export type Rank = (typeof ranks)[number] | "0"
 export type Position = [number, number]
 export type BaseKey = `${File}${Rank}`
 
-export const buttons = ["restart", "remove", "Hint"] as const
+export const buttons = ["start", "restart", "remove", "Hint", "timer"] as const
 export type ButtonTexts = (typeof buttons)[number]
 
 export type Buttons = Map<BaseKey, ButtonTexts>
@@ -45,6 +45,7 @@ export interface HeadlessState {
   targetKey?: Key
   solutions: Cells
   userInput: Cells
+  seconds: number
 }
 
 export interface State extends HeadlessState {
