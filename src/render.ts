@@ -1,5 +1,11 @@
 import {numPadEvents, panelEvents} from "./events"
-import {type CellElement, type Cells, type Key, type State} from "./types"
+import {
+  type CellElement,
+  type Hint,
+  type Key,
+  type State,
+  type Value,
+} from "./types"
 import {
   getPositionFromBound,
   keyToPosition,
@@ -7,21 +13,25 @@ import {
   Box,
   memo,
   id,
-  positionToKey,
+  formatTime,
 } from "./utils"
 
 export function renderBase(state: State): State {
   const container = document.getElementById("container")
+
   if (!container) {
     throw new Error('Not HtmlElement found with id "container"')
   }
 
   const bounds = memo(() => container.getBoundingClientRect())
   const board = document.createElement("board")
+
   container.appendChild(board)
 
   const numPad = document.createElement("numpad")
   numPad.id = "numpad"
+  const header = document.createElement("head")
+  header.id = "aside"
   const aside = document.createElement("section")
   aside.id = "aside"
   const panel = document.createElement("article")
@@ -35,8 +45,11 @@ export function renderBase(state: State): State {
 
   return state
 }
-export function renderPanel(state: State) {
+
+export function renderPanel(state: State): State {
   const {panel, buttons, bounds} = state
+
+  let lastChild: HTMLElement | null = null
   for (const [k, v] of buttons) {
     const btn = document.createElement("button")
     btn.style.height = `${bounds().height / 9}px`
@@ -47,10 +60,39 @@ export function renderPanel(state: State) {
     btn.innerText = `${v.replace(/\s/g, "-")}`
     btn.style.aspectRatio = `1 / 1`
     btn.classList.add("buttons")
+
     panel.append(btn)
+    lastChild = btn
   }
+  const timer = document.createElement("section")
+  timer.style.height = `${bounds().height / 9}px`
+  timer.style.width = `${bounds().width / 3 - 1}px`
+  timer.classList.add("buttons")
+  timer.classList.add("timer")
+  timer.id = "timer"
+
+  const timerText = document.createElement("p")
+
+  if (!lastChild) {
+    throw Error("Could found the button")
+  }
+  lastChild = panel.replaceChild(timer, lastChild)
+  timer.appendChild(timerText)
+  if (state.gameState === "isInitialed") {
+    timerText.textContent = `00:00`
+  }
+  let seconds = state.seconds ? state.seconds : 0
+  setInterval(() => {
+    if (state.gameState === "isPlaying") {
+      timerText.textContent = formatTime(state.seconds)
+      state.seconds = seconds
+      seconds++
+    }
+  }, 1000)
+
   return state
 }
+
 export function renderGameOver(state: State) {
   const {board} = state
   // board.innerHTML = ""
@@ -92,6 +134,7 @@ export function renderCells(state: State): State {
       state.selected.map((selectedKey) => {
         if (selectedKey === k) {
           cellElem.classList.remove("highlighted")
+          cellElem.classList.remove("duplicates")
           cellElem.classList.add("selected")
         }
       })
@@ -120,7 +163,14 @@ export function renderCells(state: State): State {
 
       const c = document.createElement("p")
       c.style.gridArea = "2 / 2 / 3 / 3"
-      if (v !== "0") c.innerHTML = `${v}`
+
+      if (v !== "0" && state.gameState !== "isInitialed") {
+        c.innerHTML = `${v}`
+      }
+      if (state.gameState === "isPaused") {
+        c.style.opacity = "0"
+        c.style.backgroundColor = "red"
+      }
       cellElem.appendChild(c)
       board.appendChild(cellElem)
       if (state.originCell.get(k) !== "0" && state.originCell.get(k)) {
@@ -136,6 +186,21 @@ export function renderCells(state: State): State {
   })
 
   return state
+}
+export const addHint = (state: State) => (value: Value) => {
+  const hints = state.selected?.map((k) => `${k.slice(0, 2)}${value}` as Hint)
+  const f = new Set([...hints])
+  const found = state.hints.filter((r) => f.has(r))
+  if (found.length > 0) {
+    state.hints = state.hints.filter((r) => !f.has(r))
+    return
+  }
+  state.hints = [...new Set([...state.hints, ...hints])]
+  state.hints = [...new Set([...state.hints])]
+  state.hints = [
+    ...state.hints,
+    ...new Set(hints.filter((h, i) => state.hints[i] == h)),
+  ]
 }
 
 export function renderHints(state: State, el: CellElement): State {
@@ -156,9 +221,6 @@ export function renderHints(state: State, el: CellElement): State {
   return state
 }
 
-export const render = (state: State): State => {
-  return Box(state).map(renderCells).map(renderAside).fold(id)
-}
 export const createNumPad = (state: State): State => {
   const {bounds, numPad} = state
   numPad.innerHTML = ""
@@ -175,10 +237,12 @@ export const createNumPad = (state: State): State => {
 
   return state
 }
-export const renderNumpad = (state: State): State => {
-  return Box(createNumPad(state)).map(numPadEvents).fold(id)
-}
 
-export const renderAside = (state: State) => {
-  return Box(state).map(renderNumpad).map(renderPanel).map(panelEvents).fold(id)
-}
+export const renderNumpad = (state: State): State =>
+  Box(createNumPad(state)).map(numPadEvents).fold(id)
+
+export const renderAside = (state: State) =>
+  Box(state).map(renderNumpad).map(renderPanel).map(panelEvents).fold(id)
+
+export const render = (state: State): State =>
+  Box(state).map(renderCells).map(renderAside).fold(id)

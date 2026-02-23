@@ -1,4 +1,4 @@
-import {renderCells} from "./render"
+import {addHint, renderCells} from "./render"
 import type {CellElement, Hint, Key, Rank, State, Value} from "./types"
 import {
   getPositionKeyAtDom,
@@ -122,21 +122,6 @@ export const numPadEvents = (state: State): State => {
 
   return state
 }
-export const addHint = (state: State) => (value: Value) => {
-  const hints = state.selected?.map((k) => `${k.slice(0, 2)}${value}` as Hint)
-  const f = new Set([...hints])
-  const found = state.hints.filter((r) => f.has(r))
-  if (found.length > 0) {
-    state.hints = state.hints.filter((r) => !f.has(r))
-    return
-  }
-  state.hints = [...new Set([...state.hints, ...hints])]
-  state.hints = [...new Set([...state.hints])]
-  state.hints = [
-    ...state.hints,
-    ...new Set(hints.filter((h, i) => state.hints[i] == h)),
-  ]
-}
 
 export function keyEvents(state: State): State {
   document.addEventListener("keydown", (e) => {
@@ -145,6 +130,9 @@ export function keyEvents(state: State): State {
     if (regex) {
       if (state.isHint) {
         if (!state.targetKey) return
+        /**
+         * hint has key and value attached. a11 means a = row, 1 column and the last number is value.
+         */
         const hintKey =
           `${state.targetKey.slice(0, 2)}${value}` as unknown as Hint
         const found = state.hints.find((h) => hintKey === h)
@@ -169,8 +157,32 @@ export function keyEvents(state: State): State {
 
 export function panelEvents(state: State) {
   const {panel} = state
-  const reset = panel.querySelector("#restart") as HTMLButtonElement
-  reset.addEventListener("pointerdown", () => {
+
+  const start = panel.querySelector("#start") as HTMLButtonElement
+  if (!start) return state
+  start.addEventListener("pointerdown", (e) => {
+    if (state.gameState === "isInitialed") {
+      state.gameState = "isPlaying"
+      let btn = panel.querySelector("#start") as HTMLButtonElement
+      btn.innerText = "Pause"
+      renderCells(state)
+    } else if (state.gameState === "isPaused") {
+      state.gameState = "isPlaying"
+      let btn = panel.querySelector("#start") as HTMLButtonElement
+      btn.innerText = "Pause"
+      renderCells(state)
+    } else if (state.gameState === "isPlaying") {
+      state.gameState = "isPaused"
+      let btn = panel.querySelector("#start") as HTMLButtonElement
+
+      btn.innerText = "Resume"
+      renderCells(state)
+    }
+    renderCells(state)
+  })
+
+  const restart = panel.querySelector("#restart") as HTMLButtonElement
+  restart.addEventListener("pointerdown", () => {
     document.location.reload()
   })
 
@@ -192,6 +204,7 @@ export function panelEvents(state: State) {
         if (state.originCell.get(r) !== "0") {
         } else {
           state.cells.set(r, "0")
+          state.duplicates = new Map()
         }
       })
 
@@ -200,9 +213,14 @@ export function panelEvents(state: State) {
       .flat() as unknown as Hint[]
 
     state.hints = state.hints.filter((item) => !found.includes(item))
-
     renderCells(state)
   })
-
+  const timer = panel.querySelector("#timer") as HTMLElement
+  if (timer) {
+    timer.addEventListener("pointerdown", () => {
+      const timerText = timer.firstChild as HTMLElement
+      timerText.classList.toggle("hide")
+    })
+  }
   return state
 }

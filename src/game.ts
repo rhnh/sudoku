@@ -44,12 +44,13 @@ export const initState = (): State => {
     duplicates: new Map(),
     solutions: originalCells.solutions,
     userInput, //TODO: After every click it should scan if this not empty and if it filled and has the correct answers
+    seconds: 0,
   }
   return headlessState as unknown as State
 }
 export const getCells = (): {cells: Cells; solutions: Map<Key, Value>} => {
   const cells: Cells = new Map()
-  const sudokuGenerated = sudokuGenerator(40)
+  const sudokuGenerated = sudokuGenerator(50)
   const sudoku = sudokuGenerated.grid.flat()
   const solutions = sudokuGenerated.removed
 

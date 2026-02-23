@@ -160,3 +160,12 @@ numpad > * {
 .new-cells {
   color: rgb(55, 57, 65);
 }
+
+.timer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.hide {
+  visibility: hidden;
+}
