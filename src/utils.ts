@@ -18,11 +18,16 @@ import {
 export type Box<T> = {
   map: <U>(fn: (x: T) => U) => Box<U>
   fold: <R>(fn: (x: T) => R) => R
+  toString: () => T
 }
 
 export const Box = <T>(value: T): Box<T> => ({
   map: (fn) => Box(fn(value)),
   fold: (fn) => fn(value),
+  toString: (): T => {
+    console.log(value)
+    return value
+  },
 })
 
 export const keyToPosition = (k: Key): Position => [
@@ -217,7 +222,8 @@ export const getPositionKeyAtDom =
 export const id = <T>(x: T) => x
 
 export const getButtonKeys = () => {
-  const buttonKeys = getKeys().slice(0, 3)
+  const numberOfButtons = 6
+  const buttonKeys = getKeys().slice(0, numberOfButtons)
   const m: Buttons = new Map()
   buttons.map((b, i) => {
     const k: BaseKey = buttonKeys[i] as unknown as BaseKey
@@ -235,4 +241,12 @@ export const hasCompleted = (state: State) => {
     else result = true
   }
   return result
+}
+
+export const formatTime = (totalSeconds: number): string => {
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  //https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
+  const pad = (n: number) => n.toString().padStart(2, "0")
+  return `${pad(minutes)}:${pad(seconds)}`
 }
