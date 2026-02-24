@@ -1,5 +1,5 @@
-import {addHint, renderCells} from "./render"
-import type {CellElement, Hint, Key, Rank, State, Value} from "./types"
+import {addNote, renderCells} from "./render"
+import type {CellElement, Note, Key, Rank, State, Value} from "./types"
 import {
   getPositionKeyAtDom,
   getKeyFromPosition,
@@ -59,8 +59,8 @@ export const events = (state: State): State => {
         .forEach((s) => s.classList.remove("selected"))
       const value = state.draggingValue as unknown as Rank
 
-      if (state.isHint) {
-        addHint(state)(value)
+      if (state.isNote) {
+        addNote(state)(value)
       } else {
         addNew(state, value)
       }
@@ -104,7 +104,7 @@ export const numPadEvents = (state: State): State => {
     btn.addEventListener("click", () => {
       const value = btn.dataset.value as unknown as Value
       if (!value) return
-      if (state.isHint) addHint(state)(value)
+      if (state.isNote) addNote(state)(value)
       else addNew(state, value)
       renderCells(state)
     })
@@ -114,17 +114,38 @@ export const numPadEvents = (state: State): State => {
 }
 
 export function keyEvents(state: State): State {
+  const {panel} = state
+
   document.addEventListener("keydown", (e) => {
+    if (e.key === "r") {
+      document.location.reload()
+    }
+    if (state.gameState === "isInitialed") {
+      if (e.key === "s") {
+        state.gameState = "isPlaying"
+        renderCells(state)
+      }
+    }
+
+    if (state.gameState === "isPlaying") {
+      if (e.key === "n") {
+        state.isNote = !state.isNote
+        const note = panel.querySelector("#note") as HTMLButtonElement
+        if (state.isNote) {
+          note.classList.add("btn-pressed")
+        } else {
+          note.classList.remove("btn-pressed")
+        }
+      }
+    }
     const value: Value = e.key[0] as Value
+
     const regex = value.match(/\d/)
     if (regex) {
-      if (state.isHint) {
+      if (state.isNote) {
         if (!state.targetKey) return
-        addHint(state)(value)
+        addNote(state)(value)
       } else addNew(state, `${value}`)
-    }
-    if (e.key === "h") {
-      state.isHint = !state.isHint
     }
 
     renderCells(state)
@@ -163,20 +184,20 @@ export function panelEvents(state: State) {
     document.location.reload()
   })
 
-  const hint = panel.querySelector("#hint") as HTMLButtonElement
+  const note = panel.querySelector("#note") as HTMLButtonElement
 
-  hint.addEventListener("pointerdown", () => {
-    state.isHint = !state.isHint
-    if (state.isHint) {
-      hint.classList.add("btn-pressed")
+  note.addEventListener("pointerdown", () => {
+    state.isNote = !state.isNote
+    if (state.isNote) {
+      note.classList.add("btn-pressed")
     } else {
-      hint.classList.remove("btn-pressed")
+      note.classList.remove("btn-pressed")
     }
   })
 
   const remove = panel.querySelector("#remove") as HTMLButtonElement
   remove.addEventListener("pointerdown", () => {
-    if (!state.isHint)
+    if (!state.isNote)
       state.selected.map((r) => {
         if (state.originCell.get(r) !== "0") {
         } else {
@@ -186,10 +207,10 @@ export function panelEvents(state: State) {
       })
 
     const found = state.selected
-      .map((r) => state.hints.filter((h) => r.slice(0, 2) === h.slice(0, 2)))
-      .flat() as unknown as Hint[]
+      .map((r) => state.notes.filter((h) => r.slice(0, 2) === h.slice(0, 2)))
+      .flat() as unknown as Note[]
 
-    state.hints = state.hints.filter((item) => !found.includes(item))
+    state.notes = state.notes.filter((item) => !found.includes(item))
     renderCells(state)
   })
   const timer = panel.querySelector("#timer") as HTMLElement

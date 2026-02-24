@@ -21,7 +21,6 @@ export function getDigits() {
 
   return m
 }
-
 export const initState = (): State => {
   const originalCells = getCells()
   const cells = new Map([...originalCells.cells])
@@ -35,9 +34,9 @@ export const initState = (): State => {
     originCell: originalCells.cells,
     selected: [],
     digits: getDigits(),
-    hints: [],
+    notes: [],
     buttons: getButtonKeys(),
-    isHint: false,
+    isNote: false,
     isDragging: false,
     isHold: false,
     highlight: new Map(),

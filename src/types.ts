@@ -8,12 +8,12 @@ export type Rank = (typeof ranks)[number] | "0"
 export type Position = [number, number]
 export type BaseKey = `${File}${Rank}`
 
-export const buttons = ["start", "restart", "remove", "Hint", "timer"] as const
+export const buttons = ["start", "restart", "remove", "note", "timer"] as const
 export type ButtonTexts = (typeof buttons)[number]
 
 export type Buttons = Map<BaseKey, ButtonTexts>
-export type Hint = `${BaseKey}${Rank}`
-export type Hints = Hint[]
+export type Note = `${BaseKey}${Rank}`
+export type Notes = Note[]
 export type Key = `${BaseKey}${Rank}`
 
 export type GameState = "isInitialed" | "isPaused" | "isPlaying" | "isOvered"
@@ -32,11 +32,11 @@ export interface HeadlessState {
   gameState: GameState
   cells: Cells
   originCell: Cells
-  hints: Hints
+  notes: Notes
   digits: Digits
   selected: Key[]
   buttons: Buttons
-  isHint: boolean
+  isNote: boolean
   draggingValue?: Rank
   isDragging: boolean
   isHold: boolean

@@ -191,7 +191,7 @@ export const getElementByKey =
   }
 
 export const createCellElement =
-  (tagName: keyof HTMLElementTagNameMap | "Cell" | "Hint") =>
+  (tagName: keyof HTMLElementTagNameMap | "Cell" | "Note") =>
   (k: Key, v: Value, isReadOnly = false) => {
     const cellElem = document.createElement(tagName)
     cellElem.dataset.key = k

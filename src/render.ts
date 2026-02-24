@@ -1,7 +1,7 @@
 import {numPadEvents, panelEvents} from "./events"
 import {
   type CellElement,
-  type Hint,
+  type Note,
   type Key,
   type State,
   type Value,
@@ -169,7 +169,6 @@ export function renderCells(state: State): State {
       }
       if (state.gameState === "isPaused") {
         c.style.opacity = "0"
-        c.style.backgroundColor = "red"
       }
       cellElem.appendChild(c)
       board.appendChild(cellElem)
@@ -181,42 +180,42 @@ export function renderCells(state: State): State {
       }
       if (state.gameState === "isOvered" || state.gameState === "isPaused")
         cellElem.style.opacity = "0.3"
-      renderHints(state, cellElem)
+      renderNotes(state, cellElem)
     }
   })
 
   return state
 }
-export const addHint = (state: State) => (value: Value) => {
-  const hints = state.selected?.map((k) => `${k.slice(0, 2)}${value}` as Hint)
-  const f = new Set([...hints])
-  const found = state.hints.filter((r) => f.has(r))
+export const addNote = (state: State) => (value: Value) => {
+  const notes = state.selected?.map((k) => `${k.slice(0, 2)}${value}` as Note)
+  const f = new Set([...notes])
+  const found = state.notes.filter((r) => f.has(r))
   if (found.length > 0) {
-    state.hints = state.hints.filter((r) => !f.has(r))
+    state.notes = state.notes.filter((r) => !f.has(r))
     return
   }
-  state.hints = [...new Set([...state.hints, ...hints])]
-  state.hints = [...new Set([...state.hints])]
-  state.hints = [
-    ...state.hints,
-    ...new Set(hints.filter((h, i) => state.hints[i] == h)),
+  state.notes = [...new Set([...state.notes, ...notes])]
+  state.notes = [...new Set([...state.notes])]
+  state.notes = [
+    ...state.notes,
+    ...new Set(notes.filter((h, i) => state.notes[i] == h)),
   ]
 }
 
-export function renderHints(state: State, el: CellElement): State {
-  let {hints} = state
-  hints = [...new Set(hints)]
-  hints.map((h) => {
+export function renderNotes(state: State, el: CellElement): State {
+  let {notes} = state
+  notes = [...new Set(notes)]
+  notes.map((h) => {
     const value = +h.slice(-1)
     const key = h.slice(0, 2) as unknown as Key
     if (!el.dataset.key?.startsWith(key) || el.dataset.value !== "0") return
     const [x, y] = getSquareNr(value)
-    const hint = document.createElement("hint") as CellElement
-    hint.style.gridColumn = `${y} / 3`
-    hint.style.gridRow = `${x} / 3`
-    hint.innerHTML = `${value}`
+    const noteElm = document.createElement("note") as CellElement
+    noteElm.style.gridColumn = `${y} / 3`
+    noteElm.style.gridRow = `${x} / 3`
+    noteElm.innerHTML = `${value}`
 
-    el?.appendChild(hint)
+    el?.appendChild(noteElm)
   })
   return state
 }

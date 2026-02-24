@@ -3,7 +3,7 @@
   --thick: 3px;
   --size: 600px;
   --fontSize: 40px;
-  --hintMargin: 10px;
+  --noteMargin: 10px;
 }
 *,
 ::before,
@@ -50,7 +50,7 @@ cell {
   font-size: 12px;
 }
 
-hint {
+note {
   color: rgb(43, 102, 212);
   font-size-adjust: 0.545;
   margin-top: 12px;
@@ -135,10 +135,6 @@ numpad > * {
 .vertical-lines-right {
   border-right: var(--thick) solid rgb(28, 63, 95);
   margin-right: -3px;
-}
-
-.hinting {
-  background-color: azure;
 }
 
 #aside {
