@@ -160,7 +160,7 @@ export function panelEvents(state: State) {
 
   const start = panel.querySelector("#start") as HTMLButtonElement
   if (!start) return state
-  start.addEventListener("pointerdown", (e) => {
+  start.addEventListener("pointerdown", () => {
     if (state.gameState === "isInitialed") {
       state.gameState = "isPlaying"
       let btn = panel.querySelector("#start") as HTMLButtonElement
