@@ -60,17 +60,7 @@ export const events = (state: State): State => {
       const value = state.draggingValue as unknown as Rank
 
       if (state.isHint) {
-        const hintKey = `${key.slice(0, 2)}${value}` as unknown as Hint
-        const found = state.hints.find((h) => hintKey === h)
-
-        if (found) {
-          state.hints = [...new Set(state.hints.filter((r) => r !== hintKey))]
-        } else {
-          state.selected.map((r) => {
-            const hint = (r.slice(0, 2) + value) as unknown as Hint
-            state.hints = [...new Set([...state.hints, hint])]
-          })
-        }
+        addHint(state)(value)
       } else {
         addNew(state, value)
       }
@@ -130,20 +120,7 @@ export function keyEvents(state: State): State {
     if (regex) {
       if (state.isHint) {
         if (!state.targetKey) return
-        /**
-         * hint has key and value attached. a11 means a = row, 1 column and the last number is value.
-         */
-        const hintKey =
-          `${state.targetKey.slice(0, 2)}${value}` as unknown as Hint
-        const found = state.hints.find((h) => hintKey === h)
-        if (found) {
-          state.hints = [...new Set(state.hints.filter((r) => r !== hintKey))]
-        } else {
-          state.selected.map((r) => {
-            const hint = (r.slice(0, 2) + value) as unknown as Hint
-            state.hints = [...new Set([...state.hints, hint])]
-          })
-        }
+        addHint(state)(value)
       } else addNew(state, `${value}`)
     }
     if (e.key === "h") {
