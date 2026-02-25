@@ -215,7 +215,7 @@ export function panelEvents(state: State) {
   })
 
   const showHint = panel.querySelector("#hint") as HTMLButtonElement
-  showHint.addEventListener("pointerdown", (e) => {
+  showHint.addEventListener("pointerdown", () => {
     if (state.gameState === "isPlaying") {
       const selected = state.selected
       selected.map((s) => {
