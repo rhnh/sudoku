@@ -8,7 +8,14 @@ export type Rank = (typeof ranks)[number] | "0"
 export type Position = [number, number]
 export type BaseKey = `${File}${Rank}`
 
-export const buttons = ["start", "restart", "remove", "note", "timer"] as const
+export const buttons = [
+  "start",
+  "restart",
+  "remove",
+  "note",
+  "hint",
+  "timer",
+] as const
 export type ButtonTexts = (typeof buttons)[number]
 
 export type Buttons = Map<BaseKey, ButtonTexts>

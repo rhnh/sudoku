@@ -24,14 +24,14 @@ export const events = (state: State): State => {
       if (e.ctrlKey) {
         state.selected = [...new Set(state.selected), key]
       } else {
-        state.selected = [key]
+        state.selected = [...new Set([key])]
       }
       state.isHold = true
       renderCells(state)
     } else {
       state.isDragging = true
       state.draggingElement = el
-      state.selected = [key]
+      state.selected = state.selected = [...new Set([key])]
       state.draggingElement.classList.add("selected")
       const value = state.draggingElement.dataset.value
       if (!value) return
@@ -46,7 +46,7 @@ export const events = (state: State): State => {
     let key = getKeyFromPosition(t) as unknown as Key | undefined
     if (!key) return
     state.targetKey = key
-    state.selected.push(key)
+    state.selected = [...new Set([...state.selected, key])]
     if (state.isDragging && state.draggingElement) {
       const p = state.draggingElement?.firstChild as unknown as HTMLElement
       if (state.draggingElement && p) {
@@ -213,6 +213,18 @@ export function panelEvents(state: State) {
     state.notes = state.notes.filter((item) => !found.includes(item))
     renderCells(state)
   })
+
+  const showHint = panel.querySelector("#hint") as HTMLButtonElement
+  showHint.addEventListener("pointerdown", (e) => {
+    if (state.gameState === "isPlaying") {
+      const selected = state.selected
+      selected.map((s) => {
+        const value = state.solutions.get(s) as unknown as Value
+        addNew(state, value)
+      })
+    }
+  })
+
   const timer = panel.querySelector("#timer") as HTMLElement
   if (timer) {
     timer.addEventListener("pointerdown", () => {
