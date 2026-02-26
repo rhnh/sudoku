@@ -2,17 +2,29 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>sudoku</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Sudoku </title>
+  <link rel="stylesheet" href="/assets/base.style.css">
+  <style>
+    #sudoku {
+      height: 500px;
+      width: 500px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-inline: auto;
+    }
+  </style>
+  <script type="module">
+    import { Sudoku } from "./dist/sudoku.min.js"
+    Sudoku(document.getElementById('sudoku'))
+  </script>
 </head>
 
 <body>
-  <article id="sudoku">
-    <article id="container"></article>
-  </article>
-  <script type="module" src="/src/main.ts"></script>
+
+  <div id="sudoku"></div>
 </body>
 
 </html>

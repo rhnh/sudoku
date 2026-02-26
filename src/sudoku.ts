@@ -1,3 +1,5 @@
+import {events, keyEvents} from "./events"
+import {render, renderBase} from "./render"
 import {sudokuGenerator} from "./sudoku.temp"
 import type {
   BaseKey,
@@ -9,7 +11,7 @@ import type {
   State,
   Value,
 } from "./types"
-import {allDigits, getButtonKeys, getKeys} from "./utils"
+import {allDigits, Box, getButtonKeys, getKeys} from "./utils"
 
 export function getDigits() {
   const m: Digits = new Map()
@@ -21,7 +23,7 @@ export function getDigits() {
 
   return m
 }
-export const initState = (): State => {
+export const initState = (el: HTMLElement): State => {
   const originalCells = getCells()
   const cells = new Map([...originalCells.cells])
   const userInput = new Map()
@@ -44,8 +46,10 @@ export const initState = (): State => {
     solutions: originalCells.solutions,
     userInput, //TODO: After every click it should scan if this not empty and if it filled and has the correct answers
     seconds: 0,
-  }
-  return headlessState as unknown as State
+  } as unknown as State
+
+  const state: State = {...headlessState, wrap: el} as unknown as State
+  return state
 }
 export const getCells = (): {cells: Cells; solutions: Map<Key, Value>} => {
   const cells: Cells = new Map()
@@ -64,4 +68,12 @@ export const getCells = (): {cells: Cells; solutions: Map<Key, Value>} => {
   })
 
   return {cells, solutions}
+}
+
+export function Sudoku(e: HTMLElement) {
+  return Box(initState(e))
+    .map(renderBase)
+    .map(render)
+    .map(events)
+    .map(keyEvents)
 }

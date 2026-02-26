@@ -16,14 +16,28 @@ import {
   formatTime,
 } from "./utils"
 
+export function updateBounds(s: State): void {
+  const bounds = s.wrap.getBoundingClientRect()
+  const container = s.container
+  const ratio = bounds.height / bounds.width
+  const width =
+    (Math.floor((bounds.width * window.devicePixelRatio) / 9) * 9) /
+    window.devicePixelRatio
+  const height = width * ratio
+  container.style.width = width + "px"
+  container.style.height = height + "px"
+  s.bounds.clear()
+
+  s.addDimensionsCssVarsTo?.style.setProperty("---cg-width", width + "px")
+  s.addDimensionsCssVarsTo?.style.setProperty("---cg-height", height + "px")
+}
 export function renderBase(state: State): State {
-  const container = document.getElementById("container")
+  const container = document.createElement("container")
 
   if (!container) {
     throw new Error('Not HtmlElement found with id "container"')
   }
 
-  const bounds = memo(() => container.getBoundingClientRect())
   const board = document.createElement("board")
 
   container.appendChild(board)
@@ -40,7 +54,12 @@ export function renderBase(state: State): State {
   aside.appendChild(panel)
   aside.appendChild(numPad)
   container.appendChild(aside)
-
+  state.wrap.append(container)
+  const bounds = memo(() => container.getBoundingClientRect())
+  const observer = new ResizeObserver(() => {
+    updateBounds(state)
+  })
+  observer.observe(state.wrap)
   state = {...state, board, numPad, bounds, container, panel, aside}
 
   return state
@@ -48,7 +67,8 @@ export function renderBase(state: State): State {
 
 export function renderPanel(state: State): State {
   const {panel, buttons, bounds} = state
-
+  updateBounds(state)
+  console.log(state.bounds().width)
   let lastChild: HTMLElement | null = null
   for (const [k, v] of buttons) {
     const btn = document.createElement("button")
@@ -113,6 +133,7 @@ export function renderGameOver(state: State) {
 
 export function renderCells(state: State): State {
   requestAnimationFrame(() => {
+    updateBounds(state)
     const {board, cells} = state
     board.innerHTML = ""
     if (state.gameState === "isOvered") renderGameOver(state)
@@ -224,7 +245,6 @@ export const createNumPad = (state: State): State => {
   const {bounds, numPad} = state
   numPad.innerHTML = ""
   numPad.style.height = `${bounds().height / 9}px`
-  numPad.style.maxWidth = `${bounds().width}px`
   for (const [k, i] of state.digits) {
     const el = document.createElement("button")
     el.classList.add("num")

@@ -1,23 +1,49 @@
 {
-  "homepage": "https://rhnh.github.io/sudoku/",
-  "name": "sudoku",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "game_sudoku",
+  "version": "1.0.0",
+  "description": "a sudoku game",
+  "license": "GPL-3.0-or-later",
+  "main": "dist/sudoku.js",
+  "types": "sudoku.d.ts",
+  "exports": {
+    ".": "./dist/sudoku.js",
+    "./assets/*": "./assets/*",
+    "./*": "./dist/*.js"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
+  },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "test": "vitest",
-    "deploy": "npm run build && git subtree push --prefix dist origin gh-pages"
+    "prepare": "$npm_execpath run compile",
+    "compile": "tsc --sourceMap --declaration",
+    "lint": "eslint src/*.ts",
+    "format": "prettier --write .",
+    "check-format": "prettier --check .",
+    "bundle": "esbuild src/sudoku.ts --bundle --format=esm --outfile=dist/sudoku.min.js --minify",
+    "dev": "esbuild src/sudoku.ts --bundle --format=esm --outfile=dist/sudoku.min.js --minify --watch",
+    "dist": "$npm_execpath run compile && $npm_execpath run bundle",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
+  "files": [
+    "/dist/*.js",
+    "/dist/*.d.ts",
+    "/dist/*.js.map",
+    "/assets/*.css",
+    "/src/*.ts"
+  ],
   "devDependencies": {
-    "gh-pages": "^6.3.0",
-    "typescript": "~5.9.3",
-    "vite": "npm:rolldown-vite@7.2.5",
+    "@eslint/js": "^10.0.1",
+    "esbuild": "^0.27.3",
+    "eslint": "^10.0.2",
+    "jsdom": "^28.1.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1",
     "vitest": "^4.0.18"
-  },
-  "overrides": {
-    "vite": "npm:rolldown-vite@7.2.5"
   }
 }

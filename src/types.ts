@@ -56,6 +56,8 @@ export interface HeadlessState {
 }
 
 export interface State extends HeadlessState {
+  addDimensionsCssVarsTo: any
+  wrap: HTMLElement
   board: HTMLElement
   container: HTMLElement
   numPad: HTMLElement
