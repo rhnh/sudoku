@@ -63,7 +63,7 @@ export interface State extends HeadlessState {
   numPad: HTMLElement
   aside: HTMLElement
   bounds: Memo<DOMRectReadOnly>
-  panel: HTMLElement
+  nav: HTMLElement
   draggingElement?: HTMLElement
 }
 

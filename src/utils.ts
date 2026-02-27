@@ -25,7 +25,6 @@ export const Box = <T>(value: T): Box<T> => ({
   map: (fn) => Box(fn(value)),
   fold: (fn) => fn(value),
   toString: (): T => {
-    console.log(value)
     return value
   },
 })

@@ -114,7 +114,7 @@ export const numPadEvents = (state: State): State => {
 }
 
 export function keyEvents(state: State): State {
-  const {panel} = state
+  const {nav} = state
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "r") {
@@ -130,7 +130,7 @@ export function keyEvents(state: State): State {
     if (state.gameState === "isPlaying") {
       if (e.key === "n") {
         state.isNote = !state.isNote
-        const note = panel.querySelector("#note") as HTMLButtonElement
+        const note = nav.querySelector("#note") as HTMLButtonElement
         if (state.isNote) {
           note.classList.add("btn-pressed")
         } else {
@@ -154,24 +154,24 @@ export function keyEvents(state: State): State {
 }
 
 export function panelEvents(state: State) {
-  const {panel} = state
+  const {nav} = state
 
-  const start = panel.querySelector("#start") as HTMLButtonElement
+  const start = nav.querySelector("#start") as HTMLButtonElement
   if (!start) return state
   start.addEventListener("pointerdown", () => {
     if (state.gameState === "isInitialed") {
       state.gameState = "isPlaying"
-      let btn = panel.querySelector("#start") as HTMLButtonElement
+      let btn = nav.querySelector("#start") as HTMLButtonElement
       btn.innerText = "Pause"
       renderCells(state)
     } else if (state.gameState === "isPaused") {
       state.gameState = "isPlaying"
-      let btn = panel.querySelector("#start") as HTMLButtonElement
+      let btn = nav.querySelector("#start") as HTMLButtonElement
       btn.innerText = "Pause"
       renderCells(state)
     } else if (state.gameState === "isPlaying") {
       state.gameState = "isPaused"
-      let btn = panel.querySelector("#start") as HTMLButtonElement
+      let btn = nav.querySelector("#start") as HTMLButtonElement
 
       btn.innerText = "Resume"
       renderCells(state)
@@ -179,12 +179,12 @@ export function panelEvents(state: State) {
     renderCells(state)
   })
 
-  const restart = panel.querySelector("#restart") as HTMLButtonElement
+  const restart = nav.querySelector("#restart") as HTMLButtonElement
   restart.addEventListener("pointerdown", () => {
     document.location.reload()
   })
 
-  const note = panel.querySelector("#note") as HTMLButtonElement
+  const note = nav.querySelector("#note") as HTMLButtonElement
 
   note.addEventListener("pointerdown", () => {
     state.isNote = !state.isNote
@@ -195,7 +195,7 @@ export function panelEvents(state: State) {
     }
   })
 
-  const remove = panel.querySelector("#remove") as HTMLButtonElement
+  const remove = nav.querySelector("#remove") as HTMLButtonElement
   remove.addEventListener("pointerdown", () => {
     if (!state.isNote)
       state.selected.map((r) => {
@@ -214,7 +214,7 @@ export function panelEvents(state: State) {
     renderCells(state)
   })
 
-  const showHint = panel.querySelector("#hint") as HTMLButtonElement
+  const showHint = nav.querySelector("#hint") as HTMLButtonElement
   showHint.addEventListener("pointerdown", () => {
     if (state.gameState === "isPlaying") {
       const selected = state.selected
@@ -225,7 +225,7 @@ export function panelEvents(state: State) {
     }
   })
 
-  const timer = panel.querySelector("#timer") as HTMLElement
+  const timer = nav.querySelector("#timer") as HTMLElement
   if (timer) {
     timer.addEventListener("pointerdown", () => {
       const timerText = timer.firstChild as HTMLElement

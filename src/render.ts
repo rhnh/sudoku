@@ -19,17 +19,15 @@ import {
 export function updateBounds(s: State): void {
   const bounds = s.wrap.getBoundingClientRect()
   const container = s.container
-  const ratio = bounds.height / bounds.width
-  const width =
+  let width =
     (Math.floor((bounds.width * window.devicePixelRatio) / 9) * 9) /
     window.devicePixelRatio
-  const height = width * ratio
-  container.style.width = width + "px"
-  container.style.height = height + "px"
-  s.bounds.clear()
+  width -= width * 0.3
 
-  s.addDimensionsCssVarsTo?.style.setProperty("---cg-width", width + "px")
-  s.addDimensionsCssVarsTo?.style.setProperty("---cg-height", height + "px")
+  container.style.width = width + "px"
+  container.style.height = width + "px"
+  container.style.aspectRatio = "1 / 1"
+  s.bounds.clear()
 }
 export function renderBase(state: State): State {
   const container = document.createElement("container")
@@ -48,26 +46,41 @@ export function renderBase(state: State): State {
   header.id = "aside"
   const aside = document.createElement("section")
   aside.id = "aside"
-  const panel = document.createElement("article")
-  panel.classList.add("panel")
-  panel.id = "panel"
-  aside.appendChild(panel)
+  const nav = document.createElement("article")
+  nav.classList.add("panel")
+  nav.id = "panel"
+
+  aside.appendChild(nav)
   aside.appendChild(numPad)
-  container.appendChild(aside)
+
   state.wrap.append(container)
+  state.wrap.appendChild(aside)
   const bounds = memo(() => container.getBoundingClientRect())
-  const observer = new ResizeObserver(() => {
-    updateBounds(state)
-  })
-  observer.observe(state.wrap)
-  state = {...state, board, numPad, bounds, container, panel, aside}
+
+  state = {...state, board, numPad, bounds, container, aside, nav}
+  const observerCallback: ResizeObserverCallback = (
+    entries: ResizeObserverEntry[],
+  ) => {
+    window.requestAnimationFrame((): void | undefined => {
+      if (!Array.isArray(entries) || !entries.length) {
+        return
+      }
+      if (state.container) {
+        updateBounds(state)
+        render(state)
+      }
+    })
+  }
+  new ResizeObserver(observerCallback).observe(state.wrap)
 
   return state
 }
 
 export function renderPanel(state: State): State {
-  const {panel, buttons, bounds} = state
+  const {aside, nav, buttons, bounds} = state
   updateBounds(state)
+  state.nav.innerHTML = ""
+  aside.style.maxWidth = `${state.bounds().width}px`
   console.log(state.bounds().width)
   let lastChild: HTMLElement | null = null
   for (const [k, v] of buttons) {
@@ -81,7 +94,7 @@ export function renderPanel(state: State): State {
     btn.style.aspectRatio = `1 / 1`
     btn.classList.add("buttons")
 
-    panel.append(btn)
+    nav.append(btn)
     lastChild = btn
   }
   const timer = document.createElement("section")
@@ -96,7 +109,7 @@ export function renderPanel(state: State): State {
   if (!lastChild) {
     throw Error("Could found the button")
   }
-  lastChild = panel.replaceChild(timer, lastChild)
+  lastChild = nav.replaceChild(timer, lastChild)
   timer.appendChild(timerText)
   if (state.gameState === "isInitialed") {
     timerText.textContent = `00:00`
@@ -132,79 +145,86 @@ export function renderGameOver(state: State) {
 }
 
 export function renderCells(state: State): State {
-  requestAnimationFrame(() => {
-    updateBounds(state)
-    const {board, cells} = state
-    board.innerHTML = ""
-    if (state.gameState === "isOvered") renderGameOver(state)
-
-    for (const [k, v] of cells) {
-      const cellElem = document.createElement("cell") as CellElement
-      const p = keyToPosition(k as Key)
-      const pos = getPositionFromBound(state, p)
-      cellElem.style.transform = `translate(${pos[0]}px, ${pos[1]}px)`
-      cellElem.style.position = "absolute"
-      cellElem.style.height = `${state.bounds().height / 9}px`
-      cellElem.style.width = `${state.bounds().width / 9}px`
-
-      for (const [kh, _] of state.highlight) {
-        if (kh === k) {
-          cellElem.classList.add("highlighted")
-        }
-      }
-      state.selected.map((selectedKey) => {
-        if (selectedKey === k) {
-          cellElem.classList.remove("highlighted")
-          cellElem.classList.remove("duplicates")
-          cellElem.classList.add("selected")
-        }
-      })
-      if (state.duplicates.size > 1)
-        for (const [kd, _] of state.duplicates) {
-          if (k === kd) {
-            cellElem.classList.remove("highlighted")
-            cellElem.classList.remove("selected")
-            cellElem.classList.add("duplicates")
-          }
-        }
-      cellElem.dataset.key = `${k}`
-      cellElem.dataset.value = `${v}`
-
-      if (k.startsWith("a") || k.startsWith("d") || k.startsWith("g")) {
-        cellElem.classList.add("vertical-lines-left")
-      } else if (k.startsWith("i")) {
-        cellElem.classList.add("vertical-lines-right")
-      }
-      if (k[1] === "1" || k[1] === "4" || k[1] === "7") {
-        cellElem.classList.add("horizontal-lines-top")
-      }
-      if (k[1] === "9") {
-        cellElem.classList.add("horizontal-lines-bottom")
-      }
-
-      const c = document.createElement("p")
-      c.style.gridArea = "2 / 2 / 3 / 3"
-
-      if (v !== "0" && state.gameState !== "isInitialed") {
-        c.innerHTML = `${v}`
-      }
-      if (state.gameState === "isPaused") {
-        c.style.opacity = "0"
-      }
-      cellElem.appendChild(c)
-      board.appendChild(cellElem)
-      if (state.originCell.get(k) !== "0" && state.originCell.get(k)) {
-        cellElem.classList.add("origin-cells")
-      } else {
-        cellElem.classList.remove("origin-cells")
-        cellElem.classList.add("new-cells")
-      }
-      if (state.gameState === "isOvered" || state.gameState === "isPaused")
-        cellElem.style.opacity = "0.3"
-      renderNotes(state, cellElem)
+  updateBounds(state)
+  console.log(state.bounds().width / 9, "width")
+  const {board, cells} = state
+  board.innerHTML = ""
+  if (state.gameState === "isOvered") renderGameOver(state)
+  let counter = 0
+  for (const [k, v] of cells) {
+    const cellElem = document.createElement("cell") as CellElement
+    const p = keyToPosition(k as Key)
+    const pos = getPositionFromBound(state, p)
+    if (counter % 2 === 0) {
+      cellElem.className += "cell-right"
+    } else {
+      cellElem.className += "cell-left"
     }
-  })
+    cellElem.style.transform = `translate(${pos[0]}px, ${pos[1]}px)`
+    cellElem.style.position = "absolute"
+    cellElem.style.height = `${state.bounds().height / 9}px`
+    cellElem.style.width = `${state.bounds().width / 9}px`
 
+    for (const [kh, _] of state.highlight) {
+      if (kh === k) {
+        cellElem.classList.add("highlighted")
+      }
+    }
+    state.selected.map((selectedKey) => {
+      if (selectedKey === k) {
+        cellElem.classList.remove("highlighted")
+        cellElem.classList.remove("duplicates")
+        cellElem.classList.add("selected")
+      }
+    })
+    if (state.duplicates.size > 1)
+      for (const [kd, _] of state.duplicates) {
+        if (k === kd) {
+          cellElem.classList.remove("highlighted")
+          cellElem.classList.remove("selected")
+          cellElem.classList.add("duplicates")
+        }
+      }
+    cellElem.dataset.key = `${k}`
+    cellElem.dataset.value = `${v}`
+
+    if (k.startsWith("a") || k.startsWith("d") || k.startsWith("g")) {
+      cellElem.classList.add("vertical-lines-left")
+    }
+
+    if (k.startsWith("i")) {
+      cellElem.classList.add("vertical-lines-right")
+    }
+    if (k[1] === "1" || k[1] === "4" || k[1] === "7") {
+      cellElem.classList.add("horizontal-lines-top")
+    }
+
+    if (k[1] === "9") {
+      cellElem.classList.add("horizontal-lines-bottom")
+    }
+
+    const c = document.createElement("p")
+    c.style.gridArea = "2 / 2 / 3 / 3"
+
+    if (v !== "0" && state.gameState !== "isInitialed") {
+      c.innerHTML = `${v}`
+    }
+    if (state.gameState === "isPaused") {
+      c.style.opacity = "0"
+    }
+    cellElem.appendChild(c)
+    board.appendChild(cellElem)
+    if (state.originCell.get(k) !== "0" && state.originCell.get(k)) {
+      cellElem.classList.add("origin-cells")
+    } else {
+      cellElem.classList.remove("origin-cells")
+      cellElem.classList.add("new-cells")
+    }
+    if (state.gameState === "isOvered" || state.gameState === "isPaused")
+      cellElem.style.opacity = "0.3"
+    renderNotes(state, cellElem)
+  }
+  counter++
   return state
 }
 export const addNote = (state: State) => (value: Value) => {
@@ -244,21 +264,24 @@ export function renderNotes(state: State, el: CellElement): State {
 export const createNumPad = (state: State): State => {
   const {bounds, numPad} = state
   numPad.innerHTML = ""
-  numPad.style.height = `${bounds().height / 9}px`
+
   for (const [k, i] of state.digits) {
     const el = document.createElement("button")
     el.classList.add("num")
+    el.style.height = `${bounds().height / 9}px`
     el.dataset.value = `${i}`
     el.innerHTML = `${i}`
     el.dataset.key = `${k}`
+    el.style.aspectRatio = `${1 / 1}`
     numPad.appendChild(el)
   }
 
   return state
 }
 
-export const renderNumpad = (state: State): State =>
-  Box(createNumPad(state)).map(numPadEvents).fold(id)
+export const renderNumpad = (state: State): State => {
+  return Box(createNumPad(state)).map(numPadEvents).fold(id)
+}
 
 export const renderAside = (state: State) =>
   Box(state).map(renderNumpad).map(renderPanel).map(panelEvents).fold(id)

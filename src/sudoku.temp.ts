@@ -162,7 +162,7 @@ export function sudokuGenerator(k: number) {
 
   // Remove K digits randomly to create the puzzle
 
-  return {grid, removed: removeKDigits(grid, k)}
+  return {grid, solution: removeKDigits(grid, k)}
 }
 
 // let k = 20;

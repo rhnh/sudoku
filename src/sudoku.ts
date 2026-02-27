@@ -23,7 +23,10 @@ export function getDigits() {
 
   return m
 }
-export const initState = (el: HTMLElement): State => {
+export const initState = (
+  el: HTMLElement,
+  sudoku: {cells: Map<Key, Value>; solutions?: Map<Key, Value>},
+): State => {
   const originalCells = getCells()
   const cells = new Map([...originalCells.cells])
   const userInput = new Map()
@@ -55,7 +58,7 @@ export const getCells = (): {cells: Cells; solutions: Map<Key, Value>} => {
   const cells: Cells = new Map()
   const sudokuGenerated = sudokuGenerator(50)
   const sudoku = sudokuGenerated.grid.flat()
-  const solutions = sudokuGenerated.removed
+  const solutions = sudokuGenerated.solution
 
   getKeys().map((key, i) => {
     // Calculate square number (1–9)
@@ -70,8 +73,11 @@ export const getCells = (): {cells: Cells; solutions: Map<Key, Value>} => {
   return {cells, solutions}
 }
 
-export function Sudoku(e: HTMLElement) {
-  return Box(initState(e))
+export function Sudoku(
+  e: HTMLElement,
+  sudoku: {cells: Cells; solutions: Map<Key, Value>},
+) {
+  return Box(initState(e, sudoku))
     .map(renderBase)
     .map(render)
     .map(events)

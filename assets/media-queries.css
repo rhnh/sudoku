@@ -1,9 +1,7 @@
 @media only screen and (min-device-width: 600px) {
   #sudoku {
-    width: 799px;
-    display: block;
-    margin: auto;
-    margin-top: 50px;
+    display: grid;
+    grid-template-columns: 1fr 20%;
   }
   #container {
     display: grid;

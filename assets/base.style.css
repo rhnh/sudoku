@@ -11,14 +11,22 @@
   margin: 0;
   padding: 0;
 }
-
+#sudoku {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+}
 #container {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
-body {
-  background-color: rgb(151, 151, 151);
-}
+
 board {
   display: block;
   position: relative;
@@ -52,7 +60,7 @@ note {
 }
 
 cell > p {
-  font-size: 50px;
+  font-size: 30px;
   margin: auto;
   width: 100%;
   align-self: stretch;
