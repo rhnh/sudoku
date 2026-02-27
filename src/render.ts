@@ -1,4 +1,6 @@
 import {numPadEvents, panelEvents} from "./events"
+import {library, icon} from "@fortawesome/fontawesome-svg-core"
+
 import {
   type CellElement,
   type Note,
@@ -88,7 +90,6 @@ export function renderPanel(state: State): State {
   updateBounds(state)
   state.nav.innerHTML = ""
   aside.style.maxWidth = `${state.bounds().width}px`
-  console.log(state.bounds().width)
   let counter = 0
   let lastChild: HTMLElement | null = null
   for (const [k, v] of buttons) {
@@ -154,7 +155,6 @@ export function renderGameOver(state: State) {
 
 export function renderCells(state: State): State {
   updateBounds(state)
-  console.log(state.bounds().width / 9, "width")
   const {board, cells} = state
   board.innerHTML = ""
   if (state.gameState === "isOvered") renderGameOver(state)

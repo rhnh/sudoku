@@ -96,10 +96,10 @@ numpad > * {
 }
 
 .selected {
-  background-color: rgba(6, 6, 172, 0.288);
+  background-color: rgba(0, 45, 168, 0.288);
 }
 .highlighted {
-  background-color: rgba(6, 6, 172, 0.11);
+  background-color: rgba(1, 27, 172, 0.11);
 }
 
 .panel {
@@ -153,7 +153,7 @@ numpad > * {
 }
 
 .origin-cells {
-  color: rgba(53, 19, 146, 0.637);
+  color: rgba(19, 63, 146, 0.637);
 }
 .new-cells {
   color: rgb(55, 57, 65);
