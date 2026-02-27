@@ -78,10 +78,18 @@ export function renderBase(state: State): State {
 
 export function renderPanel(state: State): State {
   const {aside, nav, buttons, bounds} = state
+  const btns = [
+    '<i class="fa-solid fa-play"></i>',
+    '<i class="fa-solid fa-arrows-rotate"></i>',
+    `<i class="fa-solid fa-x"></i>`,
+    `<i class="fa-solid fa-pen"></i>`,
+    `<i class="fa-solid fa-eye"></i>`,
+  ]
   updateBounds(state)
   state.nav.innerHTML = ""
   aside.style.maxWidth = `${state.bounds().width}px`
   console.log(state.bounds().width)
+  let counter = 0
   let lastChild: HTMLElement | null = null
   for (const [k, v] of buttons) {
     const btn = document.createElement("button")
@@ -90,7 +98,7 @@ export function renderPanel(state: State): State {
     btn.id = `${v.replace(/\s/g, "-")}`.toLowerCase()
     btn.classList.add(k)
 
-    btn.innerText = `${v.replace(/\s/g, "-")}`
+    btn.innerHTML = btns[counter++]
     btn.style.aspectRatio = `1 / 1`
     btn.classList.add("buttons")
 

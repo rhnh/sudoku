@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "a sudoku game",
   "license": "GPL-3.0-or-later",
-  "main": "dist/sudoku.js",
+  "main": "dist/sudoku.min.js",
   "types": "sudoku.d.ts",
   "exports": {
     ".": "./dist/sudoku.js",
@@ -27,7 +27,8 @@
     "dev": "esbuild src/sudoku.ts --bundle --format=esm --outfile=dist/sudoku.min.js --minify --watch",
     "dist": "$npm_execpath run compile && $npm_execpath run bundle",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "deploy": "gh-pages -d dist"
   },
   "files": [
     "/dist/*.js",
@@ -40,6 +41,7 @@
     "@eslint/js": "^10.0.1",
     "esbuild": "^0.27.3",
     "eslint": "^10.0.2",
+    "gh-pages": "^6.3.0",
     "jsdom": "^28.1.0",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",

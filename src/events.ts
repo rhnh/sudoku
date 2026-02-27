@@ -162,18 +162,18 @@ export function panelEvents(state: State) {
     if (state.gameState === "isInitialed") {
       state.gameState = "isPlaying"
       let btn = nav.querySelector("#start") as HTMLButtonElement
-      btn.innerText = "Pause"
+      btn.innerHTML = `<i class="fa-solid fa-circle-pause"></i>`
       renderCells(state)
     } else if (state.gameState === "isPaused") {
       state.gameState = "isPlaying"
       let btn = nav.querySelector("#start") as HTMLButtonElement
-      btn.innerText = "Pause"
+      btn.innerHTML = `<i class="fa-solid fa-circle-pause"></i>`
       renderCells(state)
     } else if (state.gameState === "isPlaying") {
       state.gameState = "isPaused"
       let btn = nav.querySelector("#start") as HTMLButtonElement
 
-      btn.innerText = "Resume"
+      btn.innerHTML = `<i class="fa-solid fa-forward"></i>`
       renderCells(state)
     }
     renderCells(state)
