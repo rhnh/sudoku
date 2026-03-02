@@ -164,8 +164,3 @@ export function sudokuGenerator(k: number) {
 
   return {grid, solution: removeKDigits(grid, k)}
 }
-
-// let k = 20;
-// export let sudoku = sudokuGenerator(k);
-
-// // sudoku.forEach((row) => console.log(row));
