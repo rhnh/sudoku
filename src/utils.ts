@@ -13,6 +13,7 @@ import {
   TOTAL_FILE,
   type Buttons,
   buttons,
+  Note,
 } from "./types"
 
 export type Box<T> = {
@@ -98,6 +99,10 @@ export const addNew = (state: State, value: Value) => {
   if (!state.targetKey) return
   state.selected.map((s) => {
     if (state.originCell.get(s) !== "0" && state.originCell.get(s)) return
+    const notes = getNotesInHighlighted(state, s)(value)
+    if (notes.length > 0)
+      state.notes = state.notes.filter((e) => !notes.includes(e))
+
     state.cells.set(s, `${value}`)
     state.userInput.set(s, `${value}`)
     if (hasCompleted(state)) {
@@ -125,6 +130,36 @@ export function memo<A>(f: () => A): Memo<A> {
   }
   return ret
 }
+
+/**
+ * When new value is enter should give all the notes that are value in highlighted
+ * @param state
+ * @param key
+ * @returns
+ */
+export const getNotesInHighlighted =
+  (state: State, key: Key) =>
+  (value: Value): Note[] => {
+    const commons = getCommons(state)(key)
+
+    if (state.notes.length < 1) return []
+
+    const keys: Note[] = []
+    state.notes
+      .filter((note) => {
+        return note.slice(-1) === value
+      })
+      .map((k) => {
+        const f = `${k.slice(0, 3)}` as Key
+        for (const key of commons.keys()) {
+          if (key.startsWith(f)) {
+            keys.push(`${key}${value}` as Key)
+          }
+        }
+      })
+
+    return keys
+  }
 
 export const getCellBy =
   (state: State) =>
