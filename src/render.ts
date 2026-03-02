@@ -236,7 +236,10 @@ export function renderCells(state: State): State {
   return state
 }
 export const addNote = (state: State) => (value: Value) => {
-  const notes = state.selected?.map((k) => `${k.slice(0, 2)}${value}` as Note)
+  const notes = state.selected?.map((k) => {
+    const note = `${k}${value}` as Note
+    return note
+  })
   const f = new Set([...notes])
   const found = state.notes.filter((r) => f.has(r))
   if (found.length > 0) {
@@ -256,7 +259,7 @@ export function renderNotes(state: State, el: CellElement): State {
   notes = [...new Set(notes)]
   notes.map((h) => {
     const value = +h.slice(-1)
-    const key = h.slice(0, 2) as unknown as Key
+    const key = h.slice(0, 3) as unknown as Key
     if (!el.dataset.key?.startsWith(key) || el.dataset.value !== "0") return
     const [x, y] = getSquareNr(value)
     const noteElm = document.createElement("note") as CellElement
