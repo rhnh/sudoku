@@ -125,9 +125,11 @@ numpad > * {
 
 .horizontal-lines-top {
   border-top: var(--thick) solid rgb(28, 63, 95);
+  margin-top: -3px;
 }
 .horizontal-lines-bottom {
   border-bottom: var(--thick) solid rgb(28, 63, 95);
+  margin-bottom: -3px;
 }
 
 .vertical-lines-left {
