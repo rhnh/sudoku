@@ -256,7 +256,7 @@ export const getPositionKeyAtDom =
 export const id = <T>(x: T) => x
 
 export const getButtonKeys = () => {
-  const numberOfButtons = 6
+  const numberOfButtons = 7
   const buttonKeys = getKeys().slice(0, numberOfButtons)
   const m: Buttons = new Map()
   buttons.map((b, i) => {

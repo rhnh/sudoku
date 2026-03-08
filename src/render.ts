@@ -1,5 +1,4 @@
 import {numPadEvents, panelEvents} from "./events"
-import {library, icon} from "@fortawesome/fontawesome-svg-core"
 
 import {
   type CellElement,
@@ -28,7 +27,7 @@ export function updateBounds(s: State): void {
 
   container.style.width = width + "px"
   container.style.height = width + "px"
-  container.style.aspectRatio = "1 / 1"
+  // container.style.2pectRatio = "1 / 1"
   s.bounds.clear()
 }
 export function renderBase(state: State): State {
@@ -86,8 +85,10 @@ export function renderPanel(state: State): State {
     `<i class="fa-solid fa-x"></i>`,
     `<i class="fa-solid fa-pen"></i>`,
     `<i class="fa-solid fa-eye"></i>`,
+    `<i class="fa-solid fa-eye"></i>`,
   ]
   updateBounds(state)
+
   state.nav.innerHTML = ""
   aside.style.maxWidth = `${state.bounds().width}px`
   let counter = 0
@@ -95,7 +96,7 @@ export function renderPanel(state: State): State {
   for (const [k, v] of buttons) {
     const btn = document.createElement("button")
     btn.style.height = `${bounds().height / 9}px`
-    btn.style.width = `${bounds().width / 3 - 1}px`
+    // btn.style.width = `${bounds().width / 3 - 1}px`
     btn.id = `${v.replace(/\s/g, "-")}`.toLowerCase()
     btn.classList.add(k)
 
@@ -108,7 +109,7 @@ export function renderPanel(state: State): State {
   }
   const timer = document.createElement("section")
   timer.style.height = `${bounds().height / 9}px`
-  timer.style.width = `${bounds().width / 3 - 1}px`
+  // timer.style.width = `${bounds().width / 3 - 1}px`
   timer.classList.add("buttons")
   timer.classList.add("timer")
   timer.id = "timer"

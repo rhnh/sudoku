@@ -32,7 +32,7 @@ export const initState = (
   const userInput = new Map()
   const userInputKeys = [...originalCells.solutions.keys()]
   userInputKeys.map((r) => userInput.set(r, "0"))
-
+  console.log(sudoku)
   const headlessState: HeadlessState = {
     gameState: "isInitialed",
     cells: cells,
