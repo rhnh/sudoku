@@ -1,6 +1,6 @@
 {
   "name": "game_sudoku",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "a sudoku game",
   "license": "GPL-3.0-or-later",
   "main": "dist/sudoku.min.js",
@@ -31,11 +31,11 @@
     "deploy": "gh-pages -d dist"
   },
   "files": [
+    "/dist/*",
     "/dist/*.js",
     "/dist/*.d.ts",
     "/dist/*.js.map",
-    "/assets/*.css",
-    "/src/*.ts"
+    "/assets/*.css"
   ],
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -50,5 +50,8 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.2.0"
+  },
+  "publishConfig": {
+    "registry": "http://localhost:4873"
   }
 }

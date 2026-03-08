@@ -1,0 +1,12 @@
+import { type CellElement, type State, type Value } from "./types";
+export declare function updateBounds(s: State): void;
+export declare function renderBase(state: State): State;
+export declare function renderPanel(state: State): State;
+export declare function renderGameOver(state: State): void;
+export declare function renderCells(state: State): State;
+export declare const addNote: (state: State) => (value: Value) => void;
+export declare function renderNotes(state: State, el: CellElement): State;
+export declare const createNumPad: (state: State) => State;
+export declare const renderNumpad: (state: State) => State;
+export declare const renderAside: (state: State) => State;
+export declare const render: (state: State) => State;
