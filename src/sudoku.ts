@@ -25,18 +25,17 @@ export function getDigits() {
 }
 export const initState = (
   el: HTMLElement,
-  sudoku: {cells: Map<Key, Value>; solutions?: Map<Key, Value>},
+  sudoku: {cells: Map<Key, Value>; solutions: Map<Key, Value>},
 ): State => {
-  const originalCells = getCells()
-  const cells = new Map([...originalCells.cells])
+  const cells = new Map([...sudoku.cells])
   const userInput = new Map()
-  const userInputKeys = [...originalCells.solutions.keys()]
+  const userInputKeys = [...sudoku.solutions.keys()]
   userInputKeys.map((r) => userInput.set(r, "0"))
-  console.log(sudoku)
+
   const headlessState: HeadlessState = {
     gameState: "isInitialed",
     cells: cells,
-    originCell: originalCells.cells,
+    originCell: sudoku.cells,
     selected: [],
     digits: getDigits(),
     notes: [],
@@ -46,7 +45,7 @@ export const initState = (
     isHold: false,
     highlight: new Map(),
     duplicates: new Map(),
-    solutions: originalCells.solutions,
+    solutions: sudoku.solutions,
     userInput, //TODO: After every click it should scan if this not empty and if it filled and has the correct answers
     seconds: 0,
   } as unknown as State
@@ -69,7 +68,6 @@ export const getCells = (): {cells: Cells; solutions: Map<Key, Value>} => {
     let k = key.replace(/.$/, `${block}`) as Key
     cells.set(k, `${sudoku[i]}` as Value)
   })
-
   return {cells, solutions}
 }
 

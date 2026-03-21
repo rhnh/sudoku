@@ -30,6 +30,7 @@ export function updateBounds(s: State): void {
   // container.style.2pectRatio = "1 / 1"
   s.bounds.clear()
 }
+
 export function renderBase(state: State): State {
   const container = document.createElement("container")
 
@@ -92,7 +93,8 @@ export function renderPanel(state: State): State {
   state.nav.innerHTML = ""
   aside.style.maxWidth = `${state.bounds().width}px`
   let counter = 0
-  let lastChild: HTMLElement | null = null
+  const btnSection = document.createElement("section")
+  btnSection.classList.add("btn-section")
   for (const [k, v] of buttons) {
     const btn = document.createElement("button")
     btn.style.height = `${bounds().height / 9}px`
@@ -104,23 +106,20 @@ export function renderPanel(state: State): State {
     btn.style.aspectRatio = `1 / 1`
     btn.classList.add("buttons")
 
-    nav.append(btn)
-    lastChild = btn
+    btnSection.append(btn)
   }
+
   const timer = document.createElement("section")
   timer.style.height = `${bounds().height / 9}px`
   // timer.style.width = `${bounds().width / 3 - 1}px`
-  timer.classList.add("buttons")
-  timer.classList.add("timer")
+  timer.classList.add("timer-seciton")
   timer.id = "timer"
 
   const timerText = document.createElement("p")
 
-  if (!lastChild) {
-    throw Error("Could found the button")
-  }
-  lastChild = nav.replaceChild(timer, lastChild)
   timer.appendChild(timerText)
+  nav.appendChild(timer)
+  nav.appendChild(btnSection)
   if (state.gameState === "isInitialed") {
     timerText.textContent = `00:00`
   }
@@ -236,6 +235,7 @@ export function renderCells(state: State): State {
   counter++
   return state
 }
+
 export const addNote = (state: State) => (value: Value) => {
   const notes = state.selected?.map((k) => {
     const note = `${k}${value}` as Note

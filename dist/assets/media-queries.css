@@ -1,10 +1,12 @@
 @media only screen and (min-device-width: 600px) {
   body {
   }
+
   #sudoku {
     display: grid;
     grid-template-columns: 1fr 20%;
     width: 80%;
+    padding-top: 1em;
   }
   #container {
     display: grid;
@@ -29,21 +31,18 @@
     display: flex;
     flex-wrap: wrap;
     box-sizing: border-box;
+    width: 100%;
+  }
+  .btn-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
   }
   .buttons {
-    width: 30%;
     border: 1px solid #000;
-    flex-grow: 1;
-    box-sizing: border-box;
-    justify-content: space-between;
-    text-align: center;
   }
 
   .timer {
-    margin: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 100%;
   }
   .timer > * {
     font-size: 32px;

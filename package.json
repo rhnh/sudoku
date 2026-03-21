@@ -1,5 +1,5 @@
 {
-  "name": "game_sudoku",
+  "name": "sudoku",
   "version": "1.0.3",
   "description": "a sudoku game",
   "license": "GPL-3.0-or-later",

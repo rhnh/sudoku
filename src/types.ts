@@ -15,7 +15,6 @@ export const buttons = [
   "note",
   "hint",
   "hint",
-  "timer",
 ] as const
 export type ButtonTexts = (typeof buttons)[number]
 

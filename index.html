@@ -31,9 +31,10 @@
   </style>
   <script type="module">
     const start = performance.now()
-    import { Sudoku } from "./dist/sudoku.min.js"
-    Sudoku(document.getElementById('sudoku'))
-    console.log("My code took:" + performance.now() - start)
+    import { Sudoku, getCells } from "./dist/sudoku.min.js"
+    const c = getCells();
+
+    Sudoku(document.getElementById('sudoku'), { cells: c.cells, solutions: c.solutions })
   </script>
 </head>
 
