@@ -21,9 +21,9 @@ export function updateBounds(s: State): void {
   const bounds = s.wrap.getBoundingClientRect()
   const container = s.container
   let width =
-    (Math.floor((bounds.width * window.devicePixelRatio) / 9) * 9) /
-    window.devicePixelRatio
-  width -= width * 0.3
+    Math.floor(bounds.width * window.devicePixelRatio) /
+      window.devicePixelRatio -
+    bounds.width / 3
 
   container.style.width = width + "px"
   container.style.height = width + "px"

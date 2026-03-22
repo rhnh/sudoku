@@ -13,12 +13,13 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     #sudoku {
-      height: 500px;
-      width: 500px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      max-width: 600px;
       margin-inline: auto;
+    }
+
+    h1 {
+      text-align: center;
+      padding: 1em;
     }
 
     @media only screen and (min-device-width: 600px) {
@@ -39,7 +40,9 @@
 </head>
 
 <body>
-
+  <h1>
+    Sudoku
+  </h1>
   <div id="sudoku"></div>
 </body>
 

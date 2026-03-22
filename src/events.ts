@@ -12,6 +12,7 @@ export const events = (state: State): State => {
   const {board} = state
   board.addEventListener("pointerdown", (e) => {
     const {clientX: x, clientY: y} = e
+    if (state.gameState !== "isPlaying") return
     const position = getPositionKeyAtDom(state.bounds())([x, y])
     const key = getKeyFromPosition(position) as unknown as Key
     if (!key) return
@@ -41,6 +42,7 @@ export const events = (state: State): State => {
   board.addEventListener("pointerup", (e) => {
     const {clientX: x, clientY: y} = e
 
+    if (state.gameState !== "isPlaying") return
     state.isHold = false
     const t = getPositionKeyAtDom(state.bounds())([x, y])
     let key = getKeyFromPosition(t) as unknown as Key | undefined
@@ -71,6 +73,7 @@ export const events = (state: State): State => {
     renderCells(state)
   })
   board.addEventListener("pointermove", (e) => {
+    if (state.gameState !== "isPlaying") return
     const {clientX: x, clientY: y} = e
     if (state.isHold) {
       const t = getPositionKeyAtDom(state.bounds())([x, y])
