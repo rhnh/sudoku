@@ -149,7 +149,7 @@ numpad > * {
 }
 .vertical-lines-right {
   border-right: var(--thick) solid var(--orange);
-  margin-right: -2px;
+  margin-left: -1px;
 }
 
 #aside {
