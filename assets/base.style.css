@@ -4,6 +4,17 @@
   --size: 600px;
   --fontSize: 40px;
   --noteMargin: 10px;
+  --light: #eee8d5;
+  --light2: #d4be9a;
+  --dark-orange: #674d25;
+  --orange: #d8a65c;
+  --orange2: #cb162867;
+  --green: #8c945c;
+  --light-green: #e0ca2986;
+  --brown: #4b4441;
+  --light-brown: #4b444180;
+  --black: #32302f;
+  --light-black: #645f5d;
 }
 *,
 ::before,
@@ -15,8 +26,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 400px;
-  height: 400px;
+
   flex-direction: column;
 }
 #container {
@@ -37,11 +47,12 @@ board {
   -ms-user-select: none;
   user-select: none;
   line-height: 0;
+  background-color: var(--light);
 }
 
 cell {
-  border-left: 1px solid rgb(28, 63, 95);
-  border-bottom: 1px solid rgb(28, 63, 95);
+  border-left: 1px solid var(--dark-orange);
+  border-bottom: 1px solid var(--dark-orange);
   width: 100%;
   height: 100%;
   display: grid;
@@ -49,17 +60,20 @@ cell {
   grid-template-rows: repeat(3, 1fr);
   margin: 0;
   padding: 0;
+  z-index: 2;
+  will-change: transform;
+  pointer-events: none;
 }
 
 note {
-  color: rgb(43, 102, 212);
+  color: var(--green);
   font-size-adjust: 0.545;
   margin-top: 12px;
   margin-left: 3px;
 }
 
 cell > p {
-  font-size: 42px;
+  font-size: calc(1vh + 1vw + 2vmin);
   margin: auto;
   width: 100%;
   align-self: stretch;
@@ -83,22 +97,22 @@ numpad {
 numpad > * {
   font-size: 32px;
   width: 100%;
-  background-color: rgb(93, 162, 226);
+  background-color: var(--light2);
   text-align: center;
   aspect-ratio: 1/1;
-  border: 1px solid rgb(255, 255, 255);
+  border: 1px solid var(--brown);
   margin: auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: aliceblue;
+  color: var(--black);
 }
 
 .selected {
-  background-color: rgba(0, 45, 168, 0.288);
+  background-color: var(--light-green);
 }
 .highlighted {
-  background-color: rgba(1, 27, 172, 0.11);
+  background-color: #bb951a53;
 }
 
 .panel {
@@ -110,7 +124,7 @@ numpad > * {
 .buttons {
   width: 100%;
   text-transform: capitalize;
-  background-color: rgb(28, 63, 95);
+  background-color: var(--brown);
   border: none;
   color: white;
   text-align: center;
@@ -121,21 +135,21 @@ numpad > * {
 }
 
 .horizontal-lines-top {
-  border-top: var(--thick) solid rgb(28, 63, 95);
-  margin-top: -3px;
+  border-top: var(--thick) solid var(--orange);
+  margin-top: -2px;
 }
 .horizontal-lines-bottom {
-  border-bottom: var(--thick) solid rgb(28, 63, 95);
-  margin-bottom: -3px;
+  border-bottom: var(--thick) solid var(--orange);
+  margin-bottom: -2px;
 }
 
 .vertical-lines-left {
-  border-left: var(--thick) solid rgb(28, 63, 95);
-  margin-left: -3px;
+  border-left: var(--thick) solid var(--orange);
+  margin-left: -2px;
 }
 .vertical-lines-right {
-  border-right: var(--thick) solid rgb(28, 63, 95);
-  margin-right: -3px;
+  border-right: var(--thick) solid var(--orange);
+  margin-right: -2px;
 }
 
 #aside {
@@ -144,17 +158,17 @@ numpad > * {
 }
 
 .duplicates {
-  background-color: rgba(226, 93, 93, 0.219);
+  background-color: var(--orange2);
 }
 .btn-pressed {
   opacity: 0.5;
 }
 
 .origin-cells {
-  color: rgba(19, 63, 146, 0.637);
+  color: var(--light-black);
 }
 .new-cells {
-  color: rgb(55, 57, 65);
+  color: var(--light-brown);
 }
 
 .hide {
@@ -169,7 +183,7 @@ numpad > * {
   width: 100%;
   justify-content: center;
   align-items: center;
-  background: rgba(19, 63, 146, 0.637);
+  background: var(--orange);
 }
 .timer-seciton > * {
   font-size: 32px;
