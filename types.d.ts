@@ -6,7 +6,7 @@ export type File = (typeof files)[number];
 export type Rank = (typeof ranks)[number] | "0";
 export type Position = [number, number];
 export type BaseKey = `${File}${Rank}`;
-export declare const buttons: readonly ["start", "restart", "remove", "note", "hint", "timer"];
+export declare const buttons: readonly ["start", "restart", "remove", "note", "hint", "hint"];
 export type ButtonTexts = (typeof buttons)[number];
 export type Buttons = Map<BaseKey, ButtonTexts>;
 export type Note = `${BaseKey}${Rank}`;

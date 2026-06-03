@@ -3,7 +3,7 @@ import { Box } from "./utils";
 export declare function getDigits(): Digits;
 export declare const initState: (el: HTMLElement, sudoku: {
     cells: Map<Key, Value>;
-    solutions?: Map<Key, Value>;
+    solutions: Map<Key, Value>;
 }) => State;
 export declare const getCells: () => {
     cells: Cells;
