@@ -4,6 +4,8 @@ export const events = (state) => {
     const { board } = state;
     board.addEventListener("pointerdown", (e) => {
         const { clientX: x, clientY: y } = e;
+        if (state.gameState !== "isPlaying")
+            return;
         const position = getPositionKeyAtDom(state.bounds())([x, y]);
         const key = getKeyFromPosition(position);
         if (!key)
@@ -36,6 +38,8 @@ export const events = (state) => {
     });
     board.addEventListener("pointerup", (e) => {
         const { clientX: x, clientY: y } = e;
+        if (state.gameState !== "isPlaying")
+            return;
         state.isHold = false;
         const t = getPositionKeyAtDom(state.bounds())([x, y]);
         let key = getKeyFromPosition(t);
@@ -67,6 +71,8 @@ export const events = (state) => {
         renderCells(state);
     });
     board.addEventListener("pointermove", (e) => {
+        if (state.gameState !== "isPlaying")
+            return;
         const { clientX: x, clientY: y } = e;
         if (state.isHold) {
             const t = getPositionKeyAtDom(state.bounds())([x, y]);

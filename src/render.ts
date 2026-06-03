@@ -86,7 +86,7 @@ export function renderPanel(state: State): State {
     `<i class="fa-solid fa-x"></i>`,
     `<i class="fa-solid fa-pen"></i>`,
     `<i class="fa-solid fa-eye"></i>`,
-    `<i class="fa-solid fa-eye"></i>`,
+    `<i class="fa-solid fa-arrow-left"></i>`,
   ]
   updateBounds(state)
 
@@ -112,7 +112,7 @@ export function renderPanel(state: State): State {
   const timer = document.createElement("section")
   timer.style.height = `${bounds().height / 9}px`
   // timer.style.width = `${bounds().width / 3 - 1}px`
-  timer.classList.add("timer-seciton")
+  timer.classList.add("timer-section")
   timer.id = "timer"
 
   const timerText = document.createElement("p")
@@ -291,9 +291,8 @@ export const createNumPad = (state: State): State => {
   return state
 }
 
-export const renderNumpad = (state: State): State => {
-  return Box(createNumPad(state)).map(numPadEvents).fold(id)
-}
+export const renderNumpad = (state: State): State =>
+  Box(createNumPad(state)).map(numPadEvents).fold(id)
 
 export const renderAside = (state: State) =>
   Box(state).map(renderNumpad).map(renderPanel).map(panelEvents).fold(id)

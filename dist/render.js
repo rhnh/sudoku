@@ -3,9 +3,9 @@ import { getPositionFromBound, keyToPosition, getSquareNr, Box, memo, id, format
 export function updateBounds(s) {
     const bounds = s.wrap.getBoundingClientRect();
     const container = s.container;
-    let width = (Math.floor((bounds.width * window.devicePixelRatio) / 9) * 9) /
-        window.devicePixelRatio;
-    width -= width * 0.3;
+    let width = Math.floor(bounds.width * window.devicePixelRatio) /
+        window.devicePixelRatio -
+        bounds.width / 3;
     container.style.width = width + "px";
     container.style.height = width + "px";
     // container.style.2pectRatio = "1 / 1"
@@ -55,12 +55,14 @@ export function renderPanel(state) {
         `<i class="fa-solid fa-x"></i>`,
         `<i class="fa-solid fa-pen"></i>`,
         `<i class="fa-solid fa-eye"></i>`,
+        `<i class="fa-solid fa-arrow-left"></i>`,
     ];
     updateBounds(state);
     state.nav.innerHTML = "";
     aside.style.maxWidth = `${state.bounds().width}px`;
     let counter = 0;
-    let lastChild = null;
+    const btnSection = document.createElement("section");
+    btnSection.classList.add("btn-section");
     for (const [k, v] of buttons) {
         const btn = document.createElement("button");
         btn.style.height = `${bounds().height / 9}px`;
@@ -70,21 +72,17 @@ export function renderPanel(state) {
         btn.innerHTML = btns[counter++];
         btn.style.aspectRatio = `1 / 1`;
         btn.classList.add("buttons");
-        nav.append(btn);
-        lastChild = btn;
+        btnSection.append(btn);
     }
     const timer = document.createElement("section");
     timer.style.height = `${bounds().height / 9}px`;
     // timer.style.width = `${bounds().width / 3 - 1}px`
-    timer.classList.add("buttons");
-    timer.classList.add("timer");
+    timer.classList.add("timer-seciton");
     timer.id = "timer";
     const timerText = document.createElement("p");
-    if (!lastChild) {
-        throw Error("Could found the button");
-    }
-    lastChild = nav.replaceChild(timer, lastChild);
     timer.appendChild(timerText);
+    nav.appendChild(timer);
+    nav.appendChild(btnSection);
     if (state.gameState === "isInitialed") {
         timerText.textContent = `00:00`;
     }

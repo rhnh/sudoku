@@ -183,7 +183,7 @@ export const getPositionKeyAtDom = (bounds) => (pos, xSize = 9, ySize = 9) => {
 };
 export const id = (x) => x;
 export const getButtonKeys = () => {
-    const numberOfButtons = 6;
+    const numberOfButtons = 7;
     const buttonKeys = getKeys().slice(0, numberOfButtons);
     const m = new Map();
     buttons.map((b, i) => {

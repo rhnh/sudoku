@@ -227,6 +227,21 @@ export function panelEvents(state: State) {
       })
     }
   })
+  const showUndo = nav.querySelector("#undo") as HTMLButtonElement
+  showUndo.addEventListener("pointerdown", () => {
+    console.log("hello")
+    console.log(state.targetKey)
+
+    if (state.gameState === "isPlaying" && state.targetKey) {
+      state.originCell.set(state.targetKey, "0")
+      state.cells.set(state.targetKey, "0")
+
+      console.log(state.originCell.get(state.targetKey))
+      state.targetKey = undefined
+      state.duplicates.clear()
+      renderCells(state)
+    }
+  })
 
   const timer = nav.querySelector("#timer") as HTMLElement
   if (timer) {

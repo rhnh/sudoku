@@ -8,6 +8,6 @@ export const buttons = [
     "remove",
     "note",
     "hint",
-    "timer",
+    "hint",
 ];
 //# sourceMappingURL=types.js.map

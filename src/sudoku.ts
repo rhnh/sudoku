@@ -48,6 +48,7 @@ export const initState = (
     solutions: sudoku.solutions,
     userInput, //TODO: After every click it should scan if this not empty and if it filled and has the correct answers
     seconds: 0,
+    timeSpace: [],
   } as unknown as State
 
   const state: State = {...headlessState, wrap: el} as unknown as State

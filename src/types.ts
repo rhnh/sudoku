@@ -14,7 +14,7 @@ export const buttons = [
   "remove",
   "note",
   "hint",
-  "hint",
+  "undo",
 ] as const
 export type ButtonTexts = (typeof buttons)[number]
 
@@ -65,6 +65,7 @@ export interface State extends HeadlessState {
   bounds: Memo<DOMRectReadOnly>
   nav: HTMLElement
   draggingElement?: HTMLElement
+  lastMove: Key | undefined
 }
 
 export interface CellElement extends HTMLElement {
