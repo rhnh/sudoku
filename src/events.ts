@@ -232,12 +232,15 @@ export function panelEvents(state: State) {
   const showUndo = nav.querySelector("#undo") as HTMLButtonElement
   showUndo.addEventListener("pointerdown", () => {
     if (state.gameState === "isPlaying" && state.lastMoves.length > 0) {
-      state.originCell.set(state.lastMoves[0], "0")
-      state.cells.set(state.lastMoves[0], "0")
+      const last = state.lastMoves.length - 1
+      state.originCell.set(state.lastMoves[last], "0")
+      state.cells.set(state.lastMoves[last], "0")
 
-      console.log(state.originCell.get(state.lastMoves[0]))
+      console.log(state.originCell.get(state.lastMoves[last]))
 
-      state.lastMoves = state.lastMoves.filter((r) => r != state.lastMoves[0])
+      state.lastMoves = state.lastMoves.filter(
+        (r) => r != state.lastMoves[last],
+      )
       state.duplicates.clear()
       renderCells(state)
     }
