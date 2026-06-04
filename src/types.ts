@@ -53,6 +53,7 @@ export interface HeadlessState {
   solutions: Cells
   userInput: Cells
   seconds: number
+  lastMoves: Key[]
 }
 
 export interface State extends HeadlessState {
@@ -65,7 +66,6 @@ export interface State extends HeadlessState {
   bounds: Memo<DOMRectReadOnly>
   nav: HTMLElement
   draggingElement?: HTMLElement
-  lastMove: Key | undefined
 }
 
 export interface CellElement extends HTMLElement {

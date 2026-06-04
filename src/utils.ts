@@ -104,6 +104,7 @@ export const addNew = (state: State, value: Value) => {
       state.notes = state.notes.filter((e) => !notes.includes(e))
 
     state.cells.set(s, `${value}`)
+    state.lastMoves.push(s)
     state.userInput.set(s, `${value}`)
     if (hasCompleted(state)) {
       state.gameState = "isOvered"

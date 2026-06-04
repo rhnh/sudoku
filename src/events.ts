@@ -39,6 +39,7 @@ export const events = (state: State): State => {
       state.draggingValue = value as unknown as Rank
     }
   })
+
   board.addEventListener("pointerup", (e) => {
     const {clientX: x, clientY: y} = e
 
@@ -72,6 +73,7 @@ export const events = (state: State): State => {
     state.draggingValue = undefined
     renderCells(state)
   })
+
   board.addEventListener("pointermove", (e) => {
     if (state.gameState !== "isPlaying") return
     const {clientX: x, clientY: y} = e
@@ -229,15 +231,13 @@ export function panelEvents(state: State) {
   })
   const showUndo = nav.querySelector("#undo") as HTMLButtonElement
   showUndo.addEventListener("pointerdown", () => {
-    console.log("hello")
-    console.log(state.targetKey)
+    if (state.gameState === "isPlaying" && state.lastMoves.length > 0) {
+      state.originCell.set(state.lastMoves[0], "0")
+      state.cells.set(state.lastMoves[0], "0")
 
-    if (state.gameState === "isPlaying" && state.targetKey) {
-      state.originCell.set(state.targetKey, "0")
-      state.cells.set(state.targetKey, "0")
+      console.log(state.originCell.get(state.lastMoves[0]))
 
-      console.log(state.originCell.get(state.targetKey))
-      state.targetKey = undefined
+      state.lastMoves = state.lastMoves.filter((r) => r != state.lastMoves[0])
       state.duplicates.clear()
       renderCells(state)
     }
