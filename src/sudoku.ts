@@ -1,6 +1,7 @@
-import {events, keyEvents} from "./events"
+import {events} from "./events"
+import {keyEvents} from "./keyEvent"
 import {render, renderBase} from "./render"
-import {sudokuGenerator} from "./sudoku.temp"
+import {sudokuGenerator} from "./sudoku.algo"
 import type {
   BaseKey,
   Cells,
@@ -23,6 +24,7 @@ export function getDigits() {
 
   return m
 }
+
 export const initState = (
   el: HTMLElement,
   sudoku: {cells: Map<Key, Value>; solutions: Map<Key, Value>},
@@ -54,6 +56,7 @@ export const initState = (
   const state: State = {...headlessState, wrap: el} as unknown as State
   return state
 }
+
 export const getCells = (): {cells: Cells; solutions: Map<Key, Value>} => {
   const cells: Cells = new Map()
   const sudokuGenerated = sudokuGenerator(35)

@@ -1,4 +1,5 @@
-import {numPadEvents, panelEvents} from "./events"
+import {createNumPad, numPadEvents} from "./numpad"
+import {panelEvents} from "./panelEvents"
 
 import {
   type CellElement,
@@ -7,6 +8,7 @@ import {
   type State,
   type Value,
 } from "./types"
+
 import {
   getPositionFromBound,
   keyToPosition,
@@ -16,6 +18,15 @@ import {
   id,
   formatTime,
 } from "./utils"
+
+export const renderNumpad = (state: State): State =>
+  Box(createNumPad(state)).map(numPadEvents).fold(id)
+
+export const renderAside = (state: State) =>
+  Box(state).map(renderNumpad).map(renderNavPanel).map(panelEvents).fold(id)
+
+export const render = (state: State): State =>
+  Box(state).map(renderCells).map(renderAside).fold(id)
 
 export function updateBounds(s: State): void {
   const bounds = s.wrap.getBoundingClientRect()
@@ -44,8 +55,9 @@ export function renderBase(state: State): State {
 
   const numPad = document.createElement("numpad")
   numPad.id = "numpad"
+
   const header = document.createElement("head")
-  header.id = "aside"
+  header.id = "aside-head"
   const aside = document.createElement("section")
   aside.id = "aside"
   const nav = document.createElement("article")
@@ -77,9 +89,8 @@ export function renderBase(state: State): State {
 
   return state
 }
-
-export function renderPanel(state: State): State {
-  const {aside, nav, buttons, bounds} = state
+const renderBTNSection = (state: State): HTMLElement => {
+  const {buttons, bounds} = state
   const btns = [
     '<i class="fa-solid fa-play"></i>',
     '<i class="fa-solid fa-arrows-rotate"></i>',
@@ -88,11 +99,7 @@ export function renderPanel(state: State): State {
     `<i class="fa-solid fa-eye"></i>`,
     `<i class="fa-solid fa-arrow-left"></i>`,
   ]
-  updateBounds(state)
-
-  state.nav.innerHTML = ""
-  aside.style.maxWidth = `${state.bounds().width}px`
-  let counter = 0
+  let btnsIndex = 0
   const btnSection = document.createElement("section")
   btnSection.classList.add("btn-section")
   for (const [k, v] of buttons) {
@@ -102,13 +109,17 @@ export function renderPanel(state: State): State {
     btn.id = `${v.replace(/\s/g, "-")}`.toLowerCase()
     btn.classList.add(k)
 
-    btn.innerHTML = btns[counter++]
+    btn.innerHTML = btns[btnsIndex++]
     btn.style.aspectRatio = `1 / 1`
     btn.classList.add("buttons")
 
     btnSection.append(btn)
   }
+  return btnSection
+}
 
+const renderTimer = (state: State) => {
+  const {bounds} = state
   const timer = document.createElement("section")
   timer.style.height = `${bounds().height / 9}px`
   // timer.style.width = `${bounds().width / 3 - 1}px`
@@ -116,10 +127,8 @@ export function renderPanel(state: State): State {
   timer.id = "timer"
 
   const timerText = document.createElement("p")
-
   timer.appendChild(timerText)
-  nav.appendChild(timer)
-  nav.appendChild(btnSection)
+
   if (state.gameState === "isInitialed") {
     timerText.textContent = `00:00`
   }
@@ -131,6 +140,18 @@ export function renderPanel(state: State): State {
       seconds++
     }
   }, 1000)
+  return timer
+}
+export function renderNavPanel(state: State): State {
+  const {aside, nav} = state
+
+  updateBounds(state)
+
+  state.nav.innerHTML = ""
+  aside.style.maxWidth = `${state.bounds().width}px`
+
+  nav.appendChild(renderTimer(state))
+  nav.appendChild(renderBTNSection(state))
 
   return state
 }
@@ -272,30 +293,3 @@ export function renderNotes(state: State, el: CellElement): State {
   })
   return state
 }
-
-export const createNumPad = (state: State): State => {
-  const {bounds, numPad} = state
-  numPad.innerHTML = ""
-
-  for (const [k, i] of state.digits) {
-    const el = document.createElement("button")
-    el.classList.add("num")
-    el.style.height = `${bounds().height / 9}px`
-    el.dataset.value = `${i}`
-    el.innerHTML = `${i}`
-    el.dataset.key = `${k}`
-    el.style.aspectRatio = `${1 / 1}`
-    numPad.appendChild(el)
-  }
-
-  return state
-}
-
-export const renderNumpad = (state: State): State =>
-  Box(createNumPad(state)).map(numPadEvents).fold(id)
-
-export const renderAside = (state: State) =>
-  Box(state).map(renderNumpad).map(renderPanel).map(panelEvents).fold(id)
-
-export const render = (state: State): State =>
-  Box(state).map(renderCells).map(renderAside).fold(id)

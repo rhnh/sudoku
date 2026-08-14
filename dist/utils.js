@@ -58,7 +58,7 @@ export const showAllDuplicates = (state) => {
     showDuplicate(state)(getColumn(state));
     showDuplicate(state)(getSquare(state));
 };
-export const addNew = (state, value) => {
+export const addNewValue = (state, value) => {
     state.duplicates = new Map();
     if (!state.targetKey)
         return;
@@ -69,6 +69,7 @@ export const addNew = (state, value) => {
         if (notes.length > 0)
             state.notes = state.notes.filter((e) => !notes.includes(e));
         state.cells.set(s, `${value}`);
+        state.lastMoves.push(s);
         state.userInput.set(s, `${value}`);
         if (hasCompleted(state)) {
             state.gameState = "isOvered";
@@ -133,6 +134,11 @@ export const getCellBy = (state) => (key, noZero = false) => (n) => {
 export const getRow = (state) => (key, noZero = false) => getCellBy(state)(key, noZero)(0);
 export const getColumn = (state) => (key, noZero = false) => getCellBy(state)(key, noZero)(1);
 export const getSquare = (state) => (key, noZero = false) => getCellBy(state)(key, noZero)(2);
+/**
+ * returns related squares
+ * @param state
+ * @returns
+ */
 export const getCommons = (state) => (key, noZero = false) => new Map([
     ...getRow(state)(key, noZero),
     ...getColumn(state)(key, noZero),

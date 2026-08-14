@@ -1,6 +1,7 @@
-import { events, keyEvents } from "./events";
+import { events } from "./events";
+import { keyEvents } from "./keyEvent";
 import { render, renderBase } from "./render";
-import { sudokuGenerator } from "./sudoku.temp";
+import { sudokuGenerator } from "./sudoku.algo";
 import { allDigits, Box, getButtonKeys, getKeys } from "./utils";
 export function getDigits() {
     const m = new Map();
@@ -32,6 +33,7 @@ export const initState = (el, sudoku) => {
         solutions: sudoku.solutions,
         userInput, //TODO: After every click it should scan if this not empty and if it filled and has the correct answers
         seconds: 0,
+        lastMoves: [],
     };
     const state = { ...headlessState, wrap: el };
     return state;

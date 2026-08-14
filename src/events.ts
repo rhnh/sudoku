@@ -1,257 +1,157 @@
 import {addNote, renderCells} from "./render"
-import type {CellElement, Note, Key, Rank, State, Value} from "./types"
+import type {Key, Rank, State, Value, Position, MouchEvent} from "./types"
+
 import {
   getPositionKeyAtDom,
   getKeyFromPosition,
   getElementByKey,
   getCommons,
-  addNew,
+  addNewValue,
 } from "./utils"
 
 export const events = (state: State): State => {
   const {board} = state
-  board.addEventListener("pointerdown", (e) => {
-    const {clientX: x, clientY: y} = e
-    if (state.gameState !== "isPlaying") return
+  board.addEventListener("pointerdown", pointerDown(state))
+
+  board.addEventListener("pointerup", pointerup(state))
+
+  board.addEventListener("pointermove", pointermove(state))
+
+  return state
+}
+
+const getCoordinate = (e: MouseEvent | TouchEvent): Position => {
+  if ("touches" in e) {
+    const touch = e.touches[0]
+    return [touch.clientX, touch.clientY]
+  }
+
+  return [e.clientX, e.clientY]
+}
+const getKey =
+  (state: State) =>
+  (e: MouchEvent): Key | undefined => {
+    const [x, y] = getCoordinate(e)
     const position = getPositionKeyAtDom(state.bounds())([x, y])
-    const key = getKeyFromPosition(position) as unknown as Key
-    if (!key) return
+    return getKeyFromPosition(position)
+  }
+const selectedEmptySquare = (state: State) => (e: MouchEvent, key: Key) => {
+  //don't drag this square
+  if (e.ctrlKey) {
+    state.selected = [...new Set(state.selected), key]
+  } else {
+    state.selected = [...new Set([key])]
+  }
+  state.isHold = true
+  renderCells(state)
+}
+
+const selectedNonEmptySquare =
+  (state: State) => (el: HTMLElement, key: Key) => {
+    state.isDragging = true
+    state.draggingElement = el
+    state.selected = state.selected = [...new Set([key])]
+    state.draggingElement.classList.add("selected")
+    const value: Value = state.draggingElement.dataset.value as Value
+    if (!value) return state
+    state.draggingValue = value
+    return state
+  }
+
+const pointerDown =
+  (state: State) =>
+  (e: MouchEvent): State => {
+    const key = getKey(state)(e)
+
+    if (!key) return state
 
     state.highlight = getCommons(state)(key)
-    const el = getElementByKey(state)(key) as unknown as CellElement
-    if (!el) return
-    if (el.dataset.value === "0") {
-      //don't drag this square
-      if (e.ctrlKey) {
-        state.selected = [...new Set(state.selected), key]
-      } else {
-        state.selected = [...new Set([key])]
-      }
-      state.isHold = true
-      renderCells(state)
-    } else {
-      state.isDragging = true
-      state.draggingElement = el
-      state.selected = state.selected = [...new Set([key])]
-      state.draggingElement.classList.add("selected")
-      const value = state.draggingElement.dataset.value
-      if (!value) return
-      state.draggingValue = value as unknown as Rank
-    }
-  })
 
-  board.addEventListener("pointerup", (e) => {
-    const {clientX: x, clientY: y} = e
+    const el = getElementByKey(state)(key)
+    if (!el) return state
 
-    if (state.gameState !== "isPlaying") return
-    state.isHold = false
-    const t = getPositionKeyAtDom(state.bounds())([x, y])
-    let key = getKeyFromPosition(t) as unknown as Key | undefined
-    if (!key) return
-    state.targetKey = key
-    state.selected = [...new Set([...state.selected, key])]
-    if (state.isDragging && state.draggingElement) {
-      const p = state.draggingElement?.firstChild as unknown as HTMLElement
-      if (state.draggingElement && p) {
-        p.style.position = "unset"
-        p.style.transform = "unset"
-      }
-      state.draggingElement.classList.remove("selected")
-      board
-        .querySelectorAll(".selected")
-        .forEach((s) => s.classList.remove("selected"))
-      const value = state.draggingValue as unknown as Rank
-
-      if (state.isNote) {
-        addNote(state)(value)
-      } else {
-        addNew(state, value)
-      }
-    }
-    state.draggingElement = undefined
-    state.isDragging = false
-    state.draggingValue = undefined
-    renderCells(state)
-  })
-
-  board.addEventListener("pointermove", (e) => {
-    if (state.gameState !== "isPlaying") return
-    const {clientX: x, clientY: y} = e
-    if (state.isHold) {
-      const t = getPositionKeyAtDom(state.bounds())([x, y])
-      let key = getKeyFromPosition(t) as unknown as Key | undefined
-      if (!key) return
-      state.selected = [...new Set(state.selected), key]
-      state.selected = [...new Set(state.selected)]
-      renderCells(state)
-    }
-
-    if (state.isDragging) {
-      const p = state.draggingElement?.firstChild as unknown as HTMLElement
-      if (state.draggingElement && p) {
-        p.style.position = "absolute"
-        p.style.transform = `translate(${
-          x -
-          state.draggingElement?.getBoundingClientRect().left -
-          state.draggingElement?.getBoundingClientRect().width / 3
-        }px, ${y - state.draggingElement?.getBoundingClientRect().top - state.draggingElement?.getBoundingClientRect().height / 3}px)`
-      }
-    }
-  })
-
-  return state
-}
-export const numPadEvents = (state: State): State => {
-  const {numPad} = state
-
-  numPad.querySelectorAll("*").forEach((button) => {
-    const btn = button as unknown as HTMLButtonElement
-    btn.addEventListener("click", () => {
-      const value = btn.dataset.value as unknown as Value
-      if (!value) return
-      if (state.isNote) addNote(state)(value)
-      else addNew(state, value)
-      renderCells(state)
-    })
-  })
-
-  return state
-}
-
-export function keyEvents(state: State): State {
-  const {nav} = state
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "r") {
-      document.location.reload()
-    }
-    if (state.gameState === "isInitialed") {
-      if (e.key === "s") {
-        state.gameState = "isPlaying"
-        renderCells(state)
-      }
-    }
-
-    if (state.gameState === "isPlaying") {
-      if (e.key === "n") {
-        state.isNote = !state.isNote
-        const note = nav.querySelector("#note") as HTMLButtonElement
-        if (state.isNote) {
-          note.classList.add("btn-pressed")
-        } else {
-          note.classList.remove("btn-pressed")
-        }
-      }
-    }
-    const value: Value = e.key[0] as Value
-
-    const regex = value.match(/\d/)
-    if (regex) {
-      if (state.isNote) {
-        if (!state.targetKey) return
-        addNote(state)(value)
-      } else addNew(state, `${value}`)
-    }
-
-    renderCells(state)
-  })
-  return state
-}
-
-export function panelEvents(state: State) {
-  const {nav} = state
-
-  const start = nav.querySelector("#start") as HTMLButtonElement
-  if (!start) return state
-  start.addEventListener("pointerdown", () => {
-    if (state.gameState === "isInitialed") {
-      state.gameState = "isPlaying"
-      let btn = nav.querySelector("#start") as HTMLButtonElement
-      btn.innerHTML = `<i class="fa-solid fa-circle-pause"></i>`
-      renderCells(state)
-    } else if (state.gameState === "isPaused") {
-      state.gameState = "isPlaying"
-      let btn = nav.querySelector("#start") as HTMLButtonElement
-      btn.innerHTML = `<i class="fa-solid fa-circle-pause"></i>`
-      renderCells(state)
-    } else if (state.gameState === "isPlaying") {
-      state.gameState = "isPaused"
-      let btn = nav.querySelector("#start") as HTMLButtonElement
-
-      btn.innerHTML = `<i class="fa-solid fa-forward"></i>`
-      renderCells(state)
-    }
-    renderCells(state)
-  })
-
-  const restart = nav.querySelector("#restart") as HTMLButtonElement
-  restart.addEventListener("pointerdown", () => {
-    document.location.reload()
-  })
-
-  const note = nav.querySelector("#note") as HTMLButtonElement
-
-  note.addEventListener("pointerdown", () => {
-    state.isNote = !state.isNote
-    if (state.isNote) {
-      note.classList.add("btn-pressed")
-    } else {
-      note.classList.remove("btn-pressed")
-    }
-  })
-
-  const remove = nav.querySelector("#remove") as HTMLButtonElement
-  remove.addEventListener("pointerdown", () => {
-    if (!state.isNote)
-      state.selected.map((r) => {
-        if (state.originCell.get(r) !== "0") {
-        } else {
-          state.cells.set(r, "0")
-          state.duplicates = new Map()
-        }
-      })
-
-    const found = state.selected
-      .map((r) => state.notes.filter((h) => r.slice(0, 2) === h.slice(0, 2)))
-      .flat() as unknown as Note[]
-
-    state.notes = state.notes.filter((item) => !found.includes(item))
-    renderCells(state)
-  })
-
-  const showHint = nav.querySelector("#hint") as HTMLButtonElement
-  showHint.addEventListener("pointerdown", () => {
-    if (state.gameState === "isPlaying") {
-      const selected = state.selected
-      selected.map((s) => {
-        const value = state.solutions.get(s) as unknown as Value
-        addNew(state, value)
-      })
-    }
-  })
-  const showUndo = nav.querySelector("#undo") as HTMLButtonElement
-  showUndo.addEventListener("pointerdown", () => {
-    if (state.gameState === "isPlaying" && state.lastMoves.length > 0) {
-      const last = state.lastMoves.length - 1
-      state.originCell.set(state.lastMoves[last], "0")
-      state.cells.set(state.lastMoves[last], "0")
-
-      console.log(state.originCell.get(state.lastMoves[last]))
-
-      state.lastMoves = state.lastMoves.filter(
-        (r) => r != state.lastMoves[last],
-      )
-      state.duplicates.clear()
-      renderCells(state)
-    }
-  })
-
-  const timer = nav.querySelector("#timer") as HTMLElement
-  if (timer) {
-    timer.addEventListener("pointerdown", () => {
-      const timerText = timer.firstChild as HTMLElement
-      timerText.classList.toggle("hide")
-    })
+    if (el.dataset.value === "0") selectedEmptySquare(state)(e, key)
+    else selectedNonEmptySquare(state)(el, key)
+    return state
   }
-  return state
+
+export const resetDraggingElement = (state: State) => {
+  const p = state.draggingElement?.firstChild as unknown as HTMLElement
+  if (state.draggingElement && p) {
+    p.style.position = "unset"
+    p.style.transform = "unset"
+  }
+  if (!state.draggingElement) {
+    return
+  }
+  state.draggingElement.classList.remove("selected")
+  state.board
+    .querySelectorAll(".selected")
+    .forEach((s) => s.classList.remove("selected"))
+}
+
+export const addNoteOrValue = (state: State) => {
+  const value = state.draggingValue as unknown as Rank
+  if (state.isNote) addNote(state)(value)
+  else addNewValue(state, value)
+}
+
+export const stopDragging = (state: State) => {
+  state.draggingElement = undefined
+  state.isDragging = false
+  state.draggingValue = undefined
+}
+
+export const fillNewSelectedCells = (state: State) => (key: Key) => {
+  state.isHold = false
+  state.targetKey = key
+  state.selected = [...new Set([...state.selected, key])]
+}
+
+export const pointerup =
+  (state: State) =>
+  (e: MouchEvent): State => {
+    const key = getKey(state)(e)
+
+    if (!key) return state
+
+    if (state.gameState !== "isPlaying") return state
+
+    fillNewSelectedCells(state)(key)
+
+    if (state.isDragging && state.draggingElement) {
+      resetDraggingElement(state)
+      addNoteOrValue(state)
+    }
+    stopDragging(state)
+    renderCells(state)
+    return state
+  }
+
+const moveDraggingElement = (state: State) => (position: Position) => {
+  const [x, y] = position
+  const p = state.draggingElement?.firstChild as unknown as HTMLElement
+  if (state.draggingElement && p) {
+    p.style.position = "absolute"
+    p.style.transform = `translate(${
+      x -
+      state.draggingElement?.getBoundingClientRect().left -
+      state.draggingElement?.getBoundingClientRect().width / 3
+    }px, ${y - state.draggingElement?.getBoundingClientRect().top - state.draggingElement?.getBoundingClientRect().height / 3}px)`
+  }
+}
+
+const pointermove = (state: State) => (e: MouchEvent) => {
+  if (state.gameState !== "isPlaying") return
+
+  const [x, y] = getCoordinate(e)
+
+  const key = getKey(state)(e)
+
+  if (state.isHold) {
+    if (!key) return
+    fillNewSelectedCells(state)(key)
+    renderCells(state)
+  }
+  if (state.isDragging) moveDraggingElement(state)([x, y])
 }

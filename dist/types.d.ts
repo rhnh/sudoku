@@ -6,7 +6,8 @@ export type File = (typeof files)[number];
 export type Rank = (typeof ranks)[number] | "0";
 export type Position = [number, number];
 export type BaseKey = `${File}${Rank}`;
-export declare const buttons: readonly ["start", "restart", "remove", "note", "hint", "hint"];
+export type MouchEvent = MouseEvent | TouchEvent;
+export declare const buttons: readonly ["start", "restart", "remove", "note", "hint", "undo"];
 export type ButtonTexts = (typeof buttons)[number];
 export type Buttons = Map<BaseKey, ButtonTexts>;
 export type Note = `${BaseKey}${Rank}`;
@@ -38,6 +39,7 @@ export interface HeadlessState {
     solutions: Cells;
     userInput: Cells;
     seconds: number;
+    lastMoves: Key[];
 }
 export interface State extends HeadlessState {
     addDimensionsCssVarsTo: any;

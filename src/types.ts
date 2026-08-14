@@ -7,7 +7,7 @@ export type File = (typeof files)[number]
 export type Rank = (typeof ranks)[number] | "0"
 export type Position = [number, number]
 export type BaseKey = `${File}${Rank}`
-
+export type MouchEvent = MouseEvent | TouchEvent
 export const buttons = [
   "start",
   "restart",

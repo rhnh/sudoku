@@ -48,6 +48,7 @@ board {
   user-select: none;
   line-height: 0;
   background-color: var(--light);
+  touch-action: none;
 }
 
 cell {

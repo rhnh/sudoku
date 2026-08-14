@@ -94,7 +94,7 @@ export const showAllDuplicates = (state: State) => {
   showDuplicate(state)(getSquare(state))
 }
 
-export const addNew = (state: State, value: Value) => {
+export const addNewValue = (state: State, value: Value) => {
   state.duplicates = new Map()
   if (!state.targetKey) return
   state.selected.map((s) => {
@@ -190,6 +190,11 @@ export const getSquare =
   (key: Key, noZero = false) =>
     getCellBy(state)(key, noZero)(2)
 
+/**
+ * returns related squares
+ * @param state
+ * @returns
+ */
 export const getCommons =
   (state: State) =>
   (key: Key, noZero = false): Cells =>

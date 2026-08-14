@@ -30,6 +30,22 @@
         width: 60%;
       }
     }
+
+    #info {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 50px;
+    }
+
+    ul {
+      list-style: none;
+      margin-top: 10px;
+    }
+
+    li {
+      padding: .3em;
+    }
   </style>
   <script type="module">
     const start = performance.now()
@@ -45,6 +61,20 @@
     Sudoku
   </h1>
   <div id="sudoku"></div>
+
+  <div id="info">
+
+    <ul>
+      <li>
+        <h3>Features: </h3>
+      </li>
+      <li>Infield drag and drop</li>
+      <li>Show Hint</li>
+      <li>Undo</li>
+      <li>Hide Timer on click</li>
+      <li><a href="https://github.com/rhnh/sudoku">Source Code</a></li>
+    </ul>
+  </div>
 </body>
 
 </html>

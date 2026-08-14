@@ -1,5 +1,5 @@
 /**
- * This a temporary solution. I need to rewrite this myself.
+ * This a temporary solution.  needed to rewritten.
  * @param grid
  * @param rowStart
  * @param colStart
@@ -83,7 +83,7 @@ function checkIfSafe(grid: number[][], i: number, j: number, num: number) {
 // The diagonal blocks are filled to simplify the process
 function fillDiagonal(grid: number[][]) {
   for (let i = 0; i < 9; i += 3) {
-    // Fill each 3x3 subgrid diagonally
+    // Fill each 3x3 sub-grid diagonally
     fillBox(grid, i, i)
   }
 }
