@@ -1,6 +1,6 @@
-import {renderBoard} from "./render"
+import {addNote, renderBoard} from "./render"
 import {State, Value} from "./types"
-import {addNewValue, addNote} from "./utils"
+import {addNewValue} from "./utils"
 
 export function keyEvents(state: State): State {
   const {nav} = state

@@ -1,4 +1,4 @@
-import {renderBoard} from "./render"
+import {addNote, renderBoard} from "./render"
 import type {Key, Rank, State, Value, Position, MouchEvent} from "./types"
 
 import {
@@ -7,7 +7,6 @@ import {
   getElementByKey,
   getCommons,
   addNewValue,
-  addNote,
 } from "./utils"
 
 export const events = (state: State): State => {

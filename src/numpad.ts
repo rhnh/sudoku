@@ -1,6 +1,6 @@
-import {renderBoard} from "./render"
+import {addNote, renderBoard} from "./render"
 import {State, Value} from "./types"
-import {addNote, addNewValue} from "./utils"
+import {addNewValue} from "./utils"
 
 export const createNumPad = (state: State): State => {
   const {bounds, numPad} = state
