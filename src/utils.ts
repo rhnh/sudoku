@@ -1,4 +1,4 @@
-import {renderCells} from "./render"
+import {renderBoard} from "./render"
 import {
   files,
   ranks,
@@ -30,10 +30,11 @@ export const Box = <T>(value: T): Box<T> => ({
   },
 })
 
-export const keyToPosition = (k: Key): Position => [
+export const getPositionFromKey = (k: Key): Position => [
   k.charCodeAt(0) - 97,
   k.charCodeAt(1) - 49,
 ]
+
 export const getKeys = () => {
   let i = 0
   return files
@@ -113,7 +114,7 @@ export const addNewValue = (state: State, value: Value) => {
 
   state.highlight = getCommons(state)(state.targetKey)
   showAllDuplicates(state)
-  renderCells(state)
+  renderBoard(state)
 }
 export const positionToKey = (p: Position): Key | undefined => {
   const keys = getKeys()
@@ -289,4 +290,22 @@ export const formatTime = (totalSeconds: number): string => {
   //https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
   const pad = (n: number) => n.toString().padStart(2, "0")
   return `${pad(minutes)}:${pad(seconds)}`
+}
+export const addNote = (state: State) => (value: Value) => {
+  const notes = state.selected?.map((k) => {
+    const note = `${k}${value}` as Note
+    return note
+  })
+  const f = new Set([...notes])
+  const found = state.notes.filter((r) => f.has(r))
+  if (found.length > 0) {
+    state.notes = state.notes.filter((r) => !f.has(r))
+    return
+  }
+  state.notes = [...new Set([...state.notes, ...notes])]
+  state.notes = [...new Set([...state.notes])]
+  state.notes = [
+    ...state.notes,
+    ...new Set(notes.filter((h, i) => state.notes[i] == h)),
+  ]
 }

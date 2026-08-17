@@ -1,6 +1,6 @@
-import {addNote, renderCells} from "./render"
+import {renderBoard} from "./render"
 import {State, Value} from "./types"
-import {addNewValue} from "./utils"
+import {addNote, addNewValue} from "./utils"
 
 export const createNumPad = (state: State): State => {
   const {bounds, numPad} = state
@@ -30,7 +30,7 @@ export const numPadEvents = (state: State): State => {
       if (!value) return
       if (state.isNote) addNote(state)(value)
       else addNewValue(state, value)
-      renderCells(state)
+      renderBoard(state)
     })
   })
 
