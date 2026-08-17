@@ -1,4 +1,4 @@
-import { renderCells } from "./render";
+import { renderBoard } from "./render";
 import { addNewValue } from "./utils";
 export function panelEvents(state) {
     const { nav } = state;
@@ -10,21 +10,21 @@ export function panelEvents(state) {
             state.gameState = "isPlaying";
             let btn = nav.querySelector("#start");
             btn.innerHTML = `<i class="fa-solid fa-circle-pause"></i>`;
-            renderCells(state);
+            renderBoard(state);
         }
         else if (state.gameState === "isPaused") {
             state.gameState = "isPlaying";
             let btn = nav.querySelector("#start");
             btn.innerHTML = `<i class="fa-solid fa-circle-pause"></i>`;
-            renderCells(state);
+            renderBoard(state);
         }
         else if (state.gameState === "isPlaying") {
             state.gameState = "isPaused";
             let btn = nav.querySelector("#start");
             btn.innerHTML = `<i class="fa-solid fa-forward"></i>`;
-            renderCells(state);
+            renderBoard(state);
         }
-        renderCells(state);
+        renderBoard(state);
     });
     const restart = nav.querySelector("#restart");
     restart.addEventListener("pointerdown", () => {
@@ -55,7 +55,7 @@ export function panelEvents(state) {
             .map((r) => state.notes.filter((h) => r.slice(0, 2) === h.slice(0, 2)))
             .flat();
         state.notes = state.notes.filter((item) => !found.includes(item));
-        renderCells(state);
+        renderBoard(state);
     });
     const showHint = nav.querySelector("#hint");
     showHint.addEventListener("pointerdown", () => {
@@ -75,7 +75,7 @@ export function panelEvents(state) {
             state.cells.set(state.lastMoves[last], "0");
             state.lastMoves = state.lastMoves.filter((r) => r != state.lastMoves[last]);
             state.duplicates.clear();
-            renderCells(state);
+            renderBoard(state);
         }
     });
     const timer = nav.querySelector("#timer");

@@ -1,9 +1,10 @@
 import { createNumPad, numPadEvents } from "./numpad";
 import { panelEvents } from "./panelEvents";
-import { getPositionFromBound, keyToPosition, getSquareNr, Box, memo, id, formatTime, } from "./utils";
+import { BOARD_SIZE, } from "./types";
+import { getPositionFromBound, keyToPosition, getSquareNr, Box, memo, id, formatTime, createSvg, } from "./utils";
 export const renderNumpad = (state) => Box(createNumPad(state)).map(numPadEvents).fold(id);
 export const renderAside = (state) => Box(state).map(renderNumpad).map(renderNavPanel).map(panelEvents).fold(id);
-export const render = (state) => Box(state).map(renderCells).map(renderAside).fold(id);
+export const render = (state) => Box(state).map(renderBoard).map(renderAside).fold(id);
 export function updateBounds(s) {
     const bounds = s.wrap.getBoundingClientRect();
     const container = s.container;
@@ -12,7 +13,7 @@ export function updateBounds(s) {
         bounds.width / 3;
     container.style.width = width + "px";
     container.style.height = width + "px";
-    // container.style.2pectRatio = "1 / 1"
+    // container.style.aspectRatio = "1 / 1"
     s.bounds.clear();
 }
 export function renderBase(state) {
@@ -123,23 +124,66 @@ export function renderGameOver(state) {
     h1.style.position = "absolute";
     board.appendChild(h1);
 }
-export function renderCells(state) {
+/**
+ *
+ * @param
+ * @returns
+ */
+export function drawLine({ x1, x2, y1, y2, key, strokeWidth, className, }) {
+    const line = createSvg({
+        tag: "line",
+        className,
+        x1: `${x1}`,
+        y1: `${y1}`,
+        x2: `${x2}`,
+        y2: `${y2}`,
+        key: `${key}`,
+    });
+    if (strokeWidth)
+        line.setAttribute("stroke-width", `${strokeWidth}`);
+    line.setAttribute("stroke", "black");
+    // line.setAttribute("stroke-width", `${strokeWidth}px`)
+    return line;
+}
+const drawLines = ({ isHorizontal = false, svg, size, }) => {
+    const cellHeight = size / BOARD_SIZE;
+    for (let i = 0; i <= BOARD_SIZE; i++) {
+        const x = i * cellHeight;
+        const isThick = i % 3 === 0;
+        const line = svg.appendChild(drawLine({
+            x1: isHorizontal ? 0 : x,
+            y1: isHorizontal ? x : 0,
+            x2: isHorizontal ? size : x,
+            y2: isHorizontal ? x : size,
+            key: `key-${isHorizontal ? "h" : "v"}-${i}`,
+            className: "s-lines",
+        }));
+        line.classList.add(isThick ? "s-thick" : "s-thin");
+    }
+};
+export function drawBackground(state) {
+    const { bounds, board } = state;
+    const { width, height } = bounds();
+    const svg = createSvg({
+        tag: "svg",
+        className: "svg-lines--container",
+        width: `${width}`,
+        height: `${height}`,
+    });
+    drawLines({ isHorizontal: true, svg, size: height });
+    drawLines({ isHorizontal: false, svg, size: height });
+    board.appendChild(svg);
+}
+export function renderBoard(state) {
     updateBounds(state);
     const { board, cells } = state;
     board.innerHTML = "";
     if (state.gameState === "isOvered")
         renderGameOver(state);
-    let counter = 0;
     for (const [k, v] of cells) {
         const cellElem = document.createElement("cell");
         const p = keyToPosition(k);
         const pos = getPositionFromBound(state, p);
-        if (counter % 2 === 0) {
-            cellElem.className += "cell-right";
-        }
-        else {
-            cellElem.className += "cell-left";
-        }
         cellElem.style.transform = `translate(${pos[0]}px, ${pos[1]}px)`;
         cellElem.style.position = "absolute";
         cellElem.style.height = `${state.bounds().height / 9}px`;
@@ -166,18 +210,6 @@ export function renderCells(state) {
             }
         cellElem.dataset.key = `${k}`;
         cellElem.dataset.value = `${v}`;
-        if (k.startsWith("a") || k.startsWith("d") || k.startsWith("g")) {
-            cellElem.classList.add("vertical-lines-left");
-        }
-        if (k.startsWith("i")) {
-            cellElem.classList.add("vertical-lines-right");
-        }
-        if (k[1] === "1" || k[1] === "4" || k[1] === "7") {
-            cellElem.classList.add("horizontal-lines-top");
-        }
-        if (k[1] === "9") {
-            cellElem.classList.add("horizontal-lines-bottom");
-        }
         const c = document.createElement("p");
         c.style.gridArea = "2 / 2 / 3 / 3";
         if (v !== "0" && state.gameState !== "isInitialed") {
@@ -199,7 +231,7 @@ export function renderCells(state) {
             cellElem.style.opacity = "0.3";
         renderNotes(state, cellElem);
     }
-    counter++;
+    drawBackground(state);
     return state;
 }
 export const addNote = (state) => (value) => {

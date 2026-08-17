@@ -1,4 +1,4 @@
-import { addNote, renderCells } from "./render";
+import { addNote, renderBoard } from "./render";
 import { addNewValue } from "./utils";
 export const createNumPad = (state) => {
     const { bounds, numPad } = state;
@@ -27,7 +27,7 @@ export const numPadEvents = (state) => {
                 addNote(state)(value);
             else
                 addNewValue(state, value);
-            renderCells(state);
+            renderBoard(state);
         });
     });
     return state;

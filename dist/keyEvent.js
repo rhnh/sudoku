@@ -1,4 +1,4 @@
-import { addNote, renderCells } from "./render";
+import { addNote, renderBoard } from "./render";
 import { addNewValue } from "./utils";
 export function keyEvents(state) {
     const { nav } = state;
@@ -9,7 +9,7 @@ export function keyEvents(state) {
         if (state.gameState === "isInitialed") {
             if (e.key === "s") {
                 state.gameState = "isPlaying";
-                renderCells(state);
+                renderBoard(state);
             }
         }
         if (state.gameState === "isPlaying") {
@@ -35,7 +35,7 @@ export function keyEvents(state) {
             else
                 addNewValue(state, `${value}`);
         }
-        renderCells(state);
+        renderBoard(state);
     });
     return state;
 }

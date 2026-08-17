@@ -12,6 +12,9 @@ import type {
   State,
   Value,
 } from "./types"
+
+import "./assets/base.style.css"
+import "./assets/media-queries.css"
 import {allDigits, Box, getButtonKeys, getKeys} from "./utils"
 
 export function getDigits() {

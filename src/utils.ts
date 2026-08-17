@@ -1,4 +1,4 @@
-import {renderCells} from "./render"
+import {renderBoard} from "./render"
 import {
   files,
   ranks,
@@ -113,7 +113,7 @@ export const addNewValue = (state: State, value: Value) => {
 
   state.highlight = getCommons(state)(state.targetKey)
   showAllDuplicates(state)
-  renderCells(state)
+  renderBoard(state)
 }
 export const positionToKey = (p: Position): Key | undefined => {
   const keys = getKeys()
@@ -289,4 +289,24 @@ export const formatTime = (totalSeconds: number): string => {
   //https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
   const pad = (n: number) => n.toString().padStart(2, "0")
   return `${pad(minutes)}:${pad(seconds)}`
+}
+/**
+ * https://www.typescriptlang.org/docs/handbook/dom-manipulation.html
+ * @param SVGElementTagNameMap
+ * @returns - a SVG
+ */
+export function createSvg<K extends keyof SVGElementTagNameMap>({
+  tag,
+  className,
+  ...rest
+}: {
+  tag: K
+  className: string
+} & Record<string, string>): SVGElementTagNameMap[K] {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", tag)
+  svg.classList.add(className)
+  Object.entries(rest).forEach(([name, value]) => {
+    svg.setAttribute(name, value)
+  })
+  return svg
 }

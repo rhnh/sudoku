@@ -1,4 +1,4 @@
-import { renderCells } from "./render";
+import { renderBoard } from "./render";
 import { files, ranks, TOTAL_FILE, buttons, } from "./types";
 export const Box = (value) => ({
     map: (fn) => Box(fn(value)),
@@ -77,7 +77,7 @@ export const addNewValue = (state, value) => {
     });
     state.highlight = getCommons(state)(state.targetKey);
     showAllDuplicates(state);
-    renderCells(state);
+    renderBoard(state);
 };
 export const positionToKey = (p) => {
     const keys = getKeys();
@@ -217,4 +217,17 @@ export const formatTime = (totalSeconds) => {
     const pad = (n) => n.toString().padStart(2, "0");
     return `${pad(minutes)}:${pad(seconds)}`;
 };
+/**
+ * https://www.typescriptlang.org/docs/handbook/dom-manipulation.html
+ * @param SVGElementTagNameMap
+ * @returns - a SVG
+ */
+export function createSvg({ tag, className, ...rest }) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    svg.classList.add(className);
+    Object.entries(rest).forEach(([name, value]) => {
+        svg.setAttribute(name, value);
+    });
+    return svg;
+}
 //# sourceMappingURL=utils.js.map

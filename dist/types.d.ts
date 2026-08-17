@@ -2,6 +2,7 @@ export declare const TOTAL_FILE = 9;
 export declare const TOTAL_RANK = 9;
 export declare const ranks: readonly ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 export declare const files: readonly ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+export declare const BOARD_SIZE = 9;
 export type File = (typeof files)[number];
 export type Rank = (typeof ranks)[number] | "0";
 export type Position = [number, number];
