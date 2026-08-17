@@ -1,4 +1,4 @@
-import {addNote, renderCells} from "./render"
+import {renderBoard} from "./render"
 import type {Key, Rank, State, Value, Position, MouchEvent} from "./types"
 
 import {
@@ -7,6 +7,7 @@ import {
   getElementByKey,
   getCommons,
   addNewValue,
+  addNote,
 } from "./utils"
 
 export const events = (state: State): State => {
@@ -43,7 +44,7 @@ const selectedEmptySquare = (state: State) => (e: MouchEvent, key: Key) => {
     state.selected = [...new Set([key])]
   }
   state.isHold = true
-  renderCells(state)
+  renderBoard(state)
 }
 
 const selectedNonEmptySquare =
@@ -124,7 +125,7 @@ export const pointerup =
       addNoteOrValue(state)
     }
     stopDragging(state)
-    renderCells(state)
+    renderBoard(state)
     return state
   }
 
@@ -151,7 +152,7 @@ const pointermove = (state: State) => (e: MouchEvent) => {
   if (state.isHold) {
     if (!key) return
     fillNewSelectedCells(state)(key)
-    renderCells(state)
+    renderBoard(state)
   }
   if (state.isDragging) moveDraggingElement(state)([x, y])
 }
