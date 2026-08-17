@@ -1,4 +1,4 @@
-import {renderCells} from "./render"
+import {renderBoard} from "./render"
 import {Note, State, Value} from "./types"
 import {addNewValue} from "./utils"
 
@@ -12,20 +12,20 @@ export function panelEvents(state: State) {
       state.gameState = "isPlaying"
       let btn = nav.querySelector("#start") as HTMLButtonElement
       btn.innerHTML = `<i class="fa-solid fa-circle-pause"></i>`
-      renderCells(state)
+      renderBoard(state)
     } else if (state.gameState === "isPaused") {
       state.gameState = "isPlaying"
       let btn = nav.querySelector("#start") as HTMLButtonElement
       btn.innerHTML = `<i class="fa-solid fa-circle-pause"></i>`
-      renderCells(state)
+      renderBoard(state)
     } else if (state.gameState === "isPlaying") {
       state.gameState = "isPaused"
       let btn = nav.querySelector("#start") as HTMLButtonElement
 
       btn.innerHTML = `<i class="fa-solid fa-forward"></i>`
-      renderCells(state)
+      renderBoard(state)
     }
-    renderCells(state)
+    renderBoard(state)
   })
 
   const restart = nav.querySelector("#restart") as HTMLButtonElement
@@ -60,7 +60,7 @@ export function panelEvents(state: State) {
       .flat() as unknown as Note[]
 
     state.notes = state.notes.filter((item) => !found.includes(item))
-    renderCells(state)
+    renderBoard(state)
   })
 
   const showHint = nav.querySelector("#hint") as HTMLButtonElement
@@ -84,7 +84,7 @@ export function panelEvents(state: State) {
         (r) => r != state.lastMoves[last],
       )
       state.duplicates.clear()
-      renderCells(state)
+      renderBoard(state)
     }
   })
 
