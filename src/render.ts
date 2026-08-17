@@ -3,20 +3,22 @@ import {panelEvents} from "./panelEvents"
 
 import {
   type CellElement,
+  type Note,
   type Key,
   type State,
+  type Value,
   BOARD_SIZE,
-  TOTAL_FILE,
 } from "./types"
 
 import {
   getPositionFromBound,
-  getPositionFromKey,
+  keyToPosition,
   getSquareNr,
   Box,
   memo,
   id,
   formatTime,
+  createSvg,
 } from "./utils"
 
 export const renderNumpad = (state: State): State =>
@@ -174,73 +176,6 @@ export function renderGameOver(state: State) {
   board.appendChild(h1)
 }
 
-function drawBackground(state: State) {
-  const {bounds, board} = state
-
-  const {width, height} = bounds()
-
-  const svg = createSvg({
-    tag: "svg",
-    className: "svg-lines--container",
-    width: `${width}`,
-    height: `${height}`,
-  })
-
-  drawLines({isHorizontal: true, svg, size: height})
-  drawLines({isHorizontal: false, svg, size: height})
-
-  board.appendChild(svg)
-}
-
-const drawLines = ({
-  isHorizontal = false,
-  svg,
-  size,
-}: {
-  isHorizontal: boolean
-  svg: SVGElement
-  size: number
-}) => {
-  const cellHeight = size / BOARD_SIZE
-  for (let i = 0; i <= BOARD_SIZE; i++) {
-    const x = i * cellHeight
-    const isThick = i % 3 === 0
-
-    const line = svg.appendChild(
-      drawLine({
-        x1: isHorizontal ? 0 : x,
-        y1: isHorizontal ? x : 0,
-        x2: isHorizontal ? size : x,
-        y2: isHorizontal ? x : size,
-        key: `key-${isHorizontal ? "h" : "v"}-${i}`,
-        className: "s-lines",
-      }),
-    )
-    line.classList.add(isThick ? "s-thick" : "s-thin")
-  }
-}
-
-/**
- * https://www.typescriptlang.org/docs/handbook/dom-manipulation.html
- * @param SVGElementTagNameMap
- * @returns - a SVG
- */
-export function createSvg<K extends keyof SVGElementTagNameMap>({
-  tag,
-  className,
-  ...rest
-}: {
-  tag: K
-  className: string
-} & Record<string, string>): SVGElementTagNameMap[K] {
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", tag)
-  svg.classList.add(className)
-  Object.entries(rest).forEach(([name, value]) => {
-    svg.setAttribute(name, value)
-  })
-  return svg
-}
-
 /**
  *
  * @param
@@ -279,16 +214,60 @@ export function drawLine({
   // line.setAttribute("stroke-width", `${strokeWidth}px`)
   return line
 }
+const drawLines = ({
+  isHorizontal = false,
+  svg,
+  size,
+}: {
+  isHorizontal: boolean
+  svg: SVGElement
+  size: number
+}) => {
+  const cellHeight = size / BOARD_SIZE
+  for (let i = 0; i <= BOARD_SIZE; i++) {
+    const x = i * cellHeight
+    const isThick = i % 3 === 0
+
+    const line = svg.appendChild(
+      drawLine({
+        x1: isHorizontal ? 0 : x,
+        y1: isHorizontal ? x : 0,
+        x2: isHorizontal ? size : x,
+        y2: isHorizontal ? x : size,
+        key: `key-${isHorizontal ? "h" : "v"}-${i}`,
+        className: "s-lines",
+      }),
+    )
+    line.classList.add(isThick ? "s-thick" : "s-thin")
+  }
+}
+
+export function drawBackground(state: State) {
+  const {bounds, board} = state
+
+  const {width, height} = bounds()
+
+  const svg = createSvg({
+    tag: "svg",
+    className: "svg-lines--container",
+    width: `${width}`,
+    height: `${height}`,
+  })
+
+  drawLines({isHorizontal: true, svg, size: height})
+  drawLines({isHorizontal: false, svg, size: height})
+
+  board.appendChild(svg)
+}
 
 export function renderBoard(state: State): State {
   updateBounds(state)
   const {board, cells} = state
   board.innerHTML = ""
   if (state.gameState === "isOvered") renderGameOver(state)
-  const cellsContainer = document.createElement("cells")
   for (const [k, v] of cells) {
     const cellElem = document.createElement("cell") as CellElement
-    const p = getPositionFromKey(k as Key)
+    const p = keyToPosition(k as Key)
     const pos = getPositionFromBound(state, p)
 
     cellElem.style.transform = `translate(${pos[0]}px, ${pos[1]}px)`
@@ -329,7 +308,7 @@ export function renderBoard(state: State): State {
       c.style.opacity = "0"
     }
     cellElem.appendChild(c)
-    cellsContainer.appendChild(cellElem)
+    board.appendChild(cellElem)
     if (state.originCell.get(k) !== "0" && state.originCell.get(k)) {
       cellElem.classList.add("origin-cells")
     } else {
@@ -340,15 +319,32 @@ export function renderBoard(state: State): State {
       cellElem.style.opacity = "0.3"
     renderNotes(state, cellElem)
   }
-  board.appendChild(cellsContainer)
   drawBackground(state)
   return state
 }
 
+export const addNote = (state: State) => (value: Value) => {
+  const notes = state.selected?.map((k) => {
+    const note = `${k}${value}` as Note
+    return note
+  })
+  const f = new Set([...notes])
+  const found = state.notes.filter((r) => f.has(r))
+  if (found.length > 0) {
+    state.notes = state.notes.filter((r) => !f.has(r))
+    return
+  }
+  state.notes = [...new Set([...state.notes, ...notes])]
+  state.notes = [...new Set([...state.notes])]
+  state.notes = [
+    ...state.notes,
+    ...new Set(notes.filter((h, i) => state.notes[i] == h)),
+  ]
+}
 export function renderNotes(state: State, el: CellElement): State {
   let {notes, bounds} = state
   notes = [...new Set(notes)]
-  const cellHeight = bounds().width / TOTAL_FILE
+  const cellHeight = bounds().width / BOARD_SIZE
   const rows = 3 // in one Cell there will be 3 rows
   notes.map((h) => {
     const value = +h.slice(-1)

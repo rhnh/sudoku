@@ -30,11 +30,10 @@ export const Box = <T>(value: T): Box<T> => ({
   },
 })
 
-export const getPositionFromKey = (k: Key): Position => [
+export const keyToPosition = (k: Key): Position => [
   k.charCodeAt(0) - 97,
   k.charCodeAt(1) - 49,
 ]
-
 export const getKeys = () => {
   let i = 0
   return files
@@ -291,21 +290,23 @@ export const formatTime = (totalSeconds: number): string => {
   const pad = (n: number) => n.toString().padStart(2, "0")
   return `${pad(minutes)}:${pad(seconds)}`
 }
-export const addNote = (state: State) => (value: Value) => {
-  const notes = state.selected?.map((k) => {
-    const note = `${k}${value}` as Note
-    return note
+/**
+ * https://www.typescriptlang.org/docs/handbook/dom-manipulation.html
+ * @param SVGElementTagNameMap
+ * @returns - a SVG
+ */
+export function createSvg<K extends keyof SVGElementTagNameMap>({
+  tag,
+  className,
+  ...rest
+}: {
+  tag: K
+  className: string
+} & Record<string, string>): SVGElementTagNameMap[K] {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", tag)
+  svg.classList.add(className)
+  Object.entries(rest).forEach(([name, value]) => {
+    svg.setAttribute(name, value)
   })
-  const f = new Set([...notes])
-  const found = state.notes.filter((r) => f.has(r))
-  if (found.length > 0) {
-    state.notes = state.notes.filter((r) => !f.has(r))
-    return
-  }
-  state.notes = [...new Set([...state.notes, ...notes])]
-  state.notes = [...new Set([...state.notes])]
-  state.notes = [
-    ...state.notes,
-    ...new Set(notes.filter((h, i) => state.notes[i] == h)),
-  ]
+  return svg
 }
