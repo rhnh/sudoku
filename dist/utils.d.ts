@@ -41,3 +41,12 @@ export declare const id: <T>(x: T) => T;
 export declare const getButtonKeys: () => Buttons;
 export declare const hasCompleted: (state: State) => boolean;
 export declare const formatTime: (totalSeconds: number) => string;
+/**
+ * https://www.typescriptlang.org/docs/handbook/dom-manipulation.html
+ * @param SVGElementTagNameMap
+ * @returns - a SVG
+ */
+export declare function createSvg<K extends keyof SVGElementTagNameMap>({ tag, className, ...rest }: {
+    tag: K;
+    className: string;
+} & Record<string, string>): SVGElementTagNameMap[K];

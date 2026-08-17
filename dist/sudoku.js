@@ -2,6 +2,8 @@ import { events } from "./events";
 import { keyEvents } from "./keyEvent";
 import { render, renderBase } from "./render";
 import { sudokuGenerator } from "./sudoku.algo";
+import "./assets/base.style.css";
+import "./assets/media-queries.css";
 import { allDigits, Box, getButtonKeys, getKeys } from "./utils";
 export function getDigits() {
     const m = new Map();

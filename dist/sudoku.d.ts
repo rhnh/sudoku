@@ -1,4 +1,6 @@
 import type { Cells, Digits, Key, State, Value } from "./types";
+import "./assets/base.style.css";
+import "./assets/media-queries.css";
 import { Box } from "./utils";
 export declare function getDigits(): Digits;
 export declare const initState: (el: HTMLElement, sudoku: {

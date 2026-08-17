@@ -1,4 +1,4 @@
-import { addNote, renderCells } from "./render";
+import { addNote, renderBoard } from "./render";
 import { getPositionKeyAtDom, getKeyFromPosition, getElementByKey, getCommons, addNewValue, } from "./utils";
 export const events = (state) => {
     const { board } = state;
@@ -28,7 +28,7 @@ const selectedEmptySquare = (state) => (e, key) => {
         state.selected = [...new Set([key])];
     }
     state.isHold = true;
-    renderCells(state);
+    renderBoard(state);
 };
 const selectedNonEmptySquare = (state) => (el, key) => {
     state.isDragging = true;
@@ -98,7 +98,7 @@ export const pointerup = (state) => (e) => {
         addNoteOrValue(state);
     }
     stopDragging(state);
-    renderCells(state);
+    renderBoard(state);
     return state;
 };
 const moveDraggingElement = (state) => (position) => {
@@ -120,7 +120,7 @@ const pointermove = (state) => (e) => {
         if (!key)
             return;
         fillNewSelectedCells(state)(key);
-        renderCells(state);
+        renderBoard(state);
     }
     if (state.isDragging)
         moveDraggingElement(state)([x, y]);
