@@ -1,6 +1,7 @@
 :root {
   box-sizing: border-box;
-  --thick: 3px;
+  --thick: 4px;
+  --thin: 1px;
   --size: 600px;
   --fontSize: 40px;
   --noteMargin: 10px;
@@ -22,13 +23,32 @@
   margin: 0;
   padding: 0;
 }
+
+.s-lines {
+  stroke: var(--dark-orange);
+}
+
+.s-thin {
+  stroke-width: var(--think);
+}
+
+.s-thick {
+  stroke-width: var(--thick);
+  stroke: var(--dark-orange);
+}
+
+.svg-lines--container {
+  overflow: visible;
+  stroke-linecap: square;
+}
+
 #sudoku {
   display: flex;
   justify-content: center;
   align-items: center;
-
   flex-direction: column;
 }
+
 #container {
   width: 100%;
   height: 100%;
@@ -52,8 +72,6 @@ board {
 }
 
 cell {
-  border-left: 1px solid var(--dark-orange);
-  border-bottom: 1px solid var(--dark-orange);
   width: 100%;
   height: 100%;
   display: grid;
@@ -64,13 +82,6 @@ cell {
   z-index: 2;
   will-change: transform;
   pointer-events: none;
-}
-
-note {
-  color: var(--green);
-  font-size-adjust: 0.545;
-  margin-top: 12px;
-  margin-left: 3px;
 }
 
 cell > p {
@@ -101,12 +112,11 @@ numpad > * {
   background-color: var(--light2);
   text-align: center;
   aspect-ratio: 1/1;
-  border: 1px solid var(--brown);
-  margin: auto;
   display: flex;
   justify-content: center;
   align-items: center;
   color: var(--black);
+  border: 1px solid var(--black);
 }
 
 .selected {
@@ -135,24 +145,6 @@ numpad > * {
   cursor: pointer;
 }
 
-.horizontal-lines-top {
-  border-top: var(--thick) solid var(--orange);
-  margin-top: -2px;
-}
-.horizontal-lines-bottom {
-  border-bottom: var(--thick) solid var(--orange);
-  margin-bottom: -2px;
-}
-
-.vertical-lines-left {
-  border-left: var(--thick) solid var(--orange);
-  margin-left: -2px;
-}
-.vertical-lines-right {
-  border-right: var(--thick) solid var(--orange);
-  margin-left: -1px;
-}
-
 #aside {
   display: flex;
   flex-direction: column;
@@ -174,19 +166,23 @@ numpad > * {
 
 .hide {
   visibility: hidden;
+  background-color: transparent;
 }
 .btn-section {
   display: flex;
 }
 
-.timer-seciton {
+.timer-section {
   display: flex;
   width: 100%;
   justify-content: center;
   align-items: center;
   background: var(--orange);
 }
-.timer-seciton > * {
+.timer-section > * {
   font-size: 32px;
-  color: white;
+  color: var(--black);
+  background-color: var(--light2);
+  width: 100%;
+  text-align: center;
 }
