@@ -145,11 +145,6 @@ numpad > * {
   cursor: pointer;
 }
 
-#aside {
-  display: flex;
-  flex-direction: column;
-}
-
 .duplicates {
   background-color: var(--orange2);
 }

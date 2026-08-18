@@ -6,20 +6,20 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     padding-top: 1em;
-    gap:5px;
+    gap: 5px;
   }
 
   board {
     display: block;
   }
-  container{
+  container {
     grid-column: 2;
-      grid-row: 1;
+    grid-row: 1;
   }
   #aside {
     display: block;
-grid-column: 1;
-grid-row: 1;
+    grid-column: 1;
+    grid-row: 1;
     justify-self: end;
   }
   numpad {

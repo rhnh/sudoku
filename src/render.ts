@@ -152,8 +152,6 @@ export function renderNavPanel(state: State): State {
   updateBounds(state)
 
   state.nav.innerHTML = ""
-  aside.style.maxWidth = `${state.bounds().width}px`
-  aside.style.width = `${state.bounds().width / 3}px`
 
   nav.appendChild(renderTimer(state))
   nav.appendChild(renderBTNSection(state))
