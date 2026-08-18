@@ -36,7 +36,7 @@ export function updateBounds(s: State): void {
   let width =
     Math.floor(bounds.width * window.devicePixelRatio) /
       window.devicePixelRatio -
-    bounds.width / 3
+    bounds.width / 18
 
   container.style.width = width + "px"
   container.style.height = width + "px"
@@ -107,12 +107,13 @@ const renderBTNSection = (state: State): HTMLElement => {
   for (const [k, v] of buttons) {
     const btn = document.createElement("button")
     btn.style.height = `${bounds().height / 9}px`
+    btn.style.width = `${bounds().height / 9}px`
     // btn.style.width = `${bounds().width / 3 - 1}px`
     btn.id = `${v.replace(/\s/g, "-")}`.toLowerCase()
     btn.classList.add(k)
 
     btn.innerHTML = btns[btnsIndex++]
-    btn.style.aspectRatio = `1 / 1`
+    btn.style.aspectRatio = `1`
     btn.classList.add("buttons")
 
     btnSection.append(btn)
@@ -124,6 +125,7 @@ const renderTimer = (state: State) => {
   const {bounds} = state
   const timer = document.createElement("section")
   timer.style.height = `${bounds().height / 9}px`
+  timer.style.width = `${bounds().height / 3}px`
   // timer.style.width = `${bounds().width / 3 - 1}px`
   timer.classList.add("timer-section")
   timer.id = "timer"
@@ -151,6 +153,7 @@ export function renderNavPanel(state: State): State {
 
   state.nav.innerHTML = ""
   aside.style.maxWidth = `${state.bounds().width}px`
+  aside.style.width = `${state.bounds().width / 3}px`
 
   nav.appendChild(renderTimer(state))
   nav.appendChild(renderBTNSection(state))
