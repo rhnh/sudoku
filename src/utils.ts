@@ -1,39 +1,23 @@
+import {files, ranks, TOTAL_FILE} from "./constants"
 import {renderBoard} from "./render"
+import {State} from "./state"
 import {
-  files,
-  ranks,
   type CellElement,
   type Cells,
   type Key,
-  type Memo,
   type Position,
   type Value,
-  type State,
   type BaseKey,
-  TOTAL_FILE,
   type Buttons,
   buttons,
   Note,
 } from "./types"
 
-export type Box<T> = {
-  map: <U>(fn: (x: T) => U) => Box<U>
-  fold: <R>(fn: (x: T) => R) => R
-  toString: () => T
-}
-
-export const Box = <T>(value: T): Box<T> => ({
-  map: (fn) => Box(fn(value)),
-  fold: (fn) => fn(value),
-  toString: (): T => {
-    return value
-  },
-})
-
 export const keyToPosition = (k: Key): Position => [
   k.charCodeAt(0) - 97,
   k.charCodeAt(1) - 49,
 ]
+
 export const getKeys = () => {
   let i = 0
   return files
@@ -49,35 +33,34 @@ export const getKeys = () => {
     .flat()
 }
 
-function getDuplicateKeys<K, V>(map: Map<K, V>): K[] {
-  const valueMap = new Map<V, K[]>()
+function getDuplicateKeys(map: Cells): Key[] {
+  const valueMap = new Map()
+  const result: Key[] = []
 
   for (const [key, value] of map.entries()) {
     if (!valueMap.has(value)) {
       valueMap.set(value, [])
     }
-    valueMap.get(value)!.push(key)
+    valueMap.get(value).push(key)
   }
 
-  const result: K[] = []
-
-  for (const keys of valueMap.values()) {
-    if (keys.length > 1) {
-      result.push(...keys)
+  for (const values of valueMap.values()) {
+    if (values.length > 1) {
+      result.push(...values)
     }
   }
 
   return result
 }
 
-export const showDuplicate =
+export const getDuplicates =
   (state: State) => (f: (key: Key, noZero: boolean) => Cells) =>
     getKeys()
       .map((key) =>
         getDuplicateKeys(f(key, true))
           .map((r) => {
             if (r) {
-              const value = state.cells.get(r) as unknown as Value
+              const value = state.cells.get(r) as Value
               state.duplicates.set(r, `${value}`)
             } else {
               state.duplicates.delete(r)
@@ -88,10 +71,10 @@ export const showDuplicate =
       )
       .flat()
 
-export const showAllDuplicates = (state: State) => {
-  showDuplicate(state)(getRow(state))
-  showDuplicate(state)(getColumn(state))
-  showDuplicate(state)(getSquare(state))
+export const getAllDuplicates = (state: State) => {
+  getDuplicates(state)(getRow(state))
+  getDuplicates(state)(getColumn(state))
+  getDuplicates(state)(getSquare(state))
 }
 
 export const addNewValue = (state: State, value: Value) => {
@@ -112,24 +95,13 @@ export const addNewValue = (state: State, value: Value) => {
   })
 
   state.highlight = getCommons(state)(state.targetKey)
-  showAllDuplicates(state)
+  getAllDuplicates(state)
   renderBoard(state)
 }
+
 export const positionToKey = (p: Position): Key | undefined => {
   const keys = getKeys()
   return p.every((x) => x >= 0 && x <= 8) ? keys[9 * p[0] + p[1]] : undefined
-}
-
-export function memo<A>(f: () => A): Memo<A> {
-  let v: A | undefined
-  const ret = (): A => {
-    if (v === undefined) v = f()
-    return v
-  }
-  ret.clear = () => {
-    v = undefined
-  }
-  return ret
 }
 
 /**
@@ -238,10 +210,12 @@ export const createCellElement =
     cellElem.dataset.value = v
     cellElem.dataset.isReadOnly = `${isReadOnly}`
   }
+
 export function getKeyFromPosition(pos: Position): Key | undefined {
   const k = (9 * pos[0] + pos[1]) as number
   return pos.every((x) => x >= 0 && x <= 9) ? getKeys()[k] : undefined
 }
+
 export const allDigits = files.map((f, i) => `${f}${i + 1}` as Key)
 
 export function getDigitFromPosition(pos: Position): Key | undefined {
@@ -258,8 +232,6 @@ export const getPositionKeyAtDom =
       ? [file, rank]
       : [-1, -1]
   }
-
-export const id = <T>(x: T) => x
 
 export const getButtonKeys = () => {
   const numberOfButtons = 7
@@ -295,18 +267,3 @@ export const formatTime = (totalSeconds: number): string => {
  * @param SVGElementTagNameMap
  * @returns - a SVG
  */
-export function createSvg<K extends keyof SVGElementTagNameMap>({
-  tag,
-  className,
-  ...rest
-}: {
-  tag: K
-  className: string
-} & Record<string, string>): SVGElementTagNameMap[K] {
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", tag)
-  svg.classList.add(className)
-  Object.entries(rest).forEach(([name, value]) => {
-    svg.setAttribute(name, value)
-  })
-  return svg
-}

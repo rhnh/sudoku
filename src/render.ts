@@ -1,24 +1,16 @@
+import {BOARD_SIZE} from "./constants"
+import {Box, createSvg, id, memo} from "./lib"
 import {createNumPad, numPadEvents} from "./numpad"
 import {panelEvents} from "./panelEvents"
+import {State} from "./state"
 
-import {
-  type CellElement,
-  type Note,
-  type Key,
-  type State,
-  type Value,
-  BOARD_SIZE,
-} from "./types"
+import {type CellElement, type Note, type Key, type Value} from "./types"
 
 import {
   getPositionFromBound,
   keyToPosition,
   getSquareNr,
-  Box,
-  memo,
-  id,
   formatTime,
-  createSvg,
 } from "./utils"
 
 export const renderNumpad = (state: State): State =>
@@ -215,6 +207,7 @@ export function drawLine({
   // line.setAttribute("stroke-width", `${strokeWidth}px`)
   return line
 }
+
 const drawLines = ({
   isHorizontal = false,
   svg,
@@ -265,39 +258,25 @@ export function renderBoard(state: State): State {
   updateBounds(state)
   const {board, cells} = state
   board.innerHTML = ""
+
   if (state.gameState === "isOvered") renderGameOver(state)
   for (const [k, v] of cells) {
     const cellElem = document.createElement("cell") as CellElement
     const p = keyToPosition(k as Key)
     const pos = getPositionFromBound(state, p)
+    if (state.gameState === "isOvered" || state.gameState === "isPaused") {
+      cellElem.style.opacity = "0.11"
+    }
 
     cellElem.style.transform = `translate(${pos[0]}px, ${pos[1]}px)`
     cellElem.style.position = "absolute"
     cellElem.style.height = `${state.bounds().height / 9}px`
     cellElem.style.width = `${state.bounds().width / 9}px`
 
-    for (const [kh, _] of state.highlight) {
-      if (kh === k) {
-        cellElem.classList.add("highlighted")
-      }
-    }
-    state.selected.map((selectedKey) => {
-      if (selectedKey === k) {
-        cellElem.classList.remove("highlighted")
-        cellElem.classList.remove("duplicates")
-        cellElem.classList.add("selected")
-      }
-    })
-    if (state.duplicates.size > 1)
-      for (const [kd, _] of state.duplicates) {
-        if (k === kd) {
-          cellElem.classList.remove("highlighted")
-          cellElem.classList.remove("selected")
-          cellElem.classList.add("duplicates")
-        }
-      }
     cellElem.dataset.key = `${k}`
     cellElem.dataset.value = `${v}`
+
+    showHighlighted(state)(cellElem, k)
 
     const c = document.createElement("p")
     c.style.gridArea = "2 / 2 / 3 / 3"
@@ -305,23 +284,45 @@ export function renderBoard(state: State): State {
     if (v !== "0" && state.gameState !== "isInitialed") {
       c.innerHTML = `${v}`
     }
-    if (state.gameState === "isPaused") {
-      c.style.opacity = "0"
-    }
+
     cellElem.appendChild(c)
     board.appendChild(cellElem)
+
     if (state.originCell.get(k) !== "0" && state.originCell.get(k)) {
       cellElem.classList.add("origin-cells")
     } else {
       cellElem.classList.remove("origin-cells")
       cellElem.classList.add("new-cells")
     }
-    if (state.gameState === "isOvered" || state.gameState === "isPaused")
-      cellElem.style.opacity = "0.3"
+
     renderNotes(state, cellElem)
   }
   drawBackground(state)
   return state
+}
+
+const showHighlighted = (state: State) => (cellElem: CellElement, k: Key) => {
+  for (const [kh, _] of state.highlight) {
+    if (kh === k) {
+      cellElem.classList.add("highlighted")
+    }
+  }
+
+  state.selected.map((selectedKey) => {
+    if (selectedKey === k) {
+      cellElem.classList.remove("highlighted")
+      cellElem.classList.remove("duplicates")
+      cellElem.classList.add("selected")
+    }
+  })
+  if (state.duplicates.size > 1)
+    for (const [kd, _] of state.duplicates) {
+      if (k === kd) {
+        cellElem.classList.remove("highlighted")
+        cellElem.classList.remove("selected")
+        cellElem.classList.add("duplicates")
+      }
+    }
 }
 
 export const addNote = (state: State) => (value: Value) => {
@@ -342,6 +343,7 @@ export const addNote = (state: State) => (value: Value) => {
     ...new Set(notes.filter((h, i) => state.notes[i] == h)),
   ]
 }
+
 export function renderNotes(state: State, el: CellElement): State {
   let {notes, bounds} = state
   notes = [...new Set(notes)]

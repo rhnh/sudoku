@@ -1,13 +1,11 @@
-export const TOTAL_FILE = 9
-export const TOTAL_RANK = TOTAL_FILE
-export const ranks = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const
-export const files = ["a", "b", "c", "d", "e", "f", "g", "h", "i"] as const
-export const BOARD_SIZE = TOTAL_FILE
+import {files, ranks} from "./constants"
+
 export type File = (typeof files)[number]
 export type Rank = (typeof ranks)[number] | "0"
 export type Position = [number, number]
 export type BaseKey = `${File}${Rank}`
 export type MouchEvent = MouseEvent | TouchEvent
+
 export const buttons = [
   "start",
   "restart",
@@ -29,10 +27,6 @@ export type Value = Rank
 
 export type Cells = Map<Key, Value>
 
-export interface Memo<A> {
-  (): A
-  clear: () => void
-}
 export type Digits = Map<BaseKey, Value>
 
 export interface HeadlessState {
@@ -54,18 +48,6 @@ export interface HeadlessState {
   userInput: Cells
   seconds: number
   lastMoves: Key[]
-}
-
-export interface State extends HeadlessState {
-  addDimensionsCssVarsTo: any
-  wrap: HTMLElement
-  board: HTMLElement
-  container: HTMLElement
-  numPad: HTMLElement
-  aside: HTMLElement
-  bounds: Memo<DOMRectReadOnly>
-  nav: HTMLElement
-  draggingElement?: HTMLElement
 }
 
 export interface CellElement extends HTMLElement {
