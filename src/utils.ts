@@ -1,7 +1,6 @@
+import {buttons, files, ranks, TOTAL_FILE} from "./constants"
 import {renderBoard} from "./render"
 import {
-  files,
-  ranks,
   type CellElement,
   type Cells,
   type Key,
@@ -10,9 +9,7 @@ import {
   type Value,
   type State,
   type BaseKey,
-  TOTAL_FILE,
   type Buttons,
-  buttons,
   Note,
 } from "./types"
 

@@ -1,21 +1,11 @@
-export const TOTAL_FILE = 9
-export const TOTAL_RANK = TOTAL_FILE
-export const ranks = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const
-export const files = ["a", "b", "c", "d", "e", "f", "g", "h", "i"] as const
-export const BOARD_SIZE = TOTAL_FILE
+import {buttons, files, ranks} from "./constants"
+
 export type File = (typeof files)[number]
 export type Rank = (typeof ranks)[number] | "0"
 export type Position = [number, number]
 export type BaseKey = `${File}${Rank}`
 export type MouchEvent = MouseEvent | TouchEvent
-export const buttons = [
-  "start",
-  "restart",
-  "remove",
-  "note",
-  "hint",
-  "undo",
-] as const
+
 export type ButtonTexts = (typeof buttons)[number]
 
 export type Buttons = Map<BaseKey, ButtonTexts>

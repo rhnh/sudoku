@@ -1,3 +1,4 @@
+import {BOARD_SIZE, btns} from "./constants"
 import {createNumPad, numPadEvents} from "./numpad"
 import {panelEvents} from "./panelEvents"
 
@@ -7,7 +8,6 @@ import {
   type Key,
   type State,
   type Value,
-  BOARD_SIZE,
 } from "./types"
 
 import {
@@ -93,14 +93,7 @@ export function renderBase(state: State): State {
 }
 const renderBTNSection = (state: State): HTMLElement => {
   const {buttons, bounds} = state
-  const btns = [
-    '<i class="fa-solid fa-play"></i>',
-    '<i class="fa-solid fa-arrows-rotate"></i>',
-    `<i class="fa-solid fa-x"></i>`,
-    `<i class="fa-solid fa-pen"></i>`,
-    `<i class="fa-solid fa-eye"></i>`,
-    `<i class="fa-solid fa-arrow-left"></i>`,
-  ]
+
   let btnsIndex = 0
   const btnSection = document.createElement("section")
   btnSection.classList.add("btn-section")
@@ -147,7 +140,7 @@ const renderTimer = (state: State) => {
   return timer
 }
 export function renderNavPanel(state: State): State {
-  const {aside, nav} = state
+  const {nav} = state
 
   updateBounds(state)
 
