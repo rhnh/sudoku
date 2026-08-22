@@ -1,10 +1,11 @@
 import {addNote} from "./notes"
 import {renderBoard} from "./render"
-import {State, Value} from "./types"
+import {State} from "./state"
+import {Value} from "./types"
 import {addNewValue} from "./utils"
 
 export function keyEvents(state: State): State {
-  const {nav} = state
+  const {ctrlBTNSection: nav} = state
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "r") {

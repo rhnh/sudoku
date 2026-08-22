@@ -19,47 +19,4 @@ export type Value = Rank
 
 export type Cells = Map<Key, Value>
 
-export interface Memo<A> {
-  (): A
-  clear: () => void
-}
 export type Digits = Map<BaseKey, Value>
-
-export interface HeadlessState {
-  gameState: GameState
-  cells: Cells
-  originCell: Cells
-  notes: Notes
-  digits: Digits
-  selected: Key[]
-  buttons: Buttons
-  isNote: boolean
-  draggingValue?: Rank
-  isDragging: boolean
-  isHold: boolean
-  highlight: Cells
-  duplicates: Cells
-  targetKey?: Key
-  solutions: Cells
-  userInput: Cells
-  seconds: number
-  lastMoves: Key[]
-}
-
-export interface State extends HeadlessState {
-  addDimensionsCssVarsTo: any
-  wrap: HTMLElement
-  board: HTMLElement
-  container: HTMLElement
-  numPad: HTMLElement
-  aside: HTMLElement
-  bounds: Memo<DOMRectReadOnly>
-  nav: HTMLElement
-  draggingElement?: HTMLElement
-}
-
-export interface CellElement extends HTMLElement {
-  key: Key
-  value: Value
-  isReadOnly: boolean
-}

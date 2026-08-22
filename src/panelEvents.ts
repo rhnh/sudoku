@@ -1,5 +1,6 @@
 import {renderBoard} from "./render"
-import {State, Value} from "./types"
+import {State} from "./state"
+import {Value} from "./types"
 import {addNewValue} from "./utils"
 /**
  * This looks ameature. This need to change and should be saved in a map or an array
@@ -7,7 +8,7 @@ import {addNewValue} from "./utils"
  * @returns
  */
 export function panelEvents(state: State) {
-  const {nav} = state
+  const {ctrlBTNSection: nav} = state
 
   const start = nav.querySelector("#start") as HTMLButtonElement
   if (!start) return state

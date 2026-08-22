@@ -1,6 +1,6 @@
 import {BOARD_SIZE} from "./constants"
-import {State} from "./types"
-import {createSvg} from "./utils"
+import {createSvg} from "./lib"
+import {State} from "./state"
 
 /**
  *

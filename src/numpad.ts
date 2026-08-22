@@ -1,10 +1,11 @@
 import {addNote} from "./notes"
 import {renderBoard} from "./render"
-import {State, Value} from "./types"
+import {State} from "./state"
+import {Value} from "./types"
 import {addNewValue} from "./utils"
 
 export const createNumPad = (state: State): State => {
-  const {bounds, numPad} = state
+  const {bounds, numpadSection: numPad} = state
   numPad.innerHTML = ""
 
   for (const [k, i] of state.digits) {
@@ -22,7 +23,7 @@ export const createNumPad = (state: State): State => {
 }
 
 export const numPadEvents = (state: State): State => {
-  const {numPad} = state
+  const {numpadSection: numPad} = state
 
   numPad.querySelectorAll("*").forEach((button) => {
     const btn = button as unknown as HTMLButtonElement

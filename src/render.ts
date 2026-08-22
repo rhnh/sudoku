@@ -1,17 +1,16 @@
 import {BTN_ICONS, TOTAL_FILE} from "./constants"
+import {Box, id, memo} from "./lib"
 import {renderNotes} from "./notes"
 import {createNumPad, numPadEvents} from "./numpad"
 import {panelEvents} from "./panelEvents"
+import {State, CellElement} from "./state"
 import {drawBackground} from "./svg"
 
-import {type CellElement, type Key, type State} from "./types"
+import {type Key} from "./types"
 
 import {
   getPositionFromBound,
   keyToPosition,
-  Box,
-  memo,
-  id,
   formatTime,
   resizeObserver,
 } from "./utils"
@@ -68,7 +67,15 @@ export function renderBase(state: State): State {
   state.wrap.appendChild(aside)
   const bounds = memo(() => container.getBoundingClientRect())
 
-  state = {...state, board, numPad, bounds, container, aside, nav}
+  state = {
+    ...state,
+    board,
+    numpadSection: numPad,
+    bounds,
+    container,
+    sidePanel: aside,
+    ctrlBTNSection: nav,
+  }
   resizeObserver(state)({render, updateBounds})
   return state
 }
@@ -122,11 +129,11 @@ const renderTimer = (state: State) => {
   return timer
 }
 export function renderNavPanel(state: State): State {
-  const {nav} = state
+  const {ctrlBTNSection: nav} = state
 
   updateBounds(state)
 
-  state.nav.innerHTML = ""
+  state.ctrlBTNSection.innerHTML = ""
 
   nav.appendChild(renderTimer(state))
   nav.appendChild(renderBTNSection(state))

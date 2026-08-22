@@ -1,5 +1,6 @@
 import {BOARD_SIZE} from "./constants"
-import {State, Value, Rank, CellElement} from "./types"
+import {State, CellElement} from "./state"
+import {Value, Rank} from "./types"
 import {getElementByKey, getSquareNr} from "./utils"
 
 export const addNote = (state: State) => (value: Value) => {

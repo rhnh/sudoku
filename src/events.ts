@@ -1,6 +1,7 @@
 import {addNote} from "./notes"
 import {renderBoard} from "./render"
-import type {Key, Rank, State, Value, Position, MouchEvent} from "./types"
+import {State} from "./state"
+import type {Key, Rank, Value, Position, MouchEvent} from "./types"
 
 import {
   getPositionKeyAtDom,
