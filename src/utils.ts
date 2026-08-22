@@ -296,3 +296,28 @@ export const removeNotes =
 
     return state
   }
+
+export const resizeObserver =
+  (state: State) =>
+  ({
+    render,
+    updateBounds,
+  }: {
+    updateBounds: (state: State) => void
+    render: (state: State) => State
+  }) => {
+    const observerCallback: ResizeObserverCallback = (
+      entries: ResizeObserverEntry[],
+    ) => {
+      window.requestAnimationFrame((): void | undefined => {
+        if (!Array.isArray(entries) || !entries.length) {
+          return
+        }
+        if (state.container) {
+          updateBounds(state)
+          render(state)
+        }
+      })
+    }
+    new ResizeObserver(observerCallback).observe(state.wrap)
+  }
