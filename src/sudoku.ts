@@ -2,20 +2,12 @@ import {events} from "./events"
 import {keyEvents} from "./keyEvent"
 import {render, renderBase} from "./render"
 import {sudokuGenerator} from "./sudoku.algo"
-import type {
-  BaseKey,
-  Cells,
-  Digits,
-  HeadlessState,
-  Key,
-  Rank,
-  Value,
-} from "./types"
+import type {BaseKey, Cells, Digits, Key, Rank, Value} from "./types"
 
 import "./assets/base.style.css"
 import "./assets/media-queries.css"
 import {allDigits, getButtonKeys, getKeys} from "./utils"
-import {State} from "./state"
+import {State, HeadlessState} from "./state"
 import {Box} from "./lib"
 
 export function getDigits() {
@@ -44,7 +36,7 @@ export const initState = (
     originCell: sudoku.cells,
     selected: [],
     digits: getDigits(),
-    notes: [],
+    notes: new Map(),
     buttons: getButtonKeys(),
     isNote: false,
     isDragging: false,
@@ -55,7 +47,7 @@ export const initState = (
     userInput, //TODO: After every click it should scan if this not empty and if it filled and has the correct answers
     seconds: 0,
     lastMoves: [],
-  } as unknown as State
+  }
 
   const state: State = {...headlessState, wrap: el} as unknown as State
   return state

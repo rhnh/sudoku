@@ -1,9 +1,14 @@
 import {renderBoard} from "./render"
-import {Note, State, Value} from "./types"
+import {State} from "./state"
+import {Value} from "./types"
 import {addNewValue} from "./utils"
-
+/**
+ * This looks ameature. This need to change and should be saved in a map or an array
+ * @param state
+ * @returns
+ */
 export function panelEvents(state: State) {
-  const {nav} = state
+  const {ctrlBTNSection: nav} = state
 
   const start = nav.querySelector("#start") as HTMLButtonElement
   if (!start) return state
@@ -55,11 +60,6 @@ export function panelEvents(state: State) {
         }
       })
 
-    const found = state.selected
-      .map((r) => state.notes.filter((h) => r.slice(0, 2) === h.slice(0, 2)))
-      .flat() as unknown as Note[]
-
-    state.notes = state.notes.filter((item) => !found.includes(item))
     renderBoard(state)
   })
 

@@ -1,16 +1,13 @@
-import {files, ranks, TOTAL_FILE} from "./constants"
+import {BTN_NAMES, FILES, RANKS, TOTAL_FILE} from "./constants"
 import {renderBoard} from "./render"
-import {State} from "./state"
+import {State, CellElement} from "./state"
 import {
-  type CellElement,
   type Cells,
   type Key,
   type Position,
   type Value,
   type BaseKey,
   type Buttons,
-  buttons,
-  Note,
 } from "./types"
 
 export const keyToPosition = (k: Key): Position => [
@@ -20,17 +17,15 @@ export const keyToPosition = (k: Key): Position => [
 
 export const getKeys = () => {
   let i = 0
-  return files
-    .map((f) =>
-      ranks.map((r) => {
-        const row = Math.floor(i / 9)
-        const col = i % 9
-        const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1
-        i++
-        return `${f}${r}${block}` as Key
-      }),
-    )
-    .flat()
+  return FILES.map((f) =>
+    RANKS.map((r) => {
+      const row = Math.floor(i / 9)
+      const col = i % 9
+      const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1
+      i++
+      return `${f}${r}${block}` as Key
+    }),
+  ).flat()
 }
 
 function getDuplicateKeys(map: Cells): Key[] {
@@ -82,9 +77,8 @@ export const addNewValue = (state: State, value: Value) => {
   if (!state.targetKey) return
   state.selected.map((s) => {
     if (state.originCell.get(s) !== "0" && state.originCell.get(s)) return
-    const notes = getNotesInHighlighted(state, s)(value)
-    if (notes.length > 0)
-      state.notes = state.notes.filter((e) => !notes.includes(e))
+
+    removeNotes(state, s)(value)
 
     state.cells.set(s, `${value}`)
     state.lastMoves.push(s)
@@ -104,36 +98,6 @@ export const positionToKey = (p: Position): Key | undefined => {
   return p.every((x) => x >= 0 && x <= 8) ? keys[9 * p[0] + p[1]] : undefined
 }
 
-/**
- * When new value is enter should give all the notes that are value in highlighted
- * @param state
- * @param key
- * @returns
- */
-export const getNotesInHighlighted =
-  (state: State, key: Key) =>
-  (value: Value): Note[] => {
-    const commons = getCommons(state)(key)
-
-    if (state.notes.length < 1) return []
-
-    const keys: Note[] = []
-    state.notes
-      .filter((note) => {
-        return note.slice(-1) === value
-      })
-      .map((k) => {
-        const f = `${k.slice(0, 3)}` as Key
-        for (const key of commons.keys()) {
-          if (key.startsWith(f)) {
-            keys.push(`${key}${value}` as Key)
-          }
-        }
-      })
-
-    return keys
-  }
-
 export const getCellBy =
   (state: State) =>
   (key: Key, noZero = false) =>
@@ -147,6 +111,7 @@ export const getCellBy =
     }
     return s
   }
+
 export const getRow =
   (state: State) =>
   (key: Key, noZero = false): Cells =>
@@ -215,8 +180,7 @@ export function getKeyFromPosition(pos: Position): Key | undefined {
   const k = (9 * pos[0] + pos[1]) as number
   return pos.every((x) => x >= 0 && x <= 9) ? getKeys()[k] : undefined
 }
-
-export const allDigits = files.map((f, i) => `${f}${i + 1}` as Key)
+export const allDigits = FILES.map((f, i) => `${f}${i + 1}` as Key)
 
 export function getDigitFromPosition(pos: Position): Key | undefined {
   const k = (pos[1] + pos[0]) as number
@@ -237,7 +201,7 @@ export const getButtonKeys = () => {
   const numberOfButtons = 7
   const buttonKeys = getKeys().slice(0, numberOfButtons)
   const m: Buttons = new Map()
-  buttons.map((b, i) => {
+  BTN_NAMES.map((b, i) => {
     const k: BaseKey = buttonKeys[i] as unknown as BaseKey
     m.set(k, b)
   })
@@ -262,8 +226,51 @@ export const formatTime = (totalSeconds: number): string => {
   const pad = (n: number) => n.toString().padStart(2, "0")
   return `${pad(minutes)}:${pad(seconds)}`
 }
+
 /**
- * https://www.typescriptlang.org/docs/handbook/dom-manipulation.html
- * @param SVGElementTagNameMap
- * @returns - a SVG
+ * When new value is enter should give all the notes that are value in highlighted
+ * @param state
+ * @param key
+ * @returns
  */
+export const removeNotes =
+  (state: State, key: Key) =>
+  (value: Value): State => {
+    const commons = getCommons(state)(key)
+    for (const [k, _] of commons) {
+      for (const [key, values] of state.notes) {
+        if (k === key) {
+          if (values.has(value)) {
+            state.notes.set(k, values)
+          }
+        }
+      }
+    }
+
+    return state
+  }
+
+export const resizeObserver =
+  (state: State) =>
+  ({
+    render,
+    updateBounds,
+  }: {
+    updateBounds: (state: State) => void
+    render: (state: State) => State
+  }) => {
+    const observerCallback: ResizeObserverCallback = (
+      entries: ResizeObserverEntry[],
+    ) => {
+      window.requestAnimationFrame((): void | undefined => {
+        if (!Array.isArray(entries) || !entries.length) {
+          return
+        }
+        if (state.container) {
+          updateBounds(state)
+          render(state)
+        }
+      })
+    }
+    new ResizeObserver(observerCallback).observe(state.wrap)
+  }
