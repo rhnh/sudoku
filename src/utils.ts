@@ -1,7 +1,5 @@
 import {renderBoard} from "./render"
 import {
-  files,
-  ranks,
   type CellElement,
   type Cells,
   type Key,
@@ -10,9 +8,7 @@ import {
   type Value,
   type State,
   type BaseKey,
-  TOTAL_FILE,
   type Buttons,
-  buttons,
   Note,
 } from "./types"
 
@@ -36,17 +32,15 @@ export const keyToPosition = (k: Key): Position => [
 ]
 export const getKeys = () => {
   let i = 0
-  return files
-    .map((f) =>
-      ranks.map((r) => {
-        const row = Math.floor(i / 9)
-        const col = i % 9
-        const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1
-        i++
-        return `${f}${r}${block}` as Key
-      }),
-    )
-    .flat()
+  return FILES.map((f) =>
+    RANKS.map((r) => {
+      const row = Math.floor(i / 9)
+      const col = i % 9
+      const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1
+      i++
+      return `${f}${r}${block}` as Key
+    }),
+  ).flat()
 }
 
 function getDuplicateKeys<K, V>(map: Map<K, V>): K[] {
@@ -242,7 +236,7 @@ export function getKeyFromPosition(pos: Position): Key | undefined {
   const k = (9 * pos[0] + pos[1]) as number
   return pos.every((x) => x >= 0 && x <= 9) ? getKeys()[k] : undefined
 }
-export const allDigits = files.map((f, i) => `${f}${i + 1}` as Key)
+export const allDigits = FILES.map((f, i) => `${f}${i + 1}` as Key)
 
 export function getDigitFromPosition(pos: Position): Key | undefined {
   const k = (pos[1] + pos[0]) as number
@@ -265,7 +259,7 @@ export const getButtonKeys = () => {
   const numberOfButtons = 7
   const buttonKeys = getKeys().slice(0, numberOfButtons)
   const m: Buttons = new Map()
-  buttons.map((b, i) => {
+  BTN_NAMES.map((b, i) => {
     const k: BaseKey = buttonKeys[i] as unknown as BaseKey
     m.set(k, b)
   })

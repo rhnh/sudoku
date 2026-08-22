@@ -7,7 +7,7 @@ import {
   type Key,
   type State,
   type Value,
-  BOARD_SIZE,
+  Rank,
 } from "./types"
 
 import {
@@ -93,14 +93,7 @@ export function renderBase(state: State): State {
 }
 const renderBTNSection = (state: State): HTMLElement => {
   const {buttons, bounds} = state
-  const btns = [
-    '<i class="fa-solid fa-play"></i>',
-    '<i class="fa-solid fa-arrows-rotate"></i>',
-    `<i class="fa-solid fa-x"></i>`,
-    `<i class="fa-solid fa-pen"></i>`,
-    `<i class="fa-solid fa-eye"></i>`,
-    `<i class="fa-solid fa-arrow-left"></i>`,
-  ]
+
   let btnsIndex = 0
   const btnSection = document.createElement("section")
   btnSection.classList.add("btn-section")
@@ -112,7 +105,7 @@ const renderBTNSection = (state: State): HTMLElement => {
     btn.id = `${v.replace(/\s/g, "-")}`.toLowerCase()
     btn.classList.add(k)
 
-    btn.innerHTML = btns[btnsIndex++]
+    btn.innerHTML = BTN_ICONS[btnsIndex++]
     btn.style.aspectRatio = `1`
     btn.classList.add("buttons")
 
@@ -147,7 +140,7 @@ const renderTimer = (state: State) => {
   return timer
 }
 export function renderNavPanel(state: State): State {
-  const {aside, nav} = state
+  const {nav} = state
 
   updateBounds(state)
 
@@ -263,7 +256,7 @@ export function drawBackground(state: State) {
 
 export function renderBoard(state: State): State {
   updateBounds(state)
-  const {board, cells} = state
+  const {board} = state
   board.innerHTML = ""
   if (state.gameState === "isOvered") renderGameOver(state)
   for (const [k, v] of cells) {
