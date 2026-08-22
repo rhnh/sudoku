@@ -1,4 +1,5 @@
-import {addNote, renderBoard} from "./render"
+import {addNote} from "./notes"
+import {renderBoard} from "./render"
 import type {Key, Rank, State, Value, Position, MouchEvent} from "./types"
 
 import {

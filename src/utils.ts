@@ -1,3 +1,4 @@
+import {BTN_NAMES, FILES, RANKS, TOTAL_FILE} from "./constants"
 import {renderBoard} from "./render"
 import {
   type CellElement,
@@ -93,9 +94,10 @@ export const addNewValue = (state: State, value: Value) => {
   if (!state.targetKey) return
   state.selected.map((s) => {
     if (state.originCell.get(s) !== "0" && state.originCell.get(s)) return
-    const notes = getNotesInHighlighted(state, s)(value)
-    if (notes.length > 0)
-      state.notes = state.notes.filter((e) => !notes.includes(e))
+
+    // const notes = getNotesInHighlighted(state, s)(value)
+    // if (notes.length > 0)
+    //   state.notes = state.notes.filter((e) => !notes.includes(e))
 
     state.cells.set(s, `${value}`)
     state.lastMoves.push(s)
@@ -135,23 +137,24 @@ export function memo<A>(f: () => A): Memo<A> {
 export const getNotesInHighlighted =
   (state: State, key: Key) =>
   (value: Value): Note[] => {
+    //TODO
     const commons = getCommons(state)(key)
-
-    if (state.notes.length < 1) return []
+    //TODO
+    // if (state.notes.length < 1) return []
 
     const keys: Note[] = []
-    state.notes
-      .filter((note) => {
-        return note.slice(-1) === value
-      })
-      .map((k) => {
-        const f = `${k.slice(0, 3)}` as Key
-        for (const key of commons.keys()) {
-          if (key.startsWith(f)) {
-            keys.push(`${key}${value}` as Key)
-          }
-        }
-      })
+    // state.notes
+    //   .filter((note) => {
+    //     return note.slice(-1) === value
+    //   })
+    //   .map((k) => {
+    //     const f = `${k.slice(0, 3)}` as Key
+    //     for (const key of commons.keys()) {
+    //       if (key.startsWith(f)) {
+    //         keys.push(`${key}${value}` as Key)
+    //       }
+    //     }
+    //   })
 
     return keys
   }

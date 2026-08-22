@@ -1,7 +1,11 @@
 import {renderBoard} from "./render"
-import {Note, State, Value} from "./types"
+import {State, Value} from "./types"
 import {addNewValue} from "./utils"
-
+/**
+ * This looks ameature. This need to change and should be saved in a map or an array
+ * @param state
+ * @returns
+ */
 export function panelEvents(state: State) {
   const {nav} = state
 
@@ -54,12 +58,12 @@ export function panelEvents(state: State) {
           state.duplicates = new Map()
         }
       })
+    //TODO
+    // const found = state.selected
+    //   .map((r) => state.notes.filter((h) => r.slice(0, 2) === h.slice(0, 2)))
+    //   .flat() as unknown as Note[]
 
-    const found = state.selected
-      .map((r) => state.notes.filter((h) => r.slice(0, 2) === h.slice(0, 2)))
-      .flat() as unknown as Note[]
-
-    state.notes = state.notes.filter((item) => !found.includes(item))
+    // state.notes = state.notes.filter((item) => !found.includes(item))
     renderBoard(state)
   })
 

@@ -1,3 +1,5 @@
+import {BOARD_SIZE, BTN_ICONS} from "./constants"
+import {renderNotes} from "./notes"
 import {createNumPad, numPadEvents} from "./numpad"
 import {panelEvents} from "./panelEvents"
 
@@ -19,6 +21,7 @@ import {
   id,
   formatTime,
   createSvg,
+  getElementByKey,
 } from "./utils"
 
 export const renderNumpad = (state: State): State =>
@@ -259,6 +262,14 @@ export function renderBoard(state: State): State {
   const {board} = state
   board.innerHTML = ""
   if (state.gameState === "isOvered") renderGameOver(state)
+  renderCells(state)
+  renderNotes(state)
+  drawBackground(state)
+  return state
+}
+
+function renderCells(state: State) {
+  const {cells, board} = state
   for (const [k, v] of cells) {
     const cellElem = document.createElement("cell") as CellElement
     const p = keyToPosition(k as Key)
@@ -311,51 +322,5 @@ export function renderBoard(state: State): State {
     }
     if (state.gameState === "isOvered" || state.gameState === "isPaused")
       cellElem.style.opacity = "0.3"
-    renderNotes(state, cellElem)
   }
-  drawBackground(state)
-  return state
-}
-
-export const addNote = (state: State) => (value: Value) => {
-  const notes = state.selected?.map((k) => {
-    const note = `${k}${value}` as Note
-    return note
-  })
-  const f = new Set([...notes])
-  const found = state.notes.filter((r) => f.has(r))
-  if (found.length > 0) {
-    state.notes = state.notes.filter((r) => !f.has(r))
-    return
-  }
-  state.notes = [...new Set([...state.notes, ...notes])]
-  state.notes = [...new Set([...state.notes])]
-  state.notes = [
-    ...state.notes,
-    ...new Set(notes.filter((h, i) => state.notes[i] == h)),
-  ]
-}
-export function renderNotes(state: State, el: CellElement): State {
-  let {notes, bounds} = state
-  notes = [...new Set(notes)]
-  const cellHeight = bounds().width / BOARD_SIZE
-  const rows = 3 // in one Cell there will be 3 rows
-  notes.map((h) => {
-    const value = +h.slice(-1)
-    const key = h.slice(0, 3) as unknown as Key
-    if (!el.dataset.key?.startsWith(key) || el.dataset.value !== "0") return
-    const [x, y] = getSquareNr(value)
-    const noteElm = document.createElement("note") as CellElement
-    noteElm.style.gridColumn = `${y}`
-    noteElm.style.gridRow = `${x}`
-
-    noteElm.innerHTML = `${value}`
-    noteElm.style.fontSize = `${cellHeight / rows}px`
-    noteElm.style.display = "flex"
-    noteElm.style.alignItems = "center"
-    noteElm.style.justifyContent = "center"
-    noteElm.style.lineHeight = "1"
-    el?.appendChild(noteElm)
-  })
-  return state
 }

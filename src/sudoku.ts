@@ -43,7 +43,7 @@ export const initState = (
     originCell: sudoku.cells,
     selected: [],
     digits: getDigits(),
-    notes: [],
+    notes: new Map(),
     buttons: getButtonKeys(),
     isNote: false,
     isDragging: false,
@@ -54,7 +54,7 @@ export const initState = (
     userInput, //TODO: After every click it should scan if this not empty and if it filled and has the correct answers
     seconds: 0,
     lastMoves: [],
-  } as unknown as State
+  }
 
   const state: State = {...headlessState, wrap: el} as unknown as State
   return state

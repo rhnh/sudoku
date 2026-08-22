@@ -1,4 +1,5 @@
-import {addNote, renderBoard} from "./render"
+import {addNote} from "./notes"
+import {renderBoard} from "./render"
 import {State, Value} from "./types"
 import {addNewValue} from "./utils"
 

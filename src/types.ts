@@ -10,7 +10,7 @@ export type ButtonTexts = (typeof BTN_NAMES)[number]
 
 export type Buttons = Map<BaseKey, ButtonTexts>
 export type Note = `${BaseKey}${Rank}`
-export type Notes = Note[]
+export type Notes = Map<Key, Set<Rank>>
 export type Key = `${BaseKey}${Rank}`
 
 export type GameState = (typeof GAME_STATE)[number]
