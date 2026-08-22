@@ -1,3 +1,5 @@
+export const id = <T>(x: T) => x
+
 export type Box<T> = {
   map: <U>(fn: (x: T) => U) => Box<U>
   fold: <R>(fn: (x: T) => R) => R
@@ -17,8 +19,6 @@ export interface Memo<A> {
   clear: () => void
 }
 
-export const id = <T>(x: T) => x
-
 export function memo<A>(f: () => A): Memo<A> {
   let v: A | undefined
   const ret = (): A => {
@@ -31,11 +31,6 @@ export function memo<A>(f: () => A): Memo<A> {
   return ret
 }
 
-/**
- * https://www.typescriptlang.org/docs/handbook/dom-manipulation.html
- * @param SVGElementTagNameMap
- * @returns - a SVG
- */
 export function createSvg<K extends keyof SVGElementTagNameMap>({
   tag,
   className,
@@ -50,24 +45,4 @@ export function createSvg<K extends keyof SVGElementTagNameMap>({
     svg.setAttribute(name, value)
   })
   return svg
-}
-
-/**
- * @param Html Tag
- * @returns - a SVG
- */
-export function createElement<K extends keyof HTMLElementTagNameMap>({
-  tag,
-  className,
-  ...rest
-}: {
-  tag: K
-  className: string
-} & Record<string, string>): HTMLElementTagNameMap[K] {
-  const el = document.createElement(tag)
-  el.classList.add(className)
-  Object.entries(rest).forEach(([name, value]) => {
-    el.setAttribute(name, value)
-  })
-  return el
 }

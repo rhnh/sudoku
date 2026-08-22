@@ -1,7 +1,8 @@
-import {BTN_NAMES, FILES, RANKS, TOTAL_FILE} from "./constants"
+import {files, ranks, TOTAL_FILE} from "./constants"
 import {renderBoard} from "./render"
-import {State, CellElement} from "./state"
+import {State} from "./state"
 import {
+  type CellElement,
   type Cells,
   type Key,
   type Position,
@@ -14,6 +15,7 @@ export const keyToPosition = (k: Key): Position => [
   k.charCodeAt(0) - 97,
   k.charCodeAt(1) - 49,
 ]
+
 export const getKeys = () => {
   let i = 0
   return FILES.map((f) =>
@@ -27,35 +29,34 @@ export const getKeys = () => {
   ).flat()
 }
 
-function getDuplicateKeys<K, V>(map: Map<K, V>): K[] {
-  const valueMap = new Map<V, K[]>()
+function getDuplicateKeys(map: Cells): Key[] {
+  const valueMap = new Map()
+  const result: Key[] = []
 
   for (const [key, value] of map.entries()) {
     if (!valueMap.has(value)) {
       valueMap.set(value, [])
     }
-    valueMap.get(value)!.push(key)
+    valueMap.get(value).push(key)
   }
 
-  const result: K[] = []
-
-  for (const keys of valueMap.values()) {
-    if (keys.length > 1) {
-      result.push(...keys)
+  for (const values of valueMap.values()) {
+    if (values.length > 1) {
+      result.push(...values)
     }
   }
 
   return result
 }
 
-export const showDuplicate =
+export const getDuplicates =
   (state: State) => (f: (key: Key, noZero: boolean) => Cells) =>
     getKeys()
       .map((key) =>
         getDuplicateKeys(f(key, true))
           .map((r) => {
             if (r) {
-              const value = state.cells.get(r) as unknown as Value
+              const value = state.cells.get(r) as Value
               state.duplicates.set(r, `${value}`)
             } else {
               state.duplicates.delete(r)
@@ -66,10 +67,10 @@ export const showDuplicate =
       )
       .flat()
 
-export const showAllDuplicates = (state: State) => {
-  showDuplicate(state)(getRow(state))
-  showDuplicate(state)(getColumn(state))
-  showDuplicate(state)(getSquare(state))
+export const getAllDuplicates = (state: State) => {
+  getDuplicates(state)(getRow(state))
+  getDuplicates(state)(getColumn(state))
+  getDuplicates(state)(getSquare(state))
 }
 
 export const addNewValue = (state: State, value: Value) => {
@@ -89,13 +90,44 @@ export const addNewValue = (state: State, value: Value) => {
   })
 
   state.highlight = getCommons(state)(state.targetKey)
-  showAllDuplicates(state)
+  getAllDuplicates(state)
   renderBoard(state)
 }
+
 export const positionToKey = (p: Position): Key | undefined => {
   const keys = getKeys()
   return p.every((x) => x >= 0 && x <= 8) ? keys[9 * p[0] + p[1]] : undefined
 }
+
+/**
+ * When new value is enter should give all the notes that are value in highlighted
+ * @param state
+ * @param key
+ * @returns
+ */
+export const getNotesInHighlighted =
+  (state: State, key: Key) =>
+  (value: Value): Note[] => {
+    const commons = getCommons(state)(key)
+
+    if (state.notes.length < 1) return []
+
+    const keys: Note[] = []
+    state.notes
+      .filter((note) => {
+        return note.slice(-1) === value
+      })
+      .map((k) => {
+        const f = `${k.slice(0, 3)}` as Key
+        for (const key of commons.keys()) {
+          if (key.startsWith(f)) {
+            keys.push(`${key}${value}` as Key)
+          }
+        }
+      })
+
+    return keys
+  }
 
 export const getCellBy =
   (state: State) =>
@@ -174,11 +206,13 @@ export const createCellElement =
     cellElem.dataset.value = v
     cellElem.dataset.isReadOnly = `${isReadOnly}`
   }
+
 export function getKeyFromPosition(pos: Position): Key | undefined {
   const k = (9 * pos[0] + pos[1]) as number
   return pos.every((x) => x >= 0 && x <= 9) ? getKeys()[k] : undefined
 }
-export const allDigits = FILES.map((f, i) => `${f}${i + 1}` as Key)
+
+export const allDigits = files.map((f, i) => `${f}${i + 1}` as Key)
 
 export function getDigitFromPosition(pos: Position): Key | undefined {
   const k = (pos[1] + pos[0]) as number
@@ -231,44 +265,3 @@ export const formatTime = (totalSeconds: number): string => {
  * @param key
  * @returns
  */
-export const removeNotes =
-  (state: State, key: Key) =>
-  (value: Value): State => {
-    const commons = getCommons(state)(key)
-    for (const [k, _] of commons) {
-      for (const [key, values] of state.notes) {
-        if (k === key) {
-          if (values.has(value)) {
-            state.notes.set(k, values)
-          }
-        }
-      }
-    }
-
-    return state
-  }
-
-export const resizeObserver =
-  (state: State) =>
-  ({
-    render,
-    updateBounds,
-  }: {
-    updateBounds: (state: State) => void
-    render: (state: State) => State
-  }) => {
-    const observerCallback: ResizeObserverCallback = (
-      entries: ResizeObserverEntry[],
-    ) => {
-      window.requestAnimationFrame((): void | undefined => {
-        if (!Array.isArray(entries) || !entries.length) {
-          return
-        }
-        if (state.container) {
-          updateBounds(state)
-          render(state)
-        }
-      })
-    }
-    new ResizeObserver(observerCallback).observe(state.wrap)
-  }

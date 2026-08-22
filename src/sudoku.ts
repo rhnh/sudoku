@@ -2,12 +2,20 @@ import {events} from "./events"
 import {keyEvents} from "./keyEvent"
 import {render, renderBase} from "./render"
 import {sudokuGenerator} from "./sudoku.algo"
-import type {BaseKey, Cells, Digits, Key, Rank, Value} from "./types"
+import type {
+  BaseKey,
+  Cells,
+  Digits,
+  HeadlessState,
+  Key,
+  Rank,
+  Value,
+} from "./types"
 
 import "./assets/base.style.css"
 import "./assets/media-queries.css"
 import {allDigits, getButtonKeys, getKeys} from "./utils"
-import {State, HeadlessState} from "./state"
+import {State} from "./state"
 import {Box} from "./lib"
 
 export function getDigits() {

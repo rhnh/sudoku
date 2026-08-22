@@ -1,12 +1,20 @@
-import {BTN_NAMES, FILES, GAME_STATE, RANKS} from "./constants"
+import {files, ranks} from "./constants"
 
-export type File = (typeof FILES)[number]
-export type Rank = (typeof RANKS)[number] | "0"
+export type File = (typeof files)[number]
+export type Rank = (typeof ranks)[number] | "0"
 export type Position = [number, number]
 export type BaseKey = `${File}${Rank}`
 export type MouchEvent = MouseEvent | TouchEvent
 
-export type ButtonTexts = (typeof BTN_NAMES)[number]
+export const buttons = [
+  "start",
+  "restart",
+  "remove",
+  "note",
+  "hint",
+  "undo",
+] as const
+export type ButtonTexts = (typeof buttons)[number]
 
 export type Buttons = Map<BaseKey, ButtonTexts>
 export type Note = `${BaseKey}${Rank}`
@@ -20,3 +28,30 @@ export type Value = Rank
 export type Cells = Map<Key, Value>
 
 export type Digits = Map<BaseKey, Value>
+
+export interface HeadlessState {
+  gameState: GameState
+  cells: Cells
+  originCell: Cells
+  notes: Notes
+  digits: Digits
+  selected: Key[]
+  buttons: Buttons
+  isNote: boolean
+  draggingValue?: Rank
+  isDragging: boolean
+  isHold: boolean
+  highlight: Cells
+  duplicates: Cells
+  targetKey?: Key
+  solutions: Cells
+  userInput: Cells
+  seconds: number
+  lastMoves: Key[]
+}
+
+export interface CellElement extends HTMLElement {
+  key: Key
+  value: Value
+  isReadOnly: boolean
+}
