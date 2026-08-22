@@ -182,29 +182,9 @@ function renderCells(state: State) {
     cellElem.style.height = `${state.bounds().height / 9}px`
     cellElem.style.width = `${state.bounds().width / 9}px`
 
-    for (const [kh, _] of state.highlight) {
-      if (kh === k) {
-        cellElem.classList.add("highlighted")
-      }
-    }
-    state.selected.map((selectedKey) => {
-      if (selectedKey === k) {
-        cellElem.classList.remove("highlighted")
-        cellElem.classList.remove("duplicates")
-        cellElem.classList.add("selected")
-      }
-    })
-    if (state.duplicates.size > 1)
-      for (const [kd, _] of state.duplicates) {
-        if (k === kd) {
-          cellElem.classList.remove("highlighted")
-          cellElem.classList.remove("selected")
-          cellElem.classList.add("duplicates")
-        }
-      }
     cellElem.dataset.key = `${k}`
     cellElem.dataset.value = `${v}`
-
+    showHighlighted(state)(cellElem, k)
     const c = document.createElement("p")
     c.style.gridArea = "2 / 2 / 3 / 3"
 
@@ -225,4 +205,27 @@ function renderCells(state: State) {
     if (state.gameState === "isOvered" || state.gameState === "isPaused")
       cellElem.style.opacity = "0.3"
   }
+}
+
+const showHighlighted = (state: State) => (cellElem: CellElement, k: Key) => {
+  for (const [kh, _] of state.highlight) {
+    if (kh === k) {
+      cellElem.classList.add("highlighted")
+    }
+  }
+  state.selected.map((selectedKey) => {
+    if (selectedKey === k) {
+      cellElem.classList.remove("highlighted")
+      cellElem.classList.remove("duplicates")
+      cellElem.classList.add("selected")
+    }
+  })
+  if (state.duplicates.size > 1)
+    for (const [kd, _] of state.duplicates) {
+      if (k === kd) {
+        cellElem.classList.remove("highlighted")
+        cellElem.classList.remove("selected")
+        cellElem.classList.add("duplicates")
+      }
+    }
 }
