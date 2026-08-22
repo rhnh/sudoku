@@ -9,8 +9,6 @@ import {
   type Value,
   type BaseKey,
   type Buttons,
-  buttons,
-  Note,
 } from "./types"
 
 export const keyToPosition = (k: Key): Position => [
@@ -20,17 +18,15 @@ export const keyToPosition = (k: Key): Position => [
 
 export const getKeys = () => {
   let i = 0
-  return files
-    .map((f) =>
-      ranks.map((r) => {
-        const row = Math.floor(i / 9)
-        const col = i % 9
-        const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1
-        i++
-        return `${f}${r}${block}` as Key
-      }),
-    )
-    .flat()
+  return FILES.map((f) =>
+    RANKS.map((r) => {
+      const row = Math.floor(i / 9)
+      const col = i % 9
+      const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1
+      i++
+      return `${f}${r}${block}` as Key
+    }),
+  ).flat()
 }
 
 function getDuplicateKeys(map: Cells): Key[] {
@@ -82,9 +78,8 @@ export const addNewValue = (state: State, value: Value) => {
   if (!state.targetKey) return
   state.selected.map((s) => {
     if (state.originCell.get(s) !== "0" && state.originCell.get(s)) return
-    const notes = getNotesInHighlighted(state, s)(value)
-    if (notes.length > 0)
-      state.notes = state.notes.filter((e) => !notes.includes(e))
+
+    removeNotes(state, s)(value)
 
     state.cells.set(s, `${value}`)
     state.lastMoves.push(s)
@@ -147,6 +142,7 @@ export const getCellBy =
     }
     return s
   }
+
 export const getRow =
   (state: State) =>
   (key: Key, noZero = false): Cells =>
@@ -237,7 +233,7 @@ export const getButtonKeys = () => {
   const numberOfButtons = 7
   const buttonKeys = getKeys().slice(0, numberOfButtons)
   const m: Buttons = new Map()
-  buttons.map((b, i) => {
+  BTN_NAMES.map((b, i) => {
     const k: BaseKey = buttonKeys[i] as unknown as BaseKey
     m.set(k, b)
   })
@@ -262,8 +258,10 @@ export const formatTime = (totalSeconds: number): string => {
   const pad = (n: number) => n.toString().padStart(2, "0")
   return `${pad(minutes)}:${pad(seconds)}`
 }
+
 /**
- * https://www.typescriptlang.org/docs/handbook/dom-manipulation.html
- * @param SVGElementTagNameMap
- * @returns - a SVG
+ * When new value is enter should give all the notes that are value in highlighted
+ * @param state
+ * @param key
+ * @returns
  */

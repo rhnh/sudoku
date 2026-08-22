@@ -65,34 +65,21 @@ export function renderBase(state: State): State {
   state.wrap.appendChild(aside)
   const bounds = memo(() => container.getBoundingClientRect())
 
-  state = {...state, board, numPad, bounds, container, aside, nav}
-  const observerCallback: ResizeObserverCallback = (
-    entries: ResizeObserverEntry[],
-  ) => {
-    window.requestAnimationFrame((): void | undefined => {
-      if (!Array.isArray(entries) || !entries.length) {
-        return
-      }
-      if (state.container) {
-        updateBounds(state)
-        render(state)
-      }
-    })
+  state = {
+    ...state,
+    board,
+    numpadSection: numPad,
+    bounds,
+    container,
+    sidePanel: aside,
+    ctrlBTNSection: nav,
   }
-  new ResizeObserver(observerCallback).observe(state.wrap)
-
+  resizeObserver(state)({render, updateBounds})
   return state
 }
 const renderBTNSection = (state: State): HTMLElement => {
   const {buttons, bounds} = state
-  const btns = [
-    '<i class="fa-solid fa-play"></i>',
-    '<i class="fa-solid fa-arrows-rotate"></i>',
-    `<i class="fa-solid fa-x"></i>`,
-    `<i class="fa-solid fa-pen"></i>`,
-    `<i class="fa-solid fa-eye"></i>`,
-    `<i class="fa-solid fa-arrow-left"></i>`,
-  ]
+
   let btnsIndex = 0
   const btnSection = document.createElement("section")
   btnSection.classList.add("btn-section")
@@ -104,7 +91,7 @@ const renderBTNSection = (state: State): HTMLElement => {
     btn.id = `${v.replace(/\s/g, "-")}`.toLowerCase()
     btn.classList.add(k)
 
-    btn.innerHTML = btns[btnsIndex++]
+    btn.innerHTML = BTN_ICONS[btnsIndex++]
     btn.style.aspectRatio = `1`
     btn.classList.add("buttons")
 
@@ -115,9 +102,10 @@ const renderBTNSection = (state: State): HTMLElement => {
 
 const renderTimer = (state: State) => {
   const {bounds} = state
+  const RATIO = 3
   const timer = document.createElement("section")
-  timer.style.height = `${bounds().height / 9}px`
-  timer.style.width = `${bounds().height / 3}px`
+  timer.style.height = `${bounds().height / TOTAL_FILE}px`
+  timer.style.width = `${bounds().height / RATIO}px`
   // timer.style.width = `${bounds().width / 3 - 1}px`
   timer.classList.add("timer-section")
   timer.id = "timer"
@@ -139,11 +127,11 @@ const renderTimer = (state: State) => {
   return timer
 }
 export function renderNavPanel(state: State): State {
-  const {aside, nav} = state
+  const {ctrlBTNSection: nav} = state
 
   updateBounds(state)
 
-  state.nav.innerHTML = ""
+  state.ctrlBTNSection.innerHTML = ""
 
   nav.appendChild(renderTimer(state))
   nav.appendChild(renderBTNSection(state))
@@ -256,10 +244,18 @@ export function drawBackground(state: State) {
 
 export function renderBoard(state: State): State {
   updateBounds(state)
-  const {board, cells} = state
+  const {board} = state
   board.innerHTML = ""
 
   if (state.gameState === "isOvered") renderGameOver(state)
+  renderCells(state)
+  renderNotes(state)
+  drawBackground(state)
+  return state
+}
+
+function renderCells(state: State) {
+  const {cells, board} = state
   for (const [k, v] of cells) {
     const cellElem = document.createElement("cell") as CellElement
     const p = keyToPosition(k as Key)
