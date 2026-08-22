@@ -10,7 +10,6 @@ import {
   type State,
   type BaseKey,
   type Buttons,
-  Note,
 } from "./types"
 
 export type Box<T> = {
@@ -95,9 +94,7 @@ export const addNewValue = (state: State, value: Value) => {
   state.selected.map((s) => {
     if (state.originCell.get(s) !== "0" && state.originCell.get(s)) return
 
-    // const notes = getNotesInHighlighted(state, s)(value)
-    // if (notes.length > 0)
-    //   state.notes = state.notes.filter((e) => !notes.includes(e))
+    removeNotes(state, s)(value)
 
     state.cells.set(s, `${value}`)
     state.lastMoves.push(s)
@@ -127,37 +124,6 @@ export function memo<A>(f: () => A): Memo<A> {
   }
   return ret
 }
-
-/**
- * When new value is enter should give all the notes that are value in highlighted
- * @param state
- * @param key
- * @returns
- */
-export const getNotesInHighlighted =
-  (state: State, key: Key) =>
-  (value: Value): Note[] => {
-    //TODO
-    const commons = getCommons(state)(key)
-    //TODO
-    // if (state.notes.length < 1) return []
-
-    const keys: Note[] = []
-    // state.notes
-    //   .filter((note) => {
-    //     return note.slice(-1) === value
-    //   })
-    //   .map((k) => {
-    //     const f = `${k.slice(0, 3)}` as Key
-    //     for (const key of commons.keys()) {
-    //       if (key.startsWith(f)) {
-    //         keys.push(`${key}${value}` as Key)
-    //       }
-    //     }
-    //   })
-
-    return keys
-  }
 
 export const getCellBy =
   (state: State) =>
@@ -307,3 +273,26 @@ export function createSvg<K extends keyof SVGElementTagNameMap>({
   })
   return svg
 }
+
+/**
+ * When new value is enter should give all the notes that are value in highlighted
+ * @param state
+ * @param key
+ * @returns
+ */
+export const removeNotes =
+  (state: State, key: Key) =>
+  (value: Value): State => {
+    const commons = getCommons(state)(key)
+    for (const [k, _] of commons) {
+      for (const [key, values] of state.notes) {
+        if (k === key) {
+          if (values.has(value)) {
+            state.notes.set(k, values)
+          }
+        }
+      }
+    }
+
+    return state
+  }

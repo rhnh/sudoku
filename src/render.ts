@@ -1,4 +1,4 @@
-import {BOARD_SIZE, BTN_ICONS} from "./constants"
+import {BOARD_SIZE, BTN_ICONS, TOTAL_FILE} from "./constants"
 import {renderNotes} from "./notes"
 import {createNumPad, numPadEvents} from "./numpad"
 import {panelEvents} from "./panelEvents"
@@ -119,9 +119,10 @@ const renderBTNSection = (state: State): HTMLElement => {
 
 const renderTimer = (state: State) => {
   const {bounds} = state
+  const RATIO = 3
   const timer = document.createElement("section")
-  timer.style.height = `${bounds().height / 9}px`
-  timer.style.width = `${bounds().height / 3}px`
+  timer.style.height = `${bounds().height / TOTAL_FILE}px`
+  timer.style.width = `${bounds().height / RATIO}px`
   // timer.style.width = `${bounds().width / 3 - 1}px`
   timer.classList.add("timer-section")
   timer.id = "timer"

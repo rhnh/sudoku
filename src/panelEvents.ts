@@ -58,12 +58,7 @@ export function panelEvents(state: State) {
           state.duplicates = new Map()
         }
       })
-    //TODO
-    // const found = state.selected
-    //   .map((r) => state.notes.filter((h) => r.slice(0, 2) === h.slice(0, 2)))
-    //   .flat() as unknown as Note[]
 
-    // state.notes = state.notes.filter((item) => !found.includes(item))
     renderBoard(state)
   })
 
