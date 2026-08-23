@@ -1,7 +1,4 @@
 @media only screen and (min-device-width: 600px) {
-  body {
-  }
-
   #sudoku {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -16,11 +13,33 @@
     grid-column: 2;
     grid-row: 1;
   }
-  #aside {
-    display: block;
+
+  .s-btn-section {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+
     grid-column: 1;
     grid-row: 1;
-    justify-self: end;
+
+    margin: 0;
+    padding: 0;
+  }
+
+  .content {
+    grid-column: 2;
+    grid-row: 1;
+
+    margin: 0;
+    padding: 0;
+  }
+
+  .rotate-btn {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    box-sizing: border-box;
+    margin: 0;
   }
   numpad {
     display: grid;

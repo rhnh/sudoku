@@ -1,5 +1,5 @@
 import {BTN_ICONS, TOTAL_FILE} from "./constants"
-import {Box, id, memo} from "./lib"
+import {Box, createElement, id, memo} from "./lib"
 import {renderNotes} from "./notes"
 import {createNumPad, numPadEvents} from "./numpad"
 import {panelEvents} from "./panelEvents"
@@ -48,20 +48,7 @@ export function renderBase(state: State): State {
   const board = document.createElement("board")
 
   container.appendChild(board)
-
-  const numPad = document.createElement("numpad")
-  numPad.id = "numpad"
-
-  const header = document.createElement("head")
-  header.id = "aside-head"
-  const aside = document.createElement("section")
-  aside.id = "aside"
-  const nav = document.createElement("article")
-  nav.classList.add("panel")
-  nav.id = "panel"
-
-  aside.appendChild(nav)
-  aside.appendChild(numPad)
+  const {aside, nav, numPad} = createSideLayout()
 
   state.wrap.append(container)
   state.wrap.appendChild(aside)
@@ -78,6 +65,55 @@ export function renderBase(state: State): State {
   }
   resizeObserver(state)({render, updateBounds})
   return state
+}
+
+function createSideLayout() {
+  const numPad = document.createElement("numpad")
+  numPad.id = "numpad"
+
+  const aside = document.createElement("section")
+  aside.id = "aside"
+  const nav = document.createElement("article")
+  nav.classList.add("panel")
+  nav.id = "panel"
+  const content = createElement({tag: "section", className: "content"})
+  content.appendChild(nav)
+  content.appendChild(numPad)
+
+  const buttonSection = createElement({
+    tag: "section",
+    className: "s-btn-section",
+  })
+
+  const zen = createElement({tag: "button", className: "zen-btn"})
+  zen.classList.add("rotate-btn")
+  zen.innerText = "zen"
+
+  const easy = createElement({tag: "button", className: "easy-btn"})
+  easy.classList.add("rotate-btn")
+  easy.innerText = "easy"
+
+  const medium = createElement({tag: "button", className: "medium-btn"})
+  medium.classList.add("rotate-btn")
+  medium.innerText = "medium"
+
+  const hard = createElement({tag: "button", className: "hard-btn"})
+  hard.classList.add("rotate-btn")
+  hard.innerText = "hard"
+
+  const expert = createElement({tag: "button", className: "expert-btn"})
+  expert.classList.add("rotate-btn")
+  expert.innerText = "expert"
+
+  zen.addEventListener("click", () => {
+    content.classList.toggle("zen")
+  })
+
+  buttonSection.appendChild(zen)
+  buttonSection.append(easy, medium, hard, expert)
+  aside.appendChild(buttonSection)
+  aside.append(content)
+  return {numPad, aside, nav}
 }
 const renderBTNSection = (state: State): HTMLElement => {
   const {buttons, bounds} = state
@@ -128,6 +164,7 @@ const renderTimer = (state: State) => {
   }, 1000)
   return timer
 }
+
 export function renderNavPanel(state: State): State {
   const {ctrlBTNSection: nav} = state
 

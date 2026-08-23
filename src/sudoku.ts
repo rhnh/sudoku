@@ -59,7 +59,7 @@ export const getCells = (): {cells: Cells; solutions: Map<Key, Value>} => {
   const sudoku = sudokuGenerated.grid.flat()
   const solutions = sudokuGenerated.solution
 
-  getKeys().map((key, i) => {
+  getKeys().forEach((key, i) => {
     // Calculate square number (1–9)
     const row = Math.floor(i / 9)
     const col = i % 9

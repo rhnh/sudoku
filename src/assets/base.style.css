@@ -107,7 +107,7 @@ numpad {
 }
 
 numpad > * {
-  font-size: 32px;
+  font-size: 20px;
   width: 100%;
   background-color: var(--light2);
   text-align: center;
@@ -175,9 +175,60 @@ numpad > * {
   background: var(--orange);
 }
 .timer-section > * {
-  font-size: 32px;
+  font-size: 28px;
   color: var(--black);
   background-color: var(--light2);
   width: 100%;
   text-align: center;
+}
+
+.zen {
+  display: none;
+  visibility: hidden;
+}
+
+#aside {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+}
+.s-btn-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  grid-column: 1;
+  grid-row: 2;
+  margin: 0;
+}
+.content {
+  margin: 0;
+}
+
+#aside {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+}
+
+.s-btn-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  grid-column: 1;
+  grid-row: 2;
+  margin: 0;
+}
+
+.content {
+  margin: 0;
+  grid-column: 1;
+  grid-row: 1;
 }
