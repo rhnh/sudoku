@@ -22,7 +22,16 @@ export const renderAside = (state: State) =>
   Box(state).map(renderNumpad).map(renderNavPanel).map(panelEvents).fold(id)
 
 export const render = (state: State): State =>
-  Box(state).map(renderBoard).map(renderAside).fold(id)
+  Box(state)
+    .map((a) => {
+      console.log(a)
+      return a
+    })
+    .map(renderBoard)
+    .map(renderNumpad)
+    .map(renderNavPanel)
+    .map(panelEvents)
+    .fold(id)
 
 export function renderBase(state: State): State {
   const container = document.createElement("container")
@@ -30,11 +39,12 @@ export function renderBase(state: State): State {
   if (!container) {
     throw new Error('Not HtmlElement found with id "container"')
   }
+  renderNumpad
 
   const board = document.createElement("board")
 
   container.appendChild(board)
-  const {aside, nav, numPad} = createSideLayout()
+  const {aside, nav, numPad} = createSideLayout(state)
 
   state.wrap.append(container)
   state.wrap.appendChild(aside)

@@ -3,7 +3,8 @@ import {createElement} from "./lib"
 import {State} from "./state"
 import {formatTime} from "./utils"
 
-export function createSideLayout() {
+export function createSideLayout(state: State) {
+  console.log("again createSideLayout")
   const numPad = document.createElement("numpad")
   numPad.id = "numpad"
 
@@ -68,10 +69,6 @@ export function createSideLayout() {
   })
 
   themes.innerText = "themes"
-
-  zen.addEventListener("click", () => {
-    content.classList.toggle("zen")
-  })
 
   buttonSection.appendChild(zen)
   buttonSection.append(expert, hard, medium, easy, themes)

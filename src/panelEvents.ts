@@ -1,4 +1,4 @@
-import {renderBoard} from "./render"
+import {render} from "./render"
 import {State} from "./state"
 import {Value} from "./types"
 import {addNewValue} from "./utils"
@@ -8,7 +8,7 @@ import {addNewValue} from "./utils"
  * @returns
  */
 export function panelEvents(state: State) {
-  const {ctrlBTNSection: nav} = state
+  const {ctrlBTNSection: nav, sidePanel} = state
 
   const start = nav.querySelector("#start") as HTMLButtonElement
   if (!start) return state
@@ -17,20 +17,22 @@ export function panelEvents(state: State) {
       state.gameState = "isPlaying"
       let btn = nav.querySelector("#start") as HTMLButtonElement
       btn.innerHTML = `<i class="fa-solid fa-circle-pause"></i>`
-      renderBoard(state)
+      console.log("change, to playing")
+      return render(state)
     } else if (state.gameState === "isPaused") {
       state.gameState = "isPlaying"
       let btn = nav.querySelector("#start") as HTMLButtonElement
       btn.innerHTML = `<i class="fa-solid fa-circle-pause"></i>`
-      renderBoard(state)
+      return render(state)
     } else if (state.gameState === "isPlaying") {
       state.gameState = "isPaused"
       let btn = nav.querySelector("#start") as HTMLButtonElement
 
       btn.innerHTML = `<i class="fa-solid fa-forward"></i>`
-      renderBoard(state)
+      return render(state)
+    } else {
+      return state
     }
-    renderBoard(state)
   })
 
   const restart = nav.querySelector("#restart") as HTMLButtonElement
@@ -60,7 +62,7 @@ export function panelEvents(state: State) {
         }
       })
 
-    renderBoard(state)
+    render(state)
   })
 
   const showHint = nav.querySelector("#hint") as HTMLButtonElement
@@ -84,7 +86,7 @@ export function panelEvents(state: State) {
         (r) => r != state.lastMoves[last],
       )
       state.duplicates.clear()
-      renderBoard(state)
+      render(state)
     }
   })
 
@@ -95,5 +97,17 @@ export function panelEvents(state: State) {
       timerText.classList.toggle("hide")
     })
   }
+  const content = sidePanel.querySelector(".content")
+  const zen = sidePanel.querySelector(
+    ".s-btn-section > .zen-btn",
+  ) as HTMLButtonElement
+
+  console.log(zen)
+  zen.addEventListener("click", () => {
+    console.log(state.gameState)
+    if (state.gameState === "isPlaying" && content)
+      content.classList.toggle("zen")
+  })
+
   return state
 }
