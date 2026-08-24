@@ -1,45 +1,36 @@
+import { BTN_NAMES, FILES, RANKS, TOTAL_FILE } from "./constants";
 import { renderBoard } from "./render";
-import { files, ranks, TOTAL_FILE, buttons, } from "./types";
-export const Box = (value) => ({
-    map: (fn) => Box(fn(value)),
-    fold: (fn) => fn(value),
-    toString: () => {
-        return value;
-    },
-});
 export const keyToPosition = (k) => [
     k.charCodeAt(0) - 97,
     k.charCodeAt(1) - 49,
 ];
 export const getKeys = () => {
     let i = 0;
-    return files
-        .map((f) => ranks.map((r) => {
+    return FILES.map((f) => RANKS.map((r) => {
         const row = Math.floor(i / 9);
         const col = i % 9;
         const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1;
         i++;
         return `${f}${r}${block}`;
-    }))
-        .flat();
+    })).flat();
 };
 function getDuplicateKeys(map) {
     const valueMap = new Map();
+    const result = [];
     for (const [key, value] of map.entries()) {
         if (!valueMap.has(value)) {
             valueMap.set(value, []);
         }
         valueMap.get(value).push(key);
     }
-    const result = [];
-    for (const keys of valueMap.values()) {
-        if (keys.length > 1) {
-            result.push(...keys);
+    for (const values of valueMap.values()) {
+        if (values.length > 1) {
+            result.push(...values);
         }
     }
     return result;
 }
-export const showDuplicate = (state) => (f) => getKeys()
+export const getDuplicates = (state) => (f) => getKeys()
     .map((key) => getDuplicateKeys(f(key, true))
     .map((r) => {
     if (r) {
@@ -53,10 +44,10 @@ export const showDuplicate = (state) => (f) => getKeys()
 })
     .flat())
     .flat();
-export const showAllDuplicates = (state) => {
-    showDuplicate(state)(getRow(state));
-    showDuplicate(state)(getColumn(state));
-    showDuplicate(state)(getSquare(state));
+export const getAllDuplicates = (state) => {
+    getDuplicates(state)(getRow(state));
+    getDuplicates(state)(getColumn(state));
+    getDuplicates(state)(getSquare(state));
 };
 export const addNewValue = (state, value) => {
     state.duplicates = new Map();
@@ -65,9 +56,7 @@ export const addNewValue = (state, value) => {
     state.selected.map((s) => {
         if (state.originCell.get(s) !== "0" && state.originCell.get(s))
             return;
-        const notes = getNotesInHighlighted(state, s)(value);
-        if (notes.length > 0)
-            state.notes = state.notes.filter((e) => !notes.includes(e));
+        removeNotes(state, s)(value);
         state.cells.set(s, `${value}`);
         state.lastMoves.push(s);
         state.userInput.set(s, `${value}`);
@@ -76,49 +65,12 @@ export const addNewValue = (state, value) => {
         }
     });
     state.highlight = getCommons(state)(state.targetKey);
-    showAllDuplicates(state);
+    getAllDuplicates(state);
     renderBoard(state);
 };
 export const positionToKey = (p) => {
     const keys = getKeys();
     return p.every((x) => x >= 0 && x <= 8) ? keys[9 * p[0] + p[1]] : undefined;
-};
-export function memo(f) {
-    let v;
-    const ret = () => {
-        if (v === undefined)
-            v = f();
-        return v;
-    };
-    ret.clear = () => {
-        v = undefined;
-    };
-    return ret;
-}
-/**
- * When new value is enter should give all the notes that are value in highlighted
- * @param state
- * @param key
- * @returns
- */
-export const getNotesInHighlighted = (state, key) => (value) => {
-    const commons = getCommons(state)(key);
-    if (state.notes.length < 1)
-        return [];
-    const keys = [];
-    state.notes
-        .filter((note) => {
-        return note.slice(-1) === value;
-    })
-        .map((k) => {
-        const f = `${k.slice(0, 3)}`;
-        for (const key of commons.keys()) {
-            if (key.startsWith(f)) {
-                keys.push(`${key}${value}`);
-            }
-        }
-    });
-    return keys;
 };
 export const getCellBy = (state) => (key, noZero = false) => (n) => {
     const s = new Map();
@@ -175,7 +127,7 @@ export function getKeyFromPosition(pos) {
     const k = (9 * pos[0] + pos[1]);
     return pos.every((x) => x >= 0 && x <= 9) ? getKeys()[k] : undefined;
 }
-export const allDigits = files.map((f, i) => `${f}${i + 1}`);
+export const allDigits = FILES.map((f, i) => `${f}${i + 1}`);
 export function getDigitFromPosition(pos) {
     const k = (pos[1] + pos[0]);
     return pos.every((x) => x >= 0 && x <= 9) ? allDigits[k] : undefined;
@@ -187,12 +139,11 @@ export const getPositionKeyAtDom = (bounds) => (pos, xSize = 9, ySize = 9) => {
         ? [file, rank]
         : [-1, -1];
 };
-export const id = (x) => x;
 export const getButtonKeys = () => {
     const numberOfButtons = 7;
     const buttonKeys = getKeys().slice(0, numberOfButtons);
     const m = new Map();
-    buttons.map((b, i) => {
+    BTN_NAMES.map((b, i) => {
         const k = buttonKeys[i];
         m.set(k, b);
     });
@@ -218,16 +169,47 @@ export const formatTime = (totalSeconds) => {
     return `${pad(minutes)}:${pad(seconds)}`;
 };
 /**
- * https://www.typescriptlang.org/docs/handbook/dom-manipulation.html
- * @param SVGElementTagNameMap
- * @returns - a SVG
+ * When new value is enter should give all the notes that are value in highlighted
+ * @param state
+ * @param key
+ * @returns
  */
-export function createSvg({ tag, className, ...rest }) {
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", tag);
-    svg.classList.add(className);
-    Object.entries(rest).forEach(([name, value]) => {
-        svg.setAttribute(name, value);
-    });
-    return svg;
+export const removeNotes = (state, key) => (value) => {
+    const commons = getCommons(state)(key);
+    for (const [k, _] of commons) {
+        for (const [key, values] of state.notes) {
+            if (k === key) {
+                if (values.has(value)) {
+                    state.notes.set(k, values);
+                }
+            }
+        }
+    }
+    return state;
+};
+export const resizeObserver = (state) => ({ render, updateBounds, }) => {
+    const observerCallback = (entries) => {
+        window.requestAnimationFrame(() => {
+            if (!Array.isArray(entries) || !entries.length) {
+                return;
+            }
+            if (state.container) {
+                updateBounds(state);
+                render(state);
+            }
+        });
+    };
+    new ResizeObserver(observerCallback).observe(state.wrap);
+};
+export function updateBounds(s) {
+    const bounds = s.wrap.getBoundingClientRect();
+    const container = s.container;
+    let width = Math.floor(bounds.width * window.devicePixelRatio) /
+        window.devicePixelRatio -
+        bounds.width / 18;
+    container.style.width = width + "px";
+    container.style.height = width + "px";
+    // container.style.aspectRatio = "1 / 1"
+    s.bounds.clear();
 }
 //# sourceMappingURL=utils.js.map

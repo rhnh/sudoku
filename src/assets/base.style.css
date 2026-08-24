@@ -175,7 +175,7 @@ numpad > * {
   background: var(--orange);
 }
 .timer-section > * {
-  font-size: 28px;
+  font-size: 20px;
   color: var(--black);
   background-color: var(--light2);
   width: 100%;
@@ -184,7 +184,6 @@ numpad > * {
 
 .zen {
   display: none;
-  visibility: hidden;
 }
 
 #aside {
@@ -204,8 +203,14 @@ numpad > * {
   grid-row: 2;
   margin: 0;
 }
+
 .content {
   margin: 0;
+  transform: translateX(0);
+  opacity: 1;
+  transition:
+    transform 0.4s ease,
+    opacity 0.4s ease;
 }
 
 #aside {
@@ -231,4 +236,41 @@ numpad > * {
   margin: 0;
   grid-column: 1;
   grid-row: 1;
+}
+
+.dragging {
+  background-color: rgba(251, 251, 31, 0.432);
+  color: red;
+  aspect-ratio: 1;
+}
+.sm {
+  display: block;
+  font-size: 4px;
+  white-space: initial;
+}
+
+.btn {
+  font-size: x-small;
+}
+
+.tooltiptext {
+  visibility: hidden;
+  padding: 0.25em 0.5em;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 0.25em;
+  white-space: nowrap;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 100%;
+  transition-property: visibility;
+  transition-delay: 0s;
+}
+.btn:hover .tooltiptext {
+  visibility: visible;
+  transition-delay: 0.3s;
 }

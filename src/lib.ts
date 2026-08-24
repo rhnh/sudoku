@@ -45,7 +45,7 @@ export function createSvg<K extends keyof SVGElementTagNameMap>({
   className: string
 } & Record<string, string>): SVGElementTagNameMap[K] {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", tag)
-  svg.classList.add(className)
+  className.split(" ").forEach((name) => svg.classList.add(name))
   Object.entries(rest).forEach(([name, value]) => {
     svg.setAttribute(name, value)
   })
@@ -53,6 +53,7 @@ export function createSvg<K extends keyof SVGElementTagNameMap>({
 }
 
 /**
+ * create new html element. Use space if you want to have multiple classname
  * @param Html Tag
  * @returns - a SVG
  */
@@ -65,9 +66,12 @@ export function createElement<K extends keyof HTMLElementTagNameMap>({
   className: string
 } & Record<string, string>): HTMLElementTagNameMap[K] {
   const el = document.createElement(tag)
-  el.classList.add(className)
+  className.split(" ").forEach((name) => el.classList.add(name))
+
   Object.entries(rest).forEach(([name, value]) => {
     el.setAttribute(name, value)
   })
   return el
 }
+
+export const createButton = ({}) => {}

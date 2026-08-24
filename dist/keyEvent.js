@@ -1,7 +1,8 @@
-import { addNote, renderBoard } from "./render";
+import { addNote } from "./notes";
+import { renderBoard } from "./render";
 import { addNewValue } from "./utils";
 export function keyEvents(state) {
-    const { nav } = state;
+    const { ctrlBTNSection: nav } = state;
     document.addEventListener("keydown", (e) => {
         if (e.key === "r") {
             document.location.reload();

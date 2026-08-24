@@ -6,6 +6,7 @@ import type {BaseKey, Cells, Digits, Key, Rank, Value} from "./types"
 
 import "./assets/base.style.css"
 import "./assets/media-queries.css"
+import "./assets/btn.css"
 import {allDigits, getButtonKeys, getKeys} from "./utils"
 import {State, HeadlessState} from "./state"
 import {Box} from "./lib"
@@ -55,7 +56,7 @@ export const initState = (
 
 export const getCells = (): {cells: Cells; solutions: Map<Key, Value>} => {
   const cells: Cells = new Map()
-  const sudokuGenerated = sudokuGenerator(35)
+  const sudokuGenerated = sudokuGenerator(37)
   const sudoku = sudokuGenerated.grid.flat()
   const solutions = sudokuGenerated.solution
 

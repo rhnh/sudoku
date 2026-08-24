@@ -3,7 +3,7 @@ import {State} from "./state"
 import {Value} from "./types"
 import {addNewValue} from "./utils"
 /**
- * This looks ameature. This need to change and should be saved in a map or an array
+ * This looks amateur. This need to change and should be saved in a map or an array
  * @param state
  * @returns
  */

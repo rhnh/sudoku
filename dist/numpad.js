@@ -1,7 +1,8 @@
-import { addNote, renderBoard } from "./render";
+import { addNote } from "./notes";
+import { renderBoard } from "./render";
 import { addNewValue } from "./utils";
 export const createNumPad = (state) => {
-    const { bounds, numPad } = state;
+    const { bounds, numpadSection: numPad } = state;
     numPad.innerHTML = "";
     for (const [k, i] of state.digits) {
         const el = document.createElement("button");
@@ -16,7 +17,7 @@ export const createNumPad = (state) => {
     return state;
 };
 export const numPadEvents = (state) => {
-    const { numPad } = state;
+    const { numpadSection: numPad } = state;
     numPad.querySelectorAll("*").forEach((button) => {
         const btn = button;
         btn.addEventListener("click", () => {

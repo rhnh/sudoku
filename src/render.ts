@@ -1,8 +1,8 @@
-import {BTN_ICONS, TOTAL_FILE} from "./constants"
-import {Box, createElement, id, memo} from "./lib"
+import {Box, id, memo} from "./lib"
 import {renderNotes} from "./notes"
 import {createNumPad, numPadEvents} from "./numpad"
 import {panelEvents} from "./panelEvents"
+import {createSideLayout, renderBTNSection, renderTimer} from "./renderPanel"
 import {State, CellElement} from "./state"
 import {drawBackground} from "./svg"
 
@@ -11,8 +11,8 @@ import {type Key} from "./types"
 import {
   getPositionFromBound,
   keyToPosition,
-  formatTime,
   resizeObserver,
+  updateBounds,
 } from "./utils"
 
 export const renderNumpad = (state: State): State =>
@@ -23,20 +23,6 @@ export const renderAside = (state: State) =>
 
 export const render = (state: State): State =>
   Box(state).map(renderBoard).map(renderAside).fold(id)
-
-export function updateBounds(s: State): void {
-  const bounds = s.wrap.getBoundingClientRect()
-  const container = s.container
-  let width =
-    Math.floor(bounds.width * window.devicePixelRatio) /
-      window.devicePixelRatio -
-    bounds.width / 18
-
-  container.style.width = width + "px"
-  container.style.height = width + "px"
-  // container.style.aspectRatio = "1 / 1"
-  s.bounds.clear()
-}
 
 export function renderBase(state: State): State {
   const container = document.createElement("container")
@@ -65,104 +51,6 @@ export function renderBase(state: State): State {
   }
   resizeObserver(state)({render, updateBounds})
   return state
-}
-
-function createSideLayout() {
-  const numPad = document.createElement("numpad")
-  numPad.id = "numpad"
-
-  const aside = document.createElement("section")
-  aside.id = "aside"
-  const nav = document.createElement("article")
-  nav.classList.add("panel")
-  nav.id = "panel"
-  const content = createElement({tag: "section", className: "content"})
-  content.appendChild(nav)
-  content.appendChild(numPad)
-
-  const buttonSection = createElement({
-    tag: "section",
-    className: "s-btn-section",
-  })
-
-  const zen = createElement({tag: "button", className: "zen-btn"})
-  zen.classList.add("rotate-btn")
-  zen.innerText = "zen"
-
-  const easy = createElement({tag: "button", className: "easy-btn"})
-  easy.classList.add("rotate-btn")
-  easy.innerText = "easy"
-
-  const medium = createElement({tag: "button", className: "medium-btn"})
-  medium.classList.add("rotate-btn")
-  medium.innerText = "medium"
-
-  const hard = createElement({tag: "button", className: "hard-btn"})
-  hard.classList.add("rotate-btn")
-  hard.innerText = "hard"
-
-  const expert = createElement({tag: "button", className: "expert-btn"})
-  expert.classList.add("rotate-btn")
-  expert.innerText = "expert"
-
-  zen.addEventListener("click", () => {
-    content.classList.toggle("zen")
-  })
-
-  buttonSection.appendChild(zen)
-  buttonSection.append(easy, medium, hard, expert)
-  aside.appendChild(buttonSection)
-  aside.append(content)
-  return {numPad, aside, nav}
-}
-const renderBTNSection = (state: State): HTMLElement => {
-  const {buttons, bounds} = state
-
-  let btnsIndex = 0
-  const btnSection = document.createElement("section")
-  btnSection.classList.add("btn-section")
-  for (const [k, v] of buttons) {
-    const btn = document.createElement("button")
-    btn.style.height = `${bounds().height / 9}px`
-    btn.style.width = `${bounds().height / 9}px`
-    // btn.style.width = `${bounds().width / 3 - 1}px`
-    btn.id = `${v.replace(/\s/g, "-")}`.toLowerCase()
-    btn.classList.add(k)
-
-    btn.innerHTML = BTN_ICONS[btnsIndex++]
-    btn.style.aspectRatio = `1`
-    btn.classList.add("buttons")
-
-    btnSection.append(btn)
-  }
-  return btnSection
-}
-
-const renderTimer = (state: State) => {
-  const {bounds} = state
-  const RATIO = 3
-  const timer = document.createElement("section")
-  timer.style.height = `${bounds().height / TOTAL_FILE}px`
-  timer.style.width = `${bounds().height / RATIO}px`
-  // timer.style.width = `${bounds().width / 3 - 1}px`
-  timer.classList.add("timer-section")
-  timer.id = "timer"
-
-  const timerText = document.createElement("p")
-  timer.appendChild(timerText)
-
-  if (state.gameState === "isInitialed") {
-    timerText.textContent = `00:00`
-  }
-  let seconds = state.seconds ? state.seconds : 0
-  setInterval(() => {
-    if (state.gameState === "isPlaying") {
-      timerText.textContent = formatTime(state.seconds)
-      state.seconds = seconds
-      seconds++
-    }
-  }, 1000)
-  return timer
 }
 
 export function renderNavPanel(state: State): State {

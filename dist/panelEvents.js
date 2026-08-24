@@ -1,7 +1,12 @@
 import { renderBoard } from "./render";
 import { addNewValue } from "./utils";
+/**
+ * This looks amateur. This need to change and should be saved in a map or an array
+ * @param state
+ * @returns
+ */
 export function panelEvents(state) {
-    const { nav } = state;
+    const { ctrlBTNSection: nav } = state;
     const start = nav.querySelector("#start");
     if (!start)
         return state;
@@ -51,10 +56,6 @@ export function panelEvents(state) {
                     state.duplicates = new Map();
                 }
             });
-        const found = state.selected
-            .map((r) => state.notes.filter((h) => r.slice(0, 2) === h.slice(0, 2)))
-            .flat();
-        state.notes = state.notes.filter((item) => !found.includes(item));
         renderBoard(state);
     });
     const showHint = nav.querySelector("#hint");

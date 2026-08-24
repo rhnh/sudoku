@@ -1,4 +1,5 @@
-import { addNote, renderBoard } from "./render";
+import { addNote } from "./notes";
+import { renderBoard } from "./render";
 import { getPositionKeyAtDom, getKeyFromPosition, getElementByKey, getCommons, addNewValue, } from "./utils";
 export const events = (state) => {
     const { board } = state;
@@ -56,10 +57,11 @@ const pointerDown = (state) => (e) => {
     return state;
 };
 export const resetDraggingElement = (state) => {
-    const p = state.draggingElement?.firstChild;
-    if (state.draggingElement && p) {
-        p.style.position = "unset";
-        p.style.transform = "unset";
+    const firstChild = state.draggingElement?.firstChild;
+    if (state.draggingElement && firstChild) {
+        firstChild.style.position = "unset";
+        firstChild.style.transform = "unset";
+        state.draggingElement.classList.remove("dragging");
     }
     if (!state.draggingElement) {
         return;
@@ -105,10 +107,11 @@ const moveDraggingElement = (state) => (position) => {
     const [x, y] = position;
     const p = state.draggingElement?.firstChild;
     if (state.draggingElement && p) {
+        p.classList.add("dragging");
         p.style.position = "absolute";
         p.style.transform = `translate(${x -
             state.draggingElement?.getBoundingClientRect().left -
-            state.draggingElement?.getBoundingClientRect().width / 3}px, ${y - state.draggingElement?.getBoundingClientRect().top - state.draggingElement?.getBoundingClientRect().height / 3}px)`;
+            state.draggingElement?.getBoundingClientRect().width / 2}px, ${y - state.draggingElement?.getBoundingClientRect().top - state.draggingElement?.getBoundingClientRect().height / 3}px)`;
     }
 };
 const pointermove = (state) => (e) => {

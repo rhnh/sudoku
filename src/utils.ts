@@ -274,3 +274,17 @@ export const resizeObserver =
     }
     new ResizeObserver(observerCallback).observe(state.wrap)
   }
+
+export function updateBounds(s: State): void {
+  const bounds = s.wrap.getBoundingClientRect()
+  const container = s.container
+  let width =
+    Math.floor(bounds.width * window.devicePixelRatio) /
+      window.devicePixelRatio -
+    bounds.width / 18
+
+  container.style.width = width + "px"
+  container.style.height = width + "px"
+  // container.style.aspectRatio = "1 / 1"
+  s.bounds.clear()
+}

@@ -1,4 +1,5 @@
-import type { Key, State, MouchEvent } from "./types";
+import { State } from "./state";
+import type { Key, MouchEvent } from "./types";
 export declare const events: (state: State) => State;
 export declare const resetDraggingElement: (state: State) => void;
 export declare const addNoteOrValue: (state: State) => void;

@@ -2,7 +2,11 @@ import { events } from "./events";
 import { keyEvents } from "./keyEvent";
 import { render, renderBase } from "./render";
 import { sudokuGenerator } from "./sudoku.algo";
-import { allDigits, Box, getButtonKeys, getKeys } from "./utils";
+import "./assets/base.style.css";
+import "./assets/media-queries.css";
+import "./assets/btn.css";
+import { allDigits, getButtonKeys, getKeys } from "./utils";
+import { Box } from "./lib";
 export function getDigits() {
     const m = new Map();
     allDigits.map((k, i) => {
@@ -23,7 +27,7 @@ export const initState = (el, sudoku) => {
         originCell: sudoku.cells,
         selected: [],
         digits: getDigits(),
-        notes: [],
+        notes: new Map(),
         buttons: getButtonKeys(),
         isNote: false,
         isDragging: false,
@@ -40,10 +44,10 @@ export const initState = (el, sudoku) => {
 };
 export const getCells = () => {
     const cells = new Map();
-    const sudokuGenerated = sudokuGenerator(35);
+    const sudokuGenerated = sudokuGenerator(37);
     const sudoku = sudokuGenerated.grid.flat();
     const solutions = sudokuGenerated.solution;
-    getKeys().map((key, i) => {
+    getKeys().forEach((key, i) => {
         // Calculate square number (1–9)
         const row = Math.floor(i / 9);
         const col = i % 9;
