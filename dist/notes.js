@@ -9,11 +9,15 @@ export const addNote = (state) => (value) => {
                 state.notes.set(selectedKey, preSet);
             }
             else {
+                if (state.cells.get(selectedKey) !== "0")
+                    return;
                 preSet.add(value);
                 state.notes.set(selectedKey, preSet);
             }
         }
         else {
+            if (state.cells.get(selectedKey) !== "0")
+                return;
             const set = new Set();
             set.add(value);
             state.notes.set(selectedKey, set);

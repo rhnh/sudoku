@@ -1,6 +1,6 @@
 import { addNote } from "./notes";
 import { renderBoard } from "./render";
-import { getPositionKeyAtDom, getKeyFromPosition, getElementByKey, getCommons, addNewValue, } from "./utils";
+import { getPositionKeyAtDom, getKeyFromPosition, getElementByKey, getCommons, addNewValue, isPlaying, } from "./utils";
 export const events = (state) => {
     const { board } = state;
     board.addEventListener("pointerdown", pointerDown(state));
@@ -92,7 +92,7 @@ export const pointerup = (state) => (e) => {
     const key = getKey(state)(e);
     if (!key)
         return state;
-    if (state.gameState !== "isPlaying")
+    if (!isPlaying(state.gameState))
         return state;
     fillNewSelectedCells(state)(key);
     if (state.isDragging && state.draggingElement) {
@@ -115,7 +115,7 @@ const moveDraggingElement = (state) => (position) => {
     }
 };
 const pointermove = (state) => (e) => {
-    if (state.gameState !== "isPlaying")
+    if (!isPlaying(state.gameState))
         return;
     const [x, y] = getCoordinate(e);
     const key = getKey(state)(e);

@@ -9,15 +9,6 @@ export const GAME_STATE = [
     "isPlaying",
     "isOvered",
 ];
-//TODO: This need to be merge with BTN_ICONS
-export const BTN_ICONS = [
-    '<i class="fa-solid fa-play"></i>',
-    '<i class="fa-solid fa-arrows-rotate"></i>',
-    `<i class="fa-solid fa-x"></i>`,
-    `<i class="fa-solid fa-pen"></i>`,
-    `<i class="fa-solid fa-eye"></i>`,
-    `<i class="fa-solid fa-arrow-left"></i>`,
-];
 export const BTN_NAMES = [
     "start",
     "restart",
@@ -26,4 +17,12 @@ export const BTN_NAMES = [
     "hint",
     "undo",
 ];
+export const buttonLabels = new Map();
+buttonLabels.set("start", '<i class="fa-solid fa-play"></i>');
+buttonLabels.set("restart", '<i class="fa-solid fa-arrows-rotate"></i>');
+buttonLabels.set("remove", `<i class="fa-solid fa-x"></i>`);
+buttonLabels.set("note", '<i class="fa-solid fa-pen"></i>');
+buttonLabels.set("hint", `<i class="fa-solid fa-eye"></i>`);
+buttonLabels.set("undo", `<i class="fa-solid fa-arrow-rotate-left"></i>`);
+buttonLabels.set("pause", `<Si class="fa-solid fa-pause"></i>`);
 //# sourceMappingURL=constants.js.map

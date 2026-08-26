@@ -1,16 +1,20 @@
-import { BTN_ICONS, TOTAL_FILE } from "./constants";
+import { buttonLabels, TOTAL_FILE } from "./constants";
 import { createElement } from "./lib";
-import { formatTime } from "./utils";
+import { formatTime, isInitialed, isPlaying } from "./utils";
 export function createSideLayout() {
-    const numPad = document.createElement("numpad");
-    numPad.id = "numpad";
-    const aside = document.createElement("section");
-    aside.id = "aside";
-    const nav = document.createElement("article");
-    nav.classList.add("panel");
-    nav.id = "panel";
+    const sidePanel = createElement({
+        tag: "article",
+        id: "aside",
+        className: "aside",
+    });
+    const nav = createElement({ tag: "section", id: "panel", className: "panel" });
     const content = createElement({ tag: "section", className: "content" });
     content.appendChild(nav);
+    const numPad = createElement({
+        tag: "section",
+        id: "numpad",
+        className: "numpad",
+    });
     content.appendChild(numPad);
     const buttonSection = createElement({
         tag: "section",
@@ -33,22 +37,22 @@ export function createSideLayout() {
     easy.innerHTML = `●○○○<span class="tooltiptext">Tooltip text</span>`;
     const medium = createElement({
         tag: "button",
-        className: "medium-btn btn rotate-btn",
+        className: "medium-btn btn rotate-btn level-btn",
     });
     medium.innerHTML = `●●○○<span class="tooltiptext">Tooltip text</span>`;
     const hard = createElement({
         tag: "button",
-        className: "hard-btn btn rotate-btn",
+        className: "hard-btn btn rotate-btn level-btn",
     });
     hard.innerHTML = `●●●○<span class="tooltiptext">Tooltip text</span>`;
     const expert = createElement({
         tag: "button",
-        className: "expert-btn btn rotate-btn",
+        className: "expert-btn btn rotate-btn level-btn",
     });
     expert.innerHTML = `●●●●<span class="tooltiptext">Tooltip text</span>`;
     const setting = createElement({
         tag: "button",
-        className: "setting-btn btn rotate-btn",
+        className: "setting-btn btn rotate-btn level-btn",
     });
     setting.innerText = "setting";
     const themes = createElement({
@@ -56,28 +60,32 @@ export function createSideLayout() {
         className: "themes-btn btn rotate-btn",
     });
     themes.innerText = "themes";
-    zen.addEventListener("click", () => {
-        content.classList.toggle("zen");
-    });
     buttonSection.appendChild(zen);
     buttonSection.append(expert, hard, medium, easy, themes);
-    aside.appendChild(buttonSection);
-    aside.append(content);
-    return { numPad, aside, nav };
+    sidePanel.appendChild(buttonSection);
+    sidePanel.append(content);
+    return { numPad, aside: sidePanel, nav };
 }
 export const renderBTNSection = (state) => {
     const { buttons, bounds } = state;
-    let btnsIndex = 0;
     const btnSection = document.createElement("section");
     btnSection.classList.add("btn-section");
     for (const [k, v] of buttons) {
         const btn = document.createElement("button");
         btn.style.height = `${bounds().height / 9}px`;
         btn.style.width = `${bounds().height / 9}px`;
-        // btn.style.width = `${bounds().width / 3 - 1}px`
         btn.id = `${v.replace(/\s/g, "-")}`.toLowerCase();
         btn.classList.add(k);
-        btn.innerHTML = BTN_ICONS[btnsIndex++];
+        let value = v;
+        if (k === "a11") {
+            if (isPlaying(state.gameState)) {
+                value = "pause";
+            }
+            if (isInitialed(state.gameState))
+                value = "start";
+        }
+        value = buttonLabels.get(value);
+        btn.innerHTML = value;
         btn.style.aspectRatio = `1`;
         btn.classList.add("buttons");
         btnSection.append(btn);
@@ -95,12 +103,12 @@ export const renderTimer = (state) => {
     timer.id = "timer";
     const timerText = document.createElement("span");
     timer.appendChild(timerText);
-    if (state.gameState === "isInitialed") {
+    if (isInitialed(state.gameState)) {
         timerText.textContent = `00:00`;
     }
     let seconds = state.seconds ? state.seconds : 0;
     setInterval(() => {
-        if (state.gameState === "isPlaying") {
+        if (isPlaying(state.gameState)) {
             timerText.textContent = formatTime(state.seconds);
             state.seconds = seconds;
             seconds++;

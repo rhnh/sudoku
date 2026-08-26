@@ -30,6 +30,7 @@ export interface State extends HeadlessState {
     sidePanel: HTMLElement;
     ctrlBTNSection: HTMLElement;
     draggingElement?: HTMLElement;
+    redraw: () => void;
 }
 export interface CellElement extends HTMLElement {
     key: Key;

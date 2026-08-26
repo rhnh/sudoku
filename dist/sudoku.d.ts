@@ -1,19 +1,17 @@
-import type { Cells, Digits, Key, Value } from "./types";
+import type { Cells, Key, Value } from "./types";
 import "./assets/base.style.css";
 import "./assets/media-queries.css";
 import "./assets/btn.css";
 import { State } from "./state";
 import { Box } from "./lib";
-export declare function getDigits(): Digits;
-export declare const initState: (el: HTMLElement, sudoku: {
-    cells: Map<Key, Value>;
-    solutions: Map<Key, Value>;
-}) => State;
-export declare const getCells: () => {
+export { getCells } from "./sudoku.algo";
+export declare const initState: ({ el, cells, solutions, }: {
+    el: HTMLElement;
     cells: Cells;
-    solutions: Map<Key, Value>;
-};
-export declare function Sudoku(e: HTMLElement, sudoku: {
+    solutions: Cells;
+}) => State;
+export declare function Sudoku({ el, cells, solutions, }: {
+    el: HTMLElement;
     cells: Cells;
     solutions: Map<Key, Value>;
 }): Box<State>;

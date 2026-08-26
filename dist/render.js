@@ -4,18 +4,16 @@ import { createNumPad, numPadEvents } from "./numpad";
 import { panelEvents } from "./panelEvents";
 import { createSideLayout, renderBTNSection, renderTimer } from "./renderPanel";
 import { drawBackground } from "./svg";
-import { getPositionFromBound, keyToPosition, resizeObserver, updateBounds, } from "./utils";
+import { getPositionFromBound, isInitialed, isOvered, isPaused, keyToPosition, resizeObserver, updateBounds, } from "./utils";
+export const render = (state) => Box(state).map(renderBoard).map(renderSidePanel).fold(id);
+export const renderSidePanel = (state) => Box(state).map(renderNumpad).map(renderNavPanel).map(panelEvents).fold(id);
 export const renderNumpad = (state) => Box(createNumPad(state)).map(numPadEvents).fold(id);
-export const renderAside = (state) => Box(state).map(renderNumpad).map(renderNavPanel).map(panelEvents).fold(id);
-export const render = (state) => Box(state).map(renderBoard).map(renderAside).fold(id);
 export function renderBase(state) {
     const container = document.createElement("container");
-    if (!container) {
-        throw new Error('Not HtmlElement found with id "container"');
-    }
     const board = document.createElement("board");
     container.appendChild(board);
     const { aside, nav, numPad } = createSideLayout();
+    state.wrap.dataset.theme = "";
     state.wrap.append(container);
     state.wrap.appendChild(aside);
     const bounds = memo(() => container.getBoundingClientRect());
@@ -41,11 +39,6 @@ export function renderNavPanel(state) {
 }
 export function renderGameOver(state) {
     const { board } = state;
-    // board.innerHTML = ""
-    // board.style.position = "unset"
-    // board.style.display = "flex"
-    // board.style.justifyContent = "center"
-    // board.style.alignItems = "center"
     const h1 = document.createElement("h1");
     h1.innerText = "Game Over";
     h1.style.width = `50%`;
@@ -58,7 +51,7 @@ export function renderBoard(state) {
     updateBounds(state);
     const { board } = state;
     board.innerHTML = "";
-    if (state.gameState === "isOvered")
+    if (isOvered(state.gameState))
         renderGameOver(state);
     renderCells(state);
     renderNotes(state);
@@ -71,7 +64,7 @@ function renderCells(state) {
         const cellElem = document.createElement("cell");
         const p = keyToPosition(k);
         const pos = getPositionFromBound(state, p);
-        if (state.gameState === "isOvered" || state.gameState === "isPaused") {
+        if (isOvered(state.gameState) || isPaused(state.gameState)) {
             cellElem.style.opacity = "0.11";
         }
         cellElem.style.transform = `translate(${pos[0]}px, ${pos[1]}px)`;
@@ -83,7 +76,7 @@ function renderCells(state) {
         showHighlighted(state)(cellElem, k);
         const c = document.createElement("p");
         c.style.gridArea = "2 / 2 / 3 / 3";
-        if (v !== "0" && state.gameState !== "isInitialed") {
+        if (v !== "0" && !isInitialed(state.gameState)) {
             c.innerHTML = `${v}`;
         }
         cellElem.appendChild(c);
@@ -95,7 +88,7 @@ function renderCells(state) {
             cellElem.classList.remove("origin-cells");
             cellElem.classList.add("new-cells");
         }
-        if (state.gameState === "isOvered" || state.gameState === "isPaused")
+        if (isOvered(state.gameState) || isPaused(state.gameState))
             cellElem.style.opacity = "0.3";
     }
 }

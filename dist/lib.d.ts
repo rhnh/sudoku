@@ -1,7 +1,7 @@
 export type Box<T> = {
     map: <U>(fn: (x: T) => U) => Box<U>;
     fold: <R>(fn: (x: T) => R) => R;
-    toString: () => T;
+    toString: <U>(fn: (x: T) => U) => Box<U>;
 };
 export declare const Box: <T>(value: T) => Box<T>;
 export interface Memo<A> {

@@ -140,8 +140,7 @@ export const getPositionKeyAtDom = (bounds) => (pos, xSize = 9, ySize = 9) => {
         : [-1, -1];
 };
 export const getButtonKeys = () => {
-    const numberOfButtons = 7;
-    const buttonKeys = getKeys().slice(0, numberOfButtons);
+    const buttonKeys = getKeys();
     const m = new Map();
     BTN_NAMES.map((b, i) => {
         const k = buttonKeys[i];
@@ -212,4 +211,17 @@ export function updateBounds(s) {
     // container.style.aspectRatio = "1 / 1"
     s.bounds.clear();
 }
+export function getDigits() {
+    const m = new Map();
+    allDigits.map((k, i) => {
+        const key = k;
+        const rank = (i + 1);
+        m.set(key, rank);
+    });
+    return m;
+}
+export const isPlaying = (gameState) => gameState === "isPlaying";
+export const isPaused = (gameState) => gameState === "isPaused";
+export const isOvered = (gameState) => gameState === "isOvered";
+export const isInitialed = (gameState) => gameState === "isInitialed";
 //# sourceMappingURL=utils.js.map

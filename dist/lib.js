@@ -1,8 +1,9 @@
 export const Box = (value) => ({
     map: (fn) => Box(fn(value)),
     fold: (fn) => fn(value),
-    toString: () => {
-        return value;
+    toString: (fn) => {
+        console.info(value);
+        return Box(fn(value));
     },
 });
 export const id = (x) => x;
