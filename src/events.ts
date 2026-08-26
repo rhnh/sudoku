@@ -9,6 +9,7 @@ import {
   getElementByKey,
   getCommons,
   addNewValue,
+  isPlaying,
 } from "./utils"
 
 export const events = (state: State): State => {
@@ -118,7 +119,7 @@ export const pointerup =
 
     if (!key) return state
 
-    if (state.gameState !== "isPlaying") return state
+    if (!isPlaying(state.gameState)) return state
 
     fillNewSelectedCells(state)(key)
 
@@ -146,7 +147,7 @@ const moveDraggingElement = (state: State) => (position: Position) => {
 }
 
 const pointermove = (state: State) => (e: MouchEvent) => {
-  if (state.gameState !== "isPlaying") return
+  if (!isPlaying(state.gameState)) return
 
   const [x, y] = getCoordinate(e)
 

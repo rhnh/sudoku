@@ -1,7 +1,7 @@
-import {BTN_ICONS, TOTAL_FILE} from "./constants"
+import {buttonLabels, TOTAL_FILE} from "./constants"
 import {createElement} from "./lib"
 import {State} from "./state"
-import {formatTime} from "./utils"
+import {formatTime, isInitialed, isPlaying} from "./utils"
 
 export function createSideLayout() {
   const sidePanel = createElement({
@@ -85,18 +85,24 @@ export function createSideLayout() {
 export const renderBTNSection = (state: State): HTMLElement => {
   const {buttons, bounds} = state
 
-  let btnsIndex = 0
   const btnSection = document.createElement("section")
   btnSection.classList.add("btn-section")
+
   for (const [k, v] of buttons) {
     const btn = document.createElement("button")
     btn.style.height = `${bounds().height / 9}px`
     btn.style.width = `${bounds().height / 9}px`
-    // btn.style.width = `${bounds().width / 3 - 1}px`
     btn.id = `${v.replace(/\s/g, "-")}`.toLowerCase()
     btn.classList.add(k)
-
-    btn.innerHTML = BTN_ICONS[btnsIndex++]
+    let value: string = v
+    if (k === "a11") {
+      if (isPlaying(state.gameState)) {
+        value = "pause"
+      }
+      if (isInitialed(state.gameState)) value = "start"
+    }
+    value = buttonLabels.get(value)
+    btn.innerHTML = value
     btn.style.aspectRatio = `1`
     btn.classList.add("buttons")
 
@@ -118,12 +124,12 @@ export const renderTimer = (state: State) => {
   const timerText = document.createElement("span")
   timer.appendChild(timerText)
 
-  if (state.gameState === "isInitialed") {
+  if (isInitialed(state.gameState)) {
     timerText.textContent = `00:00`
   }
   let seconds = state.seconds ? state.seconds : 0
   setInterval(() => {
-    if (state.gameState === "isPlaying") {
+    if (isPlaying(state.gameState)) {
       timerText.textContent = formatTime(state.seconds)
       state.seconds = seconds
       seconds++

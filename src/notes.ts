@@ -12,16 +12,19 @@ export const addNote = (state: State) => (value: Value) => {
         preSet.delete(value)
         state.notes.set(selectedKey, preSet)
       } else {
+        if (state.cells.get(selectedKey) !== "0") return
         preSet.add(value)
         state.notes.set(selectedKey, preSet)
       }
     } else {
+      if (state.cells.get(selectedKey) !== "0") return
       const set = new Set<Rank>()
       set.add(value)
       state.notes.set(selectedKey, set)
     }
   })
 }
+
 export function renderNotes(state: State): State {
   let {notes, bounds} = state
   const cellHeight = bounds().width / BOARD_SIZE

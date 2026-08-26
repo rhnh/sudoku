@@ -10,6 +10,9 @@ import {type Key} from "./types"
 
 import {
   getPositionFromBound,
+  isInitialed,
+  isOvered,
+  isPaused,
   keyToPosition,
   resizeObserver,
   updateBounds,
@@ -80,7 +83,7 @@ export function renderBoard(state: State): State {
   const {board} = state
   board.innerHTML = ""
 
-  if (state.gameState === "isOvered") renderGameOver(state)
+  if (isOvered(state.gameState)) renderGameOver(state)
   renderCells(state)
   renderNotes(state)
   drawBackground(state)
@@ -93,7 +96,7 @@ function renderCells(state: State) {
     const cellElem = document.createElement("cell") as CellElement
     const p = keyToPosition(k as Key)
     const pos = getPositionFromBound(state, p)
-    if (state.gameState === "isOvered" || state.gameState === "isPaused") {
+    if (isOvered(state.gameState) || isPaused(state.gameState)) {
       cellElem.style.opacity = "0.11"
     }
 
@@ -108,7 +111,7 @@ function renderCells(state: State) {
     const c = document.createElement("p")
     c.style.gridArea = "2 / 2 / 3 / 3"
 
-    if (v !== "0" && state.gameState !== "isInitialed") {
+    if (v !== "0" && !isInitialed(state.gameState)) {
       c.innerHTML = `${v}`
     }
 
@@ -121,7 +124,7 @@ function renderCells(state: State) {
       cellElem.classList.remove("origin-cells")
       cellElem.classList.add("new-cells")
     }
-    if (state.gameState === "isOvered" || state.gameState === "isPaused")
+    if (isOvered(state.gameState) || isPaused(state.gameState))
       cellElem.style.opacity = "0.3"
   }
 }

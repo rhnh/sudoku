@@ -8,7 +8,7 @@ export type MouchEvent = MouseEvent | TouchEvent
 
 export type ButtonTexts = (typeof BTN_NAMES)[number]
 
-export type Buttons = Map<BaseKey, ButtonTexts>
+export type Buttons = Map<Key, ButtonTexts>
 export type Note = `${BaseKey}${Rank}`
 export type Notes = Map<Key, Set<Rank>>
 export type Key = `${BaseKey}${Rank}`

@@ -10,6 +10,7 @@ import {
   type Buttons,
   Digits,
   Rank,
+  GameState,
 } from "./types"
 
 export const keyToPosition = (k: Key): Position => [
@@ -200,13 +201,14 @@ export const getPositionKeyAtDom =
   }
 
 export const getButtonKeys = () => {
-  const numberOfButtons = 7
-  const buttonKeys = getKeys().slice(0, numberOfButtons)
+  const buttonKeys = getKeys()
   const m: Buttons = new Map()
   BTN_NAMES.map((b, i) => {
-    const k: BaseKey = buttonKeys[i] as unknown as BaseKey
+    const k = buttonKeys[i]
+
     m.set(k, b)
   })
+
   return m
 }
 
@@ -300,3 +302,8 @@ export function getDigits() {
 
   return m
 }
+
+export const isPlaying = (gameState: GameState) => gameState === "isPlaying"
+export const isPaused = (gameState: GameState) => gameState === "isPaused"
+export const isOvered = (gameState: GameState) => gameState === "isOvered"
+export const isInitialed = (gameState: GameState) => gameState === "isInitialed"

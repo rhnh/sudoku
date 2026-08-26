@@ -2,7 +2,7 @@ import {render} from "./render"
 import {State} from "./state"
 import {getCells} from "./sudoku.algo"
 import {Value} from "./types"
-import {addNewValue, getCellBy} from "./utils"
+import {addNewValue, isInitialed, isPaused, isPlaying} from "./utils"
 /**
  * This looks amateur. This need to change and should be saved in a map or an array
  * @param state
@@ -15,25 +15,15 @@ export function panelEvents(state: State) {
 
   if (!start) return state
   start.addEventListener("pointerdown", () => {
-    if (state.gameState === "isInitialed") {
+    if (isInitialed(state.gameState)) {
       state.gameState = "isPlaying"
-      let btn = nav.querySelector("#start") as HTMLButtonElement
-      btn.innerHTML = `<i class="fa-solid fa-circle-pause"></i>`
-      return render(state)
-    } else if (state.gameState === "isPaused") {
+    } else if (isPaused(state.gameState)) {
       state.gameState = "isPlaying"
-      let btn = nav.querySelector("#start") as HTMLButtonElement
-      btn.innerHTML = `<i class="fa-solid fa-circle-pause"></i>`
-      return render(state)
-    } else if (state.gameState === "isPlaying") {
+    } else if (isPlaying(state.gameState)) {
       state.gameState = "isPaused"
-      let btn = nav.querySelector("#start") as HTMLButtonElement
-
-      btn.innerHTML = `<i class="fa-solid fa-forward"></i>`
-      return render(state)
     } else {
-      return state
     }
+    render(state)
   })
 
   const restart = nav.querySelector("#restart") as HTMLButtonElement
@@ -54,21 +44,22 @@ export function panelEvents(state: State) {
 
   const remove = nav.querySelector("#remove") as HTMLButtonElement
   remove.addEventListener("pointerdown", () => {
-    if (!state.isNote)
-      state.selected.map((r) => {
-        if (state.originCell.get(r) !== "0") {
-        } else {
-          state.cells.set(r, "0")
-          state.duplicates = new Map()
-        }
-      })
+    state.selected.map((r) => {
+      if (state.originCell.get(r) !== "0") {
+      } else {
+        state.cells.set(r, "0")
+        state.notes.set(r, new Set())
+        state.duplicates = new Map()
+      }
+    })
 
     render(state)
   })
 
   const showHint = nav.querySelector("#hint") as HTMLButtonElement
+
   showHint.addEventListener("pointerdown", () => {
-    if (state.gameState === "isPlaying") {
+    if (isPlaying(state.gameState)) {
       const selected = state.selected
       selected.map((s) => {
         const value = state.solutions.get(s) as unknown as Value
@@ -76,10 +67,11 @@ export function panelEvents(state: State) {
       })
     }
   })
+
   const showUndo = nav.querySelector("#undo") as HTMLButtonElement
 
   showUndo.addEventListener("pointerdown", () => {
-    if (state.gameState === "isPlaying" && state.lastMoves.length > 0) {
+    if (isPlaying(state.gameState) && state.lastMoves.length > 0) {
       const last = state.lastMoves.length - 1
       state.originCell.set(state.lastMoves[last], "0")
       state.cells.set(state.lastMoves[last], "0")
@@ -107,8 +99,7 @@ export function panelEvents(state: State) {
   )
   if (zen)
     zen.addEventListener("pointerdown", () => {
-      if (state.gameState === "isPlaying" && content)
-        content.classList.toggle("zen")
+      if (isPlaying(state.gameState) && content) content.classList.toggle("zen")
     })
 
   const easyBtn: HTMLButtonElement | null = sidePanel.querySelector(".easy-btn")
@@ -121,7 +112,7 @@ export function panelEvents(state: State) {
       state.cells = cells.cells
       state.originCell = cells.cells
       state.solutions = cells.solutions
-      console.log(state.solutions)
+
       render(state)
     })
   }
@@ -136,7 +127,7 @@ export function panelEvents(state: State) {
       state.cells = cells.cells
       state.originCell = cells.cells
       state.solutions = cells.solutions
-      console.log(state.solutions)
+
       render(state)
     })
   }
@@ -150,7 +141,7 @@ export function panelEvents(state: State) {
       state.cells = cells.cells
       state.originCell = cells.cells
       state.solutions = cells.solutions
-      console.log(state.solutions)
+
       render(state)
     })
   }
@@ -165,7 +156,7 @@ export function panelEvents(state: State) {
       state.cells = cells.cells
       state.originCell = cells.cells
       state.solutions = cells.solutions
-      console.log(state.solutions)
+
       render(state)
     })
   }

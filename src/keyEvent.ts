@@ -2,7 +2,7 @@ import {addNote} from "./notes"
 import {renderBoard} from "./render"
 import {State} from "./state"
 import {Value} from "./types"
-import {addNewValue} from "./utils"
+import {addNewValue, isInitialed, isPlaying} from "./utils"
 
 export function keyEvents(state: State): State {
   const {ctrlBTNSection: nav} = state
@@ -11,14 +11,14 @@ export function keyEvents(state: State): State {
     if (e.key === "r") {
       document.location.reload()
     }
-    if (state.gameState === "isInitialed") {
+    if (isInitialed(state.gameState)) {
       if (e.key === "s") {
         state.gameState = "isPlaying"
         renderBoard(state)
       }
     }
 
-    if (state.gameState === "isPlaying") {
+    if (isPlaying(state.gameState)) {
       if (e.key === "n") {
         state.isNote = !state.isNote
         const note = nav.querySelector("#note") as HTMLButtonElement
