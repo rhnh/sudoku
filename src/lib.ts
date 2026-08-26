@@ -1,15 +1,15 @@
 export type Box<T> = {
   map: <U>(fn: (x: T) => U) => Box<U>
   fold: <R>(fn: (x: T) => R) => R
-  toString: () => T
+  toString: <U>(fn: (x: T) => U) => Box<U>
 }
 
 export const Box = <T>(value: T): Box<T> => ({
   map: (fn) => Box(fn(value)),
   fold: (fn) => fn(value),
-  toString: (): T => {
-    console.log(value)
-    return value
+  toString: (fn) => {
+    console.info(value)
+    return Box(fn(value))
   },
 })
 
