@@ -15,37 +15,23 @@ import {
   updateBounds,
 } from "./utils"
 
-export const renderNumpad = (state: State): State =>
-  Box(createNumPad(state)).map(numPadEvents).fold(id)
+export const render = (state: State): State =>
+  Box(state).map(renderBoard).map(renderSidePanel).fold(id)
 
-export const renderAside = (state: State) =>
+export const renderSidePanel = (state: State) =>
   Box(state).map(renderNumpad).map(renderNavPanel).map(panelEvents).fold(id)
 
-export const render = (state: State): State =>
-  Box(state)
-    .map((a) => {
-      console.log(a)
-      return a
-    })
-    .map(renderBoard)
-    .map(renderNumpad)
-    .map(renderNavPanel)
-    .map(panelEvents)
-    .fold(id)
+export const renderNumpad = (state: State): State =>
+  Box(createNumPad(state)).map(numPadEvents).fold(id)
 
 export function renderBase(state: State): State {
   const container = document.createElement("container")
 
-  if (!container) {
-    throw new Error('Not HtmlElement found with id "container"')
-  }
-  renderNumpad
-
   const board = document.createElement("board")
 
   container.appendChild(board)
-  const {aside, nav, numPad} = createSideLayout(state)
-
+  const {aside, nav, numPad} = createSideLayout()
+  state.wrap.dataset.theme = ""
   state.wrap.append(container)
   state.wrap.appendChild(aside)
   const bounds = memo(() => container.getBoundingClientRect())
@@ -78,11 +64,6 @@ export function renderNavPanel(state: State): State {
 
 export function renderGameOver(state: State) {
   const {board} = state
-  // board.innerHTML = ""
-  // board.style.position = "unset"
-  // board.style.display = "flex"
-  // board.style.justifyContent = "center"
-  // board.style.alignItems = "center"
   const h1 = document.createElement("h1")
   h1.innerText = "Game Over"
   h1.style.width = `50%`

@@ -3,18 +3,23 @@ import {createElement} from "./lib"
 import {State} from "./state"
 import {formatTime} from "./utils"
 
-export function createSideLayout(state: State) {
-  console.log("again createSideLayout")
-  const numPad = document.createElement("numpad")
-  numPad.id = "numpad"
+export function createSideLayout() {
+  const sidePanel = createElement({
+    tag: "article",
+    id: "aside",
+    className: "aside",
+  })
 
-  const aside = document.createElement("section")
-  aside.id = "aside"
-  const nav = document.createElement("article")
-  nav.classList.add("panel")
-  nav.id = "panel"
+  const nav = createElement({tag: "section", id: "panel", className: "panel"})
   const content = createElement({tag: "section", className: "content"})
+
   content.appendChild(nav)
+
+  const numPad = createElement({
+    tag: "section",
+    id: "numpad",
+    className: "numpad",
+  })
   content.appendChild(numPad)
 
   const buttonSection = createElement({
@@ -41,24 +46,24 @@ export function createSideLayout(state: State) {
   easy.innerHTML = `●○○○<span class="tooltiptext">Tooltip text</span>`
   const medium = createElement({
     tag: "button",
-    className: "medium-btn btn rotate-btn",
+    className: "medium-btn btn rotate-btn level-btn",
   })
   medium.innerHTML = `●●○○<span class="tooltiptext">Tooltip text</span>`
   const hard = createElement({
     tag: "button",
-    className: "hard-btn btn rotate-btn",
+    className: "hard-btn btn rotate-btn level-btn",
   })
   hard.innerHTML = `●●●○<span class="tooltiptext">Tooltip text</span>`
   const expert = createElement({
     tag: "button",
-    className: "expert-btn btn rotate-btn",
+    className: "expert-btn btn rotate-btn level-btn",
   })
 
   expert.innerHTML = `●●●●<span class="tooltiptext">Tooltip text</span>`
 
   const setting = createElement({
     tag: "button",
-    className: "setting-btn btn rotate-btn",
+    className: "setting-btn btn rotate-btn level-btn",
   })
 
   setting.innerText = "setting"
@@ -72,9 +77,9 @@ export function createSideLayout(state: State) {
 
   buttonSection.appendChild(zen)
   buttonSection.append(expert, hard, medium, easy, themes)
-  aside.appendChild(buttonSection)
-  aside.append(content)
-  return {numPad, aside, nav}
+  sidePanel.appendChild(buttonSection)
+  sidePanel.append(content)
+  return {numPad, aside: sidePanel, nav}
 }
 
 export const renderBTNSection = (state: State): HTMLElement => {

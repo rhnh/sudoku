@@ -96,7 +96,7 @@ cell > p {
   font-weight: 400;
 }
 
-numpad {
+.numpad {
   display: flex;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -106,7 +106,7 @@ numpad {
   width: 100%;
 }
 
-numpad > * {
+.numpad > * {
   font-size: 20px;
   width: 100%;
   background-color: var(--light2);

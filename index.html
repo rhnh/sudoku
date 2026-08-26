@@ -11,6 +11,10 @@
     integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
+    a {
+      margin-top: 10px;
+    }
+
     #sudoku {
       max-width: 600px;
       margin-inline: auto;
@@ -44,17 +48,30 @@
       gap: 10px;
       padding: 0;
     }
+
+    .links {
+      margin-top: 50px;
+      margin-inline: 50%;
+    }
   </style>
   <script type="module">
     const start = performance.now()
     import { Sudoku, getCells } from "./dist/sudoku.min.js"
-    const c = getCells();
+    const c = getCells(37);
 
-    Sudoku(document.getElementById('sudoku'), { cells: c.cells, solutions: c.solutions })
+    Sudoku({ el: document.getElementById('sudoku'), cells: c.cells, solutions: c.solutions })
   </script>
 </head>
 
 <body>
+
+  <h1>
+    Sudoku
+  </h1>
+  <div id="sudoku"></div>
+  <div class="links">
+    <a href="github.com/rhnh">Github</a>
+  </div>
   <div id="info">
     <ul class="features">
       <li>
@@ -71,11 +88,6 @@
       <li><a href="https://github.com/rhnh/sudoku">Source Code</a></li>
     </ul>
   </div>
-  <h1>
-    Sudoku
-  </h1>
-  <div id="sudoku"></div>
-
 
 </body>
 

@@ -1,7 +1,8 @@
 import {render} from "./render"
 import {State} from "./state"
+import {getCells} from "./sudoku.algo"
 import {Value} from "./types"
-import {addNewValue} from "./utils"
+import {addNewValue, getCellBy} from "./utils"
 /**
  * This looks amateur. This need to change and should be saved in a map or an array
  * @param state
@@ -11,13 +12,13 @@ export function panelEvents(state: State) {
   const {ctrlBTNSection: nav, sidePanel} = state
 
   const start = nav.querySelector("#start") as HTMLButtonElement
+
   if (!start) return state
   start.addEventListener("pointerdown", () => {
     if (state.gameState === "isInitialed") {
       state.gameState = "isPlaying"
       let btn = nav.querySelector("#start") as HTMLButtonElement
       btn.innerHTML = `<i class="fa-solid fa-circle-pause"></i>`
-      console.log("change, to playing")
       return render(state)
     } else if (state.gameState === "isPaused") {
       state.gameState = "isPlaying"
@@ -76,6 +77,7 @@ export function panelEvents(state: State) {
     }
   })
   const showUndo = nav.querySelector("#undo") as HTMLButtonElement
+
   showUndo.addEventListener("pointerdown", () => {
     if (state.gameState === "isPlaying" && state.lastMoves.length > 0) {
       const last = state.lastMoves.length - 1
@@ -97,17 +99,75 @@ export function panelEvents(state: State) {
       timerText.classList.toggle("hide")
     })
   }
+
   const content = sidePanel.querySelector(".content")
-  const zen = sidePanel.querySelector(
+
+  const zen: HTMLButtonElement | null = sidePanel.querySelector(
     ".s-btn-section > .zen-btn",
-  ) as HTMLButtonElement
+  )
+  if (zen)
+    zen.addEventListener("pointerdown", () => {
+      if (state.gameState === "isPlaying" && content)
+        content.classList.toggle("zen")
+    })
 
-  console.log(zen)
-  zen.addEventListener("click", () => {
-    console.log(state.gameState)
-    if (state.gameState === "isPlaying" && content)
-      content.classList.toggle("zen")
-  })
-
+  const easyBtn: HTMLButtonElement | null = sidePanel.querySelector(".easy-btn")
+  if (easyBtn) {
+    easyBtn.addEventListener("pointerdown", () => {
+      state.cells = new Map()
+      state.solutions = new Map()
+      render(state)
+      const cells = getCells(37)
+      state.cells = cells.cells
+      state.originCell = cells.cells
+      state.solutions = cells.solutions
+      console.log(state.solutions)
+      render(state)
+    })
+  }
+  const mediumBtn: HTMLButtonElement | null =
+    sidePanel.querySelector(".medium-btn")
+  if (mediumBtn) {
+    mediumBtn.addEventListener("pointerdown", () => {
+      state.cells = new Map()
+      state.solutions = new Map()
+      render(state)
+      const cells = getCells(47)
+      state.cells = cells.cells
+      state.originCell = cells.cells
+      state.solutions = cells.solutions
+      console.log(state.solutions)
+      render(state)
+    })
+  }
+  const hardBTN: HTMLButtonElement | null = sidePanel.querySelector(".hard-btn")
+  if (hardBTN) {
+    hardBTN.addEventListener("pointerdown", () => {
+      state.cells = new Map()
+      state.solutions = new Map()
+      render(state)
+      const cells = getCells(57)
+      state.cells = cells.cells
+      state.originCell = cells.cells
+      state.solutions = cells.solutions
+      console.log(state.solutions)
+      render(state)
+    })
+  }
+  const expertBtn: HTMLButtonElement | null =
+    sidePanel.querySelector(".expert-btn")
+  if (expertBtn) {
+    expertBtn.addEventListener("pointerdown", () => {
+      state.cells = new Map()
+      state.solutions = new Map()
+      render(state)
+      const cells = getCells(67)
+      state.cells = cells.cells
+      state.originCell = cells.cells
+      state.solutions = cells.solutions
+      console.log(state.solutions)
+      render(state)
+    })
+  }
   return state
 }

@@ -8,6 +8,8 @@ import {
   type Value,
   type BaseKey,
   type Buttons,
+  Digits,
+  Rank,
 } from "./types"
 
 export const keyToPosition = (k: Key): Position => [
@@ -287,4 +289,14 @@ export function updateBounds(s: State): void {
   container.style.height = width + "px"
   // container.style.aspectRatio = "1 / 1"
   s.bounds.clear()
+}
+export function getDigits() {
+  const m: Digits = new Map()
+  allDigits.map((k, i) => {
+    const key: BaseKey = k as unknown as BaseKey
+    const rank: Rank = (i + 1) as unknown as Rank
+    m.set(key, rank)
+  })
+
+  return m
 }

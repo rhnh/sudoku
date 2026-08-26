@@ -42,7 +42,7 @@
     box-sizing: border-box;
     margin: 0;
   }
-  numpad {
+  .numpad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);

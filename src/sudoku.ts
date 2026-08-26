@@ -1,40 +1,33 @@
 import {events} from "./events"
 import {keyEvents} from "./keyEvent"
 import {render, renderBase} from "./render"
-import {sudokuGenerator} from "./sudoku.algo"
-import type {BaseKey, Cells, Digits, Key, Rank, Value} from "./types"
-
+import type {Cells, Key, Value} from "./types"
 import "./assets/base.style.css"
 import "./assets/media-queries.css"
 import "./assets/btn.css"
-import {allDigits, getButtonKeys, getKeys} from "./utils"
+import {getButtonKeys, getDigits} from "./utils"
 import {State, HeadlessState} from "./state"
 import {Box} from "./lib"
 
-export function getDigits() {
-  const m: Digits = new Map()
-  allDigits.map((k, i) => {
-    const key: BaseKey = k as unknown as BaseKey
-    const value: Value = +(i + 1) as unknown as Rank
-    m.set(key, value)
-  })
+export {getCells} from "./sudoku.algo"
 
-  return m
-}
-
-export const initState = (
-  el: HTMLElement,
-  sudoku: {cells: Map<Key, Value>; solutions: Map<Key, Value>},
-): State => {
-  const cells = new Map([...sudoku.cells])
+export const initState = ({
+  el,
+  cells,
+  solutions,
+}: {
+  el: HTMLElement
+  cells: Cells
+  solutions: Cells
+}): State => {
   const userInput = new Map()
-  const userInputKeys = [...sudoku.solutions.keys()]
+  const userInputKeys = [...solutions.keys()]
   userInputKeys.map((r) => userInput.set(r, "0"))
 
   const headlessState: HeadlessState = {
     gameState: "isInitialed",
-    cells: cells,
-    originCell: sudoku.cells,
+    cells: new Map([...cells]),
+    originCell: new Map([...cells]),
     selected: [],
     digits: getDigits(),
     notes: new Map(),
@@ -44,7 +37,7 @@ export const initState = (
     isHold: false,
     highlight: new Map(),
     duplicates: new Map(),
-    solutions: sudoku.solutions,
+    solutions: solutions,
     userInput, //TODO: After every click it should scan if this not empty and if it filled and has the correct answers
     seconds: 0,
     lastMoves: [],
@@ -54,29 +47,16 @@ export const initState = (
   return state
 }
 
-export const getCells = (): {cells: Cells; solutions: Map<Key, Value>} => {
-  const cells: Cells = new Map()
-  const sudokuGenerated = sudokuGenerator(37)
-  const sudoku = sudokuGenerated.grid.flat()
-  const solutions = sudokuGenerated.solution
-
-  getKeys().forEach((key, i) => {
-    // Calculate square number (1–9)
-    const row = Math.floor(i / 9)
-    const col = i % 9
-
-    const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1
-    let k = key.replace(/.$/, `${block}`) as Key
-    cells.set(k, `${sudoku[i]}` as Value)
-  })
-  return {cells, solutions}
-}
-
-export function Sudoku(
-  e: HTMLElement,
-  sudoku: {cells: Cells; solutions: Map<Key, Value>},
-) {
-  return Box(initState(e, sudoku))
+export function Sudoku({
+  el,
+  cells,
+  solutions,
+}: {
+  el: HTMLElement
+  cells: Cells
+  solutions: Map<Key, Value>
+}) {
+  return Box(initState({el, cells, solutions}))
     .map(renderBase)
     .map(render)
     .map(events)
