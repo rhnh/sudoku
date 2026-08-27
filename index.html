@@ -56,7 +56,7 @@
   </style>
   <script type="module">
     const start = performance.now()
-    import { Sudoku, getCells } from "dist/sudoku.min.js"
+    import { Sudoku, getCells } from "./dist/sudoku.min.js"
     const c = getCells(37);
 
     Sudoku({ el: document.getElementById('sudoku'), cells: c.cells, solutions: c.solutions })
