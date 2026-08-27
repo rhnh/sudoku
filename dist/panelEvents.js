@@ -1,30 +1,29 @@
-import { renderBoard } from "./render";
-import { addNewValue } from "./utils";
+import { render } from "./render";
+import { getCells } from "./sudoku.algo";
+import { addNewValue, isInitialed, isPaused, isPlaying } from "./utils";
+/**
+ * This looks amateur. This need to change and should be saved in a map or an array
+ * @param state
+ * @returns
+ */
 export function panelEvents(state) {
-    const { nav } = state;
+    const { ctrlBTNSection: nav, sidePanel } = state;
     const start = nav.querySelector("#start");
     if (!start)
         return state;
     start.addEventListener("pointerdown", () => {
-        if (state.gameState === "isInitialed") {
+        if (isInitialed(state.gameState)) {
             state.gameState = "isPlaying";
-            let btn = nav.querySelector("#start");
-            btn.innerHTML = `<i class="fa-solid fa-circle-pause"></i>`;
-            renderBoard(state);
         }
-        else if (state.gameState === "isPaused") {
+        else if (isPaused(state.gameState)) {
             state.gameState = "isPlaying";
-            let btn = nav.querySelector("#start");
-            btn.innerHTML = `<i class="fa-solid fa-circle-pause"></i>`;
-            renderBoard(state);
         }
-        else if (state.gameState === "isPlaying") {
+        else if (isPlaying(state.gameState)) {
             state.gameState = "isPaused";
-            let btn = nav.querySelector("#start");
-            btn.innerHTML = `<i class="fa-solid fa-forward"></i>`;
-            renderBoard(state);
         }
-        renderBoard(state);
+        else {
+        }
+        render(state);
     });
     const restart = nav.querySelector("#restart");
     restart.addEventListener("pointerdown", () => {
@@ -42,24 +41,20 @@ export function panelEvents(state) {
     });
     const remove = nav.querySelector("#remove");
     remove.addEventListener("pointerdown", () => {
-        if (!state.isNote)
-            state.selected.map((r) => {
-                if (state.originCell.get(r) !== "0") {
-                }
-                else {
-                    state.cells.set(r, "0");
-                    state.duplicates = new Map();
-                }
-            });
-        const found = state.selected
-            .map((r) => state.notes.filter((h) => r.slice(0, 2) === h.slice(0, 2)))
-            .flat();
-        state.notes = state.notes.filter((item) => !found.includes(item));
-        renderBoard(state);
+        state.selected.map((r) => {
+            if (state.originCell.get(r) !== "0") {
+            }
+            else {
+                state.cells.set(r, "0");
+                state.notes.set(r, new Set());
+                state.duplicates = new Map();
+            }
+        });
+        render(state);
     });
     const showHint = nav.querySelector("#hint");
     showHint.addEventListener("pointerdown", () => {
-        if (state.gameState === "isPlaying") {
+        if (isPlaying(state.gameState)) {
             const selected = state.selected;
             selected.map((s) => {
                 const value = state.solutions.get(s);
@@ -69,13 +64,13 @@ export function panelEvents(state) {
     });
     const showUndo = nav.querySelector("#undo");
     showUndo.addEventListener("pointerdown", () => {
-        if (state.gameState === "isPlaying" && state.lastMoves.length > 0) {
+        if (isPlaying(state.gameState) && state.lastMoves.length > 0) {
             const last = state.lastMoves.length - 1;
             state.originCell.set(state.lastMoves[last], "0");
             state.cells.set(state.lastMoves[last], "0");
             state.lastMoves = state.lastMoves.filter((r) => r != state.lastMoves[last]);
             state.duplicates.clear();
-            renderBoard(state);
+            render(state);
         }
     });
     const timer = nav.querySelector("#timer");
@@ -83,6 +78,65 @@ export function panelEvents(state) {
         timer.addEventListener("pointerdown", () => {
             const timerText = timer.firstChild;
             timerText.classList.toggle("hide");
+        });
+    }
+    const content = sidePanel.querySelector(".content");
+    const zen = sidePanel.querySelector(".s-btn-section > .zen-btn");
+    if (zen)
+        zen.addEventListener("pointerdown", () => {
+            if (isPlaying(state.gameState) && content)
+                content.classList.toggle("zen");
+        });
+    const easyBtn = sidePanel.querySelector(".easy-btn");
+    if (easyBtn) {
+        easyBtn.addEventListener("pointerdown", () => {
+            state.cells = new Map();
+            state.solutions = new Map();
+            render(state);
+            const cells = getCells(37);
+            state.cells = cells.cells;
+            state.originCell = cells.cells;
+            state.solutions = cells.solutions;
+            render(state);
+        });
+    }
+    const mediumBtn = sidePanel.querySelector(".medium-btn");
+    if (mediumBtn) {
+        mediumBtn.addEventListener("pointerdown", () => {
+            state.cells = new Map();
+            state.solutions = new Map();
+            render(state);
+            const cells = getCells(47);
+            state.cells = cells.cells;
+            state.originCell = cells.cells;
+            state.solutions = cells.solutions;
+            render(state);
+        });
+    }
+    const hardBTN = sidePanel.querySelector(".hard-btn");
+    if (hardBTN) {
+        hardBTN.addEventListener("pointerdown", () => {
+            state.cells = new Map();
+            state.solutions = new Map();
+            render(state);
+            const cells = getCells(57);
+            state.cells = cells.cells;
+            state.originCell = cells.cells;
+            state.solutions = cells.solutions;
+            render(state);
+        });
+    }
+    const expertBtn = sidePanel.querySelector(".expert-btn");
+    if (expertBtn) {
+        expertBtn.addEventListener("pointerdown", () => {
+            state.cells = new Map();
+            state.solutions = new Map();
+            render(state);
+            const cells = getCells(67);
+            state.cells = cells.cells;
+            state.originCell = cells.cells;
+            state.solutions = cells.solutions;
+            render(state);
         });
     }
     return state;

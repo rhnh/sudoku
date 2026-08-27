@@ -6,7 +6,7 @@
  * @param num
  * @returns
  */
-import { positionToKey } from "./utils";
+import { getKeys, positionToKey } from "./utils";
 // https://www.geeksforgeeks.org/dsa/program-sudoku-generator/
 // JavaScript program to generate a valid sudoku
 // with k empty cells
@@ -133,4 +133,19 @@ export function sudokuGenerator(k) {
     // Remove K digits randomly to create the puzzle
     return { grid, solution: removeKDigits(grid, k) };
 }
+export const getCells = (emptyCells) => {
+    const cells = new Map();
+    const sudokuGenerated = sudokuGenerator(emptyCells);
+    const sudoku = sudokuGenerated.grid.flat();
+    const solutions = sudokuGenerated.solution;
+    getKeys().forEach((key, i) => {
+        // Calculate square number (1–9)
+        const row = Math.floor(i / 9);
+        const col = i % 9;
+        const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1;
+        let k = key.replace(/.$/, `${block}`);
+        cells.set(k, `${sudoku[i]}`);
+    });
+    return { cells, solutions };
+};
 //# sourceMappingURL=sudoku.algo.js.map

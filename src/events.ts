@@ -1,5 +1,7 @@
-import {addNote, renderBoard} from "./render"
-import type {Key, Rank, State, Value, Position, MouchEvent} from "./types"
+import {addNote} from "./notes"
+import {renderBoard} from "./render"
+import {State} from "./state"
+import type {Key, Rank, Value, Position, MouchEvent} from "./types"
 
 import {
   getPositionKeyAtDom,
@@ -7,6 +9,7 @@ import {
   getElementByKey,
   getCommons,
   addNewValue,
+  isPlaying,
 } from "./utils"
 
 export const events = (state: State): State => {
@@ -76,10 +79,11 @@ const pointerDown =
   }
 
 export const resetDraggingElement = (state: State) => {
-  const p = state.draggingElement?.firstChild as unknown as HTMLElement
-  if (state.draggingElement && p) {
-    p.style.position = "unset"
-    p.style.transform = "unset"
+  const firstChild = state.draggingElement?.firstChild as unknown as HTMLElement
+  if (state.draggingElement && firstChild) {
+    firstChild.style.position = "unset"
+    firstChild.style.transform = "unset"
+    state.draggingElement.classList.remove("dragging")
   }
   if (!state.draggingElement) {
     return
@@ -115,7 +119,7 @@ export const pointerup =
 
     if (!key) return state
 
-    if (state.gameState !== "isPlaying") return state
+    if (!isPlaying(state.gameState)) return state
 
     fillNewSelectedCells(state)(key)
 
@@ -132,17 +136,18 @@ const moveDraggingElement = (state: State) => (position: Position) => {
   const [x, y] = position
   const p = state.draggingElement?.firstChild as unknown as HTMLElement
   if (state.draggingElement && p) {
+    p.classList.add("dragging")
     p.style.position = "absolute"
     p.style.transform = `translate(${
       x -
       state.draggingElement?.getBoundingClientRect().left -
-      state.draggingElement?.getBoundingClientRect().width / 3
+      state.draggingElement?.getBoundingClientRect().width / 2
     }px, ${y - state.draggingElement?.getBoundingClientRect().top - state.draggingElement?.getBoundingClientRect().height / 3}px)`
   }
 }
 
 const pointermove = (state: State) => (e: MouchEvent) => {
-  if (state.gameState !== "isPlaying") return
+  if (!isPlaying(state.gameState)) return
 
   const [x, y] = getCoordinate(e)
 

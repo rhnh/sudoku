@@ -1,5 +1,6 @@
-import { addNote, renderBoard } from "./render";
-import { getPositionKeyAtDom, getKeyFromPosition, getElementByKey, getCommons, addNewValue, } from "./utils";
+import { addNote } from "./notes";
+import { renderBoard } from "./render";
+import { getPositionKeyAtDom, getKeyFromPosition, getElementByKey, getCommons, addNewValue, isPlaying, } from "./utils";
 export const events = (state) => {
     const { board } = state;
     board.addEventListener("pointerdown", pointerDown(state));
@@ -56,10 +57,11 @@ const pointerDown = (state) => (e) => {
     return state;
 };
 export const resetDraggingElement = (state) => {
-    const p = state.draggingElement?.firstChild;
-    if (state.draggingElement && p) {
-        p.style.position = "unset";
-        p.style.transform = "unset";
+    const firstChild = state.draggingElement?.firstChild;
+    if (state.draggingElement && firstChild) {
+        firstChild.style.position = "unset";
+        firstChild.style.transform = "unset";
+        state.draggingElement.classList.remove("dragging");
     }
     if (!state.draggingElement) {
         return;
@@ -90,7 +92,7 @@ export const pointerup = (state) => (e) => {
     const key = getKey(state)(e);
     if (!key)
         return state;
-    if (state.gameState !== "isPlaying")
+    if (!isPlaying(state.gameState))
         return state;
     fillNewSelectedCells(state)(key);
     if (state.isDragging && state.draggingElement) {
@@ -105,14 +107,15 @@ const moveDraggingElement = (state) => (position) => {
     const [x, y] = position;
     const p = state.draggingElement?.firstChild;
     if (state.draggingElement && p) {
+        p.classList.add("dragging");
         p.style.position = "absolute";
         p.style.transform = `translate(${x -
             state.draggingElement?.getBoundingClientRect().left -
-            state.draggingElement?.getBoundingClientRect().width / 3}px, ${y - state.draggingElement?.getBoundingClientRect().top - state.draggingElement?.getBoundingClientRect().height / 3}px)`;
+            state.draggingElement?.getBoundingClientRect().width / 2}px, ${y - state.draggingElement?.getBoundingClientRect().top - state.draggingElement?.getBoundingClientRect().height / 3}px)`;
     }
 };
 const pointermove = (state) => (e) => {
-    if (state.gameState !== "isPlaying")
+    if (!isPlaying(state.gameState))
         return;
     const [x, y] = getCoordinate(e);
     const key = getKey(state)(e);

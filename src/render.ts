@@ -1,150 +1,63 @@
-import {BOARD_SIZE, btns} from "./constants"
+import {Box, id, memo} from "./lib"
+import {renderNotes} from "./notes"
 import {createNumPad, numPadEvents} from "./numpad"
 import {panelEvents} from "./panelEvents"
+import {createSideLayout, renderBTNSection, renderTimer} from "./renderPanel"
+import {State, CellElement} from "./state"
+import {drawBackground} from "./svg"
 
-import {
-  type CellElement,
-  type Note,
-  type Key,
-  type State,
-  type Value,
-} from "./types"
+import {type Key} from "./types"
 
 import {
   getPositionFromBound,
+  isInitialed,
+  isOvered,
+  isPaused,
   keyToPosition,
-  getSquareNr,
-  Box,
-  memo,
-  id,
-  formatTime,
-  createSvg,
+  resizeObserver,
+  updateBounds,
 } from "./utils"
+
+export const render = (state: State): State =>
+  Box(state).map(renderBoard).map(renderSidePanel).fold(id)
+
+export const renderSidePanel = (state: State) =>
+  Box(state).map(renderNumpad).map(renderNavPanel).map(panelEvents).fold(id)
 
 export const renderNumpad = (state: State): State =>
   Box(createNumPad(state)).map(numPadEvents).fold(id)
 
-export const renderAside = (state: State) =>
-  Box(state).map(renderNumpad).map(renderNavPanel).map(panelEvents).fold(id)
-
-export const render = (state: State): State =>
-  Box(state).map(renderBoard).map(renderAside).fold(id)
-
-export function updateBounds(s: State): void {
-  const bounds = s.wrap.getBoundingClientRect()
-  const container = s.container
-  let width =
-    Math.floor(bounds.width * window.devicePixelRatio) /
-      window.devicePixelRatio -
-    bounds.width / 18
-
-  container.style.width = width + "px"
-  container.style.height = width + "px"
-  // container.style.aspectRatio = "1 / 1"
-  s.bounds.clear()
-}
-
 export function renderBase(state: State): State {
   const container = document.createElement("container")
-
-  if (!container) {
-    throw new Error('Not HtmlElement found with id "container"')
-  }
 
   const board = document.createElement("board")
 
   container.appendChild(board)
-
-  const numPad = document.createElement("numpad")
-  numPad.id = "numpad"
-
-  const header = document.createElement("head")
-  header.id = "aside-head"
-  const aside = document.createElement("section")
-  aside.id = "aside"
-  const nav = document.createElement("article")
-  nav.classList.add("panel")
-  nav.id = "panel"
-
-  aside.appendChild(nav)
-  aside.appendChild(numPad)
-
+  const {aside, nav, numPad} = createSideLayout()
+  state.wrap.dataset.theme = ""
   state.wrap.append(container)
   state.wrap.appendChild(aside)
   const bounds = memo(() => container.getBoundingClientRect())
 
-  state = {...state, board, numPad, bounds, container, aside, nav}
-  const observerCallback: ResizeObserverCallback = (
-    entries: ResizeObserverEntry[],
-  ) => {
-    window.requestAnimationFrame((): void | undefined => {
-      if (!Array.isArray(entries) || !entries.length) {
-        return
-      }
-      if (state.container) {
-        updateBounds(state)
-        render(state)
-      }
-    })
+  state = {
+    ...state,
+    board,
+    numpadSection: numPad,
+    bounds,
+    container,
+    sidePanel: aside,
+    ctrlBTNSection: nav,
   }
-  new ResizeObserver(observerCallback).observe(state.wrap)
-
+  resizeObserver(state)({render, updateBounds})
   return state
 }
-const renderBTNSection = (state: State): HTMLElement => {
-  const {buttons, bounds} = state
 
-  let btnsIndex = 0
-  const btnSection = document.createElement("section")
-  btnSection.classList.add("btn-section")
-  for (const [k, v] of buttons) {
-    const btn = document.createElement("button")
-    btn.style.height = `${bounds().height / 9}px`
-    btn.style.width = `${bounds().height / 9}px`
-    // btn.style.width = `${bounds().width / 3 - 1}px`
-    btn.id = `${v.replace(/\s/g, "-")}`.toLowerCase()
-    btn.classList.add(k)
-
-    btn.innerHTML = btns[btnsIndex++]
-    btn.style.aspectRatio = `1`
-    btn.classList.add("buttons")
-
-    btnSection.append(btn)
-  }
-  return btnSection
-}
-
-const renderTimer = (state: State) => {
-  const {bounds} = state
-  const timer = document.createElement("section")
-  timer.style.height = `${bounds().height / 9}px`
-  timer.style.width = `${bounds().height / 3}px`
-  // timer.style.width = `${bounds().width / 3 - 1}px`
-  timer.classList.add("timer-section")
-  timer.id = "timer"
-
-  const timerText = document.createElement("p")
-  timer.appendChild(timerText)
-
-  if (state.gameState === "isInitialed") {
-    timerText.textContent = `00:00`
-  }
-  let seconds = state.seconds ? state.seconds : 0
-  setInterval(() => {
-    if (state.gameState === "isPlaying") {
-      timerText.textContent = formatTime(state.seconds)
-      state.seconds = seconds
-      seconds++
-    }
-  }, 1000)
-  return timer
-}
 export function renderNavPanel(state: State): State {
-  const {nav} = state
+  const {ctrlBTNSection: nav} = state
 
   updateBounds(state)
 
-  state.nav.innerHTML = ""
+  state.ctrlBTNSection.innerHTML = ""
 
   nav.appendChild(renderTimer(state))
   nav.appendChild(renderBTNSection(state))
@@ -154,11 +67,6 @@ export function renderNavPanel(state: State): State {
 
 export function renderGameOver(state: State) {
   const {board} = state
-  // board.innerHTML = ""
-  // board.style.position = "unset"
-  // board.style.display = "flex"
-  // board.style.justifyContent = "center"
-  // board.style.alignItems = "center"
   const h1 = document.createElement("h1")
   h1.innerText = "Game Over"
   h1.style.width = `50%`
@@ -170,192 +78,76 @@ export function renderGameOver(state: State) {
   board.appendChild(h1)
 }
 
-/**
- *
- * @param
- * @returns
- */
-export function drawLine({
-  x1,
-  x2,
-  y1,
-  y2,
-  key,
-  strokeWidth,
-  className,
-}: {
-  x1: number
-  x2: number
-  y1: number
-  y2: number
-  key: string
-  strokeWidth?: number
-  className: string
-}) {
-  const line: SVGLineElement = createSvg({
-    tag: "line",
-    className,
-    x1: `${x1}`,
-    y1: `${y1}`,
-    x2: `${x2}`,
-    y2: `${y2}`,
-    key: `${key}`,
-  })
-
-  if (strokeWidth) line.setAttribute("stroke-width", `${strokeWidth}`)
-
-  line.setAttribute("stroke", "black")
-  // line.setAttribute("stroke-width", `${strokeWidth}px`)
-  return line
-}
-const drawLines = ({
-  isHorizontal = false,
-  svg,
-  size,
-}: {
-  isHorizontal: boolean
-  svg: SVGElement
-  size: number
-}) => {
-  const cellHeight = size / BOARD_SIZE
-  for (let i = 0; i <= BOARD_SIZE; i++) {
-    const x = i * cellHeight
-    const isThick = i % 3 === 0
-
-    const line = svg.appendChild(
-      drawLine({
-        x1: isHorizontal ? 0 : x,
-        y1: isHorizontal ? x : 0,
-        x2: isHorizontal ? size : x,
-        y2: isHorizontal ? x : size,
-        key: `key-${isHorizontal ? "h" : "v"}-${i}`,
-        className: "s-lines",
-      }),
-    )
-    line.classList.add(isThick ? "s-thick" : "s-thin")
-  }
-}
-
-export function drawBackground(state: State) {
-  const {bounds, board} = state
-
-  const {width, height} = bounds()
-
-  const svg = createSvg({
-    tag: "svg",
-    className: "svg-lines--container",
-    width: `${width}`,
-    height: `${height}`,
-  })
-
-  drawLines({isHorizontal: true, svg, size: height})
-  drawLines({isHorizontal: false, svg, size: height})
-
-  board.appendChild(svg)
-}
-
 export function renderBoard(state: State): State {
   updateBounds(state)
-  const {board, cells} = state
+  const {board} = state
   board.innerHTML = ""
-  if (state.gameState === "isOvered") renderGameOver(state)
+
+  if (isOvered(state.gameState)) renderGameOver(state)
+  renderCells(state)
+  renderNotes(state)
+  drawBackground(state)
+  return state
+}
+
+function renderCells(state: State) {
+  const {cells, board} = state
   for (const [k, v] of cells) {
     const cellElem = document.createElement("cell") as CellElement
     const p = keyToPosition(k as Key)
     const pos = getPositionFromBound(state, p)
+    if (isOvered(state.gameState) || isPaused(state.gameState)) {
+      cellElem.style.opacity = "0.11"
+    }
 
     cellElem.style.transform = `translate(${pos[0]}px, ${pos[1]}px)`
     cellElem.style.position = "absolute"
     cellElem.style.height = `${state.bounds().height / 9}px`
     cellElem.style.width = `${state.bounds().width / 9}px`
 
-    for (const [kh, _] of state.highlight) {
-      if (kh === k) {
-        cellElem.classList.add("highlighted")
-      }
-    }
-    state.selected.map((selectedKey) => {
-      if (selectedKey === k) {
-        cellElem.classList.remove("highlighted")
-        cellElem.classList.remove("duplicates")
-        cellElem.classList.add("selected")
-      }
-    })
-    if (state.duplicates.size > 1)
-      for (const [kd, _] of state.duplicates) {
-        if (k === kd) {
-          cellElem.classList.remove("highlighted")
-          cellElem.classList.remove("selected")
-          cellElem.classList.add("duplicates")
-        }
-      }
     cellElem.dataset.key = `${k}`
     cellElem.dataset.value = `${v}`
-
+    showHighlighted(state)(cellElem, k)
     const c = document.createElement("p")
     c.style.gridArea = "2 / 2 / 3 / 3"
 
-    if (v !== "0" && state.gameState !== "isInitialed") {
+    if (v !== "0" && !isInitialed(state.gameState)) {
       c.innerHTML = `${v}`
     }
-    if (state.gameState === "isPaused") {
-      c.style.opacity = "0"
-    }
+
     cellElem.appendChild(c)
     board.appendChild(cellElem)
+
     if (state.originCell.get(k) !== "0" && state.originCell.get(k)) {
       cellElem.classList.add("origin-cells")
     } else {
       cellElem.classList.remove("origin-cells")
       cellElem.classList.add("new-cells")
     }
-    if (state.gameState === "isOvered" || state.gameState === "isPaused")
+    if (isOvered(state.gameState) || isPaused(state.gameState))
       cellElem.style.opacity = "0.3"
-    renderNotes(state, cellElem)
   }
-  drawBackground(state)
-  return state
 }
 
-export const addNote = (state: State) => (value: Value) => {
-  const notes = state.selected?.map((k) => {
-    const note = `${k}${value}` as Note
-    return note
-  })
-  const f = new Set([...notes])
-  const found = state.notes.filter((r) => f.has(r))
-  if (found.length > 0) {
-    state.notes = state.notes.filter((r) => !f.has(r))
-    return
+const showHighlighted = (state: State) => (cellElem: CellElement, k: Key) => {
+  for (const [kh, _] of state.highlight) {
+    if (kh === k) {
+      cellElem.classList.add("highlighted")
+    }
   }
-  state.notes = [...new Set([...state.notes, ...notes])]
-  state.notes = [...new Set([...state.notes])]
-  state.notes = [
-    ...state.notes,
-    ...new Set(notes.filter((h, i) => state.notes[i] == h)),
-  ]
-}
-export function renderNotes(state: State, el: CellElement): State {
-  let {notes, bounds} = state
-  notes = [...new Set(notes)]
-  const cellHeight = bounds().width / BOARD_SIZE
-  const rows = 3 // in one Cell there will be 3 rows
-  notes.map((h) => {
-    const value = +h.slice(-1)
-    const key = h.slice(0, 3) as unknown as Key
-    if (!el.dataset.key?.startsWith(key) || el.dataset.value !== "0") return
-    const [x, y] = getSquareNr(value)
-    const noteElm = document.createElement("note") as CellElement
-    noteElm.style.gridColumn = `${y}`
-    noteElm.style.gridRow = `${x}`
-
-    noteElm.innerHTML = `${value}`
-    noteElm.style.fontSize = `${cellHeight / rows}px`
-    noteElm.style.display = "flex"
-    noteElm.style.alignItems = "center"
-    noteElm.style.justifyContent = "center"
-    noteElm.style.lineHeight = "1"
-    el?.appendChild(noteElm)
+  state.selected.map((selectedKey) => {
+    if (selectedKey === k) {
+      cellElem.classList.remove("highlighted")
+      cellElem.classList.remove("duplicates")
+      cellElem.classList.add("selected")
+    }
   })
-  return state
+  if (state.duplicates.size > 1)
+    for (const [kd, _] of state.duplicates) {
+      if (k === kd) {
+        cellElem.classList.remove("highlighted")
+        cellElem.classList.remove("selected")
+        cellElem.classList.add("duplicates")
+      }
+    }
 }

@@ -96,7 +96,7 @@ cell > p {
   font-weight: 400;
 }
 
-numpad {
+.numpad {
   display: flex;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -106,8 +106,8 @@ numpad {
   width: 100%;
 }
 
-numpad > * {
-  font-size: 32px;
+.numpad > * {
+  font-size: 20px;
   width: 100%;
   background-color: var(--light2);
   text-align: center;
@@ -175,9 +175,102 @@ numpad > * {
   background: var(--orange);
 }
 .timer-section > * {
-  font-size: 32px;
+  font-size: 20px;
   color: var(--black);
   background-color: var(--light2);
   width: 100%;
   text-align: center;
+}
+
+.zen {
+  display: none;
+}
+
+#aside {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+}
+.s-btn-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  grid-column: 1;
+  grid-row: 2;
+  margin: 0;
+}
+
+.content {
+  margin: 0;
+  transform: translateX(0);
+  opacity: 1;
+  transition:
+    transform 0.4s ease,
+    opacity 0.4s ease;
+}
+
+#aside {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+}
+
+.s-btn-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  grid-column: 1;
+  grid-row: 2;
+  margin: 0;
+}
+
+.content {
+  margin: 0;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.dragging {
+  background-color: rgba(251, 251, 31, 0.432);
+  color: red;
+  aspect-ratio: 1;
+}
+.sm {
+  display: block;
+  font-size: 4px;
+  white-space: initial;
+}
+
+.btn {
+  font-size: x-small;
+}
+
+.tooltiptext {
+  visibility: hidden;
+  padding: 0.25em 0.5em;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 0.25em;
+  white-space: nowrap;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 100%;
+  transition-property: visibility;
+  transition-delay: 0s;
+}
+.btn:hover .tooltiptext {
+  visibility: visible;
+  transition-delay: 0.3s;
 }
