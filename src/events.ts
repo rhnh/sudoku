@@ -97,7 +97,9 @@ export const resetDraggingElement = (state: State) => {
 export const addNoteOrValue = (state: State) => {
   const value = state.draggingValue as unknown as Rank
   if (state.isNote) addNote(state)(value)
-  else addNewValue(state, value)
+  else {
+    addNewValue(state, value)
+  }
 }
 
 export const stopDragging = (state: State) => {

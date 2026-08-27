@@ -63,6 +63,7 @@ export function panelEvents(state: State) {
       selected.map((s) => {
         const value = state.solutions.get(s) as unknown as Value
         addNewValue(state, value)
+        state.rerender(state)
       })
     }
   })
