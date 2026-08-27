@@ -74,8 +74,9 @@ export const addNoteOrValue = (state) => {
     const value = state.draggingValue;
     if (state.isNote)
         addNote(state)(value);
-    else
+    else {
         addNewValue(state, value);
+    }
 };
 export const stopDragging = (state) => {
     state.draggingElement = undefined;

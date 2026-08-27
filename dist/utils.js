@@ -53,7 +53,7 @@ export const addNewValue = (state, value) => {
     state.selected.map((s) => {
         if (state.originCell.get(s) !== "0" && state.originCell.get(s))
             return;
-        removeNotes(state, s)(value);
+        removeNotes(state)(state.targetKey);
         state.cells.set(s, `${value}`);
         state.lastMoves.push(s);
         state.userInput.set(s, `${value}`);
@@ -169,7 +169,7 @@ export const formatTime = (totalSeconds) => {
  * @param key
  * @returns
  */
-export const removeNotes = (state, key) => (value) => {
+export const removeNote = (state, key) => (value) => {
     const commons = getCommons(state)(key);
     // oxlint-disable-next-line no-unused-vars
     for (const [k, _] of commons) {
@@ -182,6 +182,17 @@ export const removeNotes = (state, key) => (value) => {
         }
     }
     return state;
+};
+export const removeNotes = (state) => (key) => {
+    const commons = getCommons(state)(key);
+    // oxlint-disable-next-line no-unused-vars
+    for (const [k, _] of commons) {
+        // oxlint-disable-next-line no-unused-vars
+        for (const [key, _] of state.notes) {
+            if (k === key)
+                state.notes.set(k, new Set());
+        }
+    }
 };
 export const resizeObserver = (state) => ({ render, updateBounds, }) => {
     const observerCallback = (entries) => {

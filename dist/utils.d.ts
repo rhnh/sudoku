@@ -33,7 +33,8 @@ export declare const formatTime: (totalSeconds: number) => string;
  * @param key
  * @returns
  */
-export declare const removeNotes: (state: State, key: Key) => (value: Value) => State;
+export declare const removeNote: (state: State, key: Key) => (value: Value) => State;
+export declare const removeNotes: (state: State) => (key: Key) => void;
 export declare const resizeObserver: (state: State) => ({ render, updateBounds, }: {
     updateBounds: (state: State) => void;
     render: (state: State) => State;

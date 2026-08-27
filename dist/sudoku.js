@@ -3,6 +3,9 @@ import { keyEvents } from "./keyEvent";
 import { Box } from "./lib";
 import { render, renderBase } from "./render";
 import { getButtonKeys, getDigits } from "./utils";
+import "./assets/base.style.css";
+import "./assets/media-queries.css";
+import "./assets/btn.css";
 export { getCells } from "./sudoku.algo";
 export const initState = ({ el, cells, solutions, }) => {
     const userInput = new Map();

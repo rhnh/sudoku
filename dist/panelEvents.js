@@ -58,6 +58,7 @@ export function panelEvents(state) {
             selected.map((s) => {
                 const value = state.solutions.get(s);
                 addNewValue(state, value);
+                state.rerender(state);
             });
         }
     });
