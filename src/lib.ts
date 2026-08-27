@@ -75,4 +75,10 @@ export function createElement<K extends keyof HTMLElementTagNameMap>({
   return el
 }
 
-export const createButton = ({}) => {}
+export const createButton = ({
+  className,
+  ...rest
+}: {
+  className: string
+} & Record<string, string>) =>
+  createElement({tag: "button", className, ...rest})

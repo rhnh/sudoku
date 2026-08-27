@@ -1,5 +1,6 @@
-import {Memo} from "./lib"
-import {
+import type {Memo} from "./lib"
+
+import type {
   Buttons,
   Cells,
   Digits,
@@ -41,10 +42,10 @@ export interface State extends HeadlessState {
   sidePanel: HTMLElement
   ctrlBTNSection: HTMLElement
   draggingElement?: HTMLElement
-  redraw: () => void
+  rerender: (state: State) => State
 }
 
-export interface CellElement extends HTMLElement {
+export interface TypeCellElement extends HTMLElement {
   key: Key
   value: Value
   isReadOnly: boolean

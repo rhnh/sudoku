@@ -18,30 +18,17 @@
     }
   },
   "scripts": {
-    "prepare": "$npm_execpath run compile",
-    "compile": "tsc --sourceMap --declaration",
-    "lint": "eslint src/*.ts",
-    "format": "prettier --write .",
-    "check-format": "prettier --check .",
     "bundle": "esbuild src/sudoku.ts --bundle --format=esm  --loader:.svg=dataurl --outfile=dist/sudoku.min.js --minify",
     "dev": "$npm_execpath run bundle -- --watch",
     "dist": "$npm_execpath run compile && $npm_execpath run bundle",
     "test": "vitest run",
     "test:watch": "vitest",
-    "deploy": "gh-pages -d dist"
-  },
-  "files": [
-    "dist"
-  ],
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "esbuild": "^0.27.3",
-    "eslint": "^10.0.2",
-    "jsdom": "^28.1.0",
-    "prettier": "^3.8.1",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.56.1",
-    "vitest": "^4.0.18"
+    "prepare": "$npm_execpath run compile",
+    "compile": "tsc --sourceMap --declaration",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt",
+    "check-format": "oxfmt --check"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.2.0"

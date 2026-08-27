@@ -6,7 +6,7 @@
  * @param num
  * @returns
  */
-import { Cells, Key, Value } from "./types";
+import type { Cells, Key, Value } from "./types";
 export declare function sudokuGenerator(k: number): {
     grid: number[][];
     solution: Map<any, any>;

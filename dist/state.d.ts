@@ -1,5 +1,5 @@
-import { Memo } from "./lib";
-import { Buttons, Cells, Digits, GameState, Key, Notes, Rank, Value } from "./types";
+import type { Memo } from "./lib";
+import type { Buttons, Cells, Digits, GameState, Key, Notes, Rank, Value } from "./types";
 export interface HeadlessState {
     gameState: GameState;
     cells: Cells;
@@ -30,9 +30,9 @@ export interface State extends HeadlessState {
     sidePanel: HTMLElement;
     ctrlBTNSection: HTMLElement;
     draggingElement?: HTMLElement;
-    redraw: () => void;
+    rerender: (state: State) => State;
 }
-export interface CellElement extends HTMLElement {
+export interface TypeCellElement extends HTMLElement {
     key: Key;
     value: Value;
     isReadOnly: boolean;

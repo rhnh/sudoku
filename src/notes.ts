@@ -1,6 +1,6 @@
 import {BOARD_SIZE} from "./constants"
-import {State, CellElement} from "./state"
-import {Value, Rank} from "./types"
+import type {State, TypeCellElement} from "./state"
+import type {Rank, Value} from "./types"
 import {getElementByKey, getSquareNr} from "./utils"
 
 export const addNote = (state: State) => (value: Value) => {
@@ -18,22 +18,22 @@ export const addNote = (state: State) => (value: Value) => {
       }
     } else {
       if (state.cells.get(selectedKey) !== "0") return
-      const set = new Set<Rank>()
-      set.add(value)
+      const set = new Set<Rank>([value])
+
       state.notes.set(selectedKey, set)
     }
   })
 }
 
 export function renderNotes(state: State): State {
-  let {notes, bounds} = state
+  const {notes, bounds} = state
   const cellHeight = bounds().width / BOARD_SIZE
   const rows = 3 // in one Cell there will be 3 rows
   for (const [key, values] of notes) {
     const el = getElementByKey(state)(key)
     for (const value of values) {
-      const [x, y] = getSquareNr(+value)
-      const noteElm = document.createElement("note") as CellElement
+      const [x, y] = getSquareNr(Number(value))
+      const noteElm = document.createElement("note") as TypeCellElement
       noteElm.style.gridColumn = `${y}`
       noteElm.style.gridRow = `${x}`
       noteElm.innerHTML = `${value}`

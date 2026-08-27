@@ -1,4 +1,4 @@
-import {BTN_NAMES, FILES, GAME_STATE, RANKS} from "./constants"
+import type {BTN_NAMES, FILES, GAME_STATE, RANKS} from "./constants"
 
 export type File = (typeof FILES)[number]
 export type Rank = (typeof RANKS)[number] | "0"

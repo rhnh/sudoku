@@ -1,7 +1,9 @@
+import {BOARD_SIZE} from "./constants"
 import {addNote} from "./notes"
-import {renderBoard} from "./render"
-import {State} from "./state"
-import {Value} from "./types"
+import {renderBoard} from "./renderBoard"
+import type {State} from "./state"
+import type {Value} from "./types"
+
 import {addNewValue} from "./utils"
 
 export const createNumPad = (state: State): State => {
@@ -11,7 +13,7 @@ export const createNumPad = (state: State): State => {
   for (const [k, i] of state.digits) {
     const el = document.createElement("button")
     el.classList.add("num")
-    el.style.height = `${bounds().height / 9}px`
+    el.style.height = `${bounds().height / BOARD_SIZE}px`
     el.dataset.value = `${i}`
     el.innerHTML = `${i}`
     el.dataset.key = `${k}`

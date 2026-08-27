@@ -18,20 +18,19 @@ export const addNote = (state) => (value) => {
         else {
             if (state.cells.get(selectedKey) !== "0")
                 return;
-            const set = new Set();
-            set.add(value);
+            const set = new Set([value]);
             state.notes.set(selectedKey, set);
         }
     });
 };
 export function renderNotes(state) {
-    let { notes, bounds } = state;
+    const { notes, bounds } = state;
     const cellHeight = bounds().width / BOARD_SIZE;
     const rows = 3; // in one Cell there will be 3 rows
     for (const [key, values] of notes) {
         const el = getElementByKey(state)(key);
         for (const value of values) {
-            const [x, y] = getSquareNr(+value);
+            const [x, y] = getSquareNr(Number(value));
             const noteElm = document.createElement("note");
             noteElm.style.gridColumn = `${y}`;
             noteElm.style.gridRow = `${x}`;

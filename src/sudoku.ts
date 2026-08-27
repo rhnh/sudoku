@@ -1,13 +1,14 @@
 import {events} from "./events"
 import {keyEvents} from "./keyEvent"
+import {Box} from "./lib"
 import {render, renderBase} from "./render"
+import type {HeadlessState, State} from "./state"
 import type {Cells, Key, Value} from "./types"
+import {getButtonKeys, getDigits} from "./utils"
+
 import "./assets/base.style.css"
 import "./assets/media-queries.css"
 import "./assets/btn.css"
-import {getButtonKeys, getDigits} from "./utils"
-import {State, HeadlessState} from "./state"
-import {Box} from "./lib"
 
 export {getCells} from "./sudoku.algo"
 
@@ -26,8 +27,8 @@ export const initState = ({
 
   const headlessState: HeadlessState = {
     gameState: "isInitialed",
-    cells: new Map([...cells]),
-    originCell: new Map([...cells]),
+    cells: new Map(cells),
+    originCell: new Map(cells),
     selected: [],
     digits: getDigits(),
     notes: new Map(),
@@ -37,13 +38,18 @@ export const initState = ({
     isHold: false,
     highlight: new Map(),
     duplicates: new Map(),
-    solutions: solutions,
+    solutions,
     userInput, //TODO: After every click it should scan if this not empty and if it filled and has the correct answers
     seconds: 0,
     lastMoves: [],
   }
 
-  const state: State = {...headlessState, wrap: el} as unknown as State
+  const state: State = {
+    ...headlessState,
+    wrap: el,
+    rerender: render,
+    addDimensionsCssVarsTo: undefined,
+  } as unknown as State
   return state
 }
 

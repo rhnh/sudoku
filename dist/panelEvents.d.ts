@@ -1,4 +1,4 @@
-import { State } from "./state";
+import type { State } from "./state";
 /**
  * This looks amateur. This need to change and should be saved in a map or an array
  * @param state

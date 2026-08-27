@@ -45,5 +45,5 @@ export function createElement({ tag, className, ...rest }) {
     });
     return el;
 }
-export const createButton = ({}) => { };
+export const createButton = ({ className, ...rest }) => createElement({ tag: "button", className, ...rest });
 //# sourceMappingURL=lib.js.map

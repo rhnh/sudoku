@@ -253,7 +253,7 @@ cell > p {
   font-size: x-small;
 }
 
-.tooltiptext {
+.tooltip-text {
   visibility: hidden;
   padding: 0.25em 0.5em;
   background-color: black;
@@ -270,7 +270,7 @@ cell > p {
   transition-property: visibility;
   transition-delay: 0s;
 }
-.btn:hover .tooltiptext {
+.btn:hover .tooltip-text {
   visibility: visible;
   transition-delay: 0.3s;
 }

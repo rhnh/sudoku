@@ -1,11 +1,8 @@
 import { events } from "./events";
 import { keyEvents } from "./keyEvent";
-import { render, renderBase } from "./render";
-import "./assets/base.style.css";
-import "./assets/media-queries.css";
-import "./assets/btn.css";
-import { getButtonKeys, getDigits } from "./utils";
 import { Box } from "./lib";
+import { render, renderBase } from "./render";
+import { getButtonKeys, getDigits } from "./utils";
 export { getCells } from "./sudoku.algo";
 export const initState = ({ el, cells, solutions, }) => {
     const userInput = new Map();
@@ -13,8 +10,8 @@ export const initState = ({ el, cells, solutions, }) => {
     userInputKeys.map((r) => userInput.set(r, "0"));
     const headlessState = {
         gameState: "isInitialed",
-        cells: new Map([...cells]),
-        originCell: new Map([...cells]),
+        cells: new Map(cells),
+        originCell: new Map(cells),
         selected: [],
         digits: getDigits(),
         notes: new Map(),
@@ -24,12 +21,17 @@ export const initState = ({ el, cells, solutions, }) => {
         isHold: false,
         highlight: new Map(),
         duplicates: new Map(),
-        solutions: solutions,
+        solutions,
         userInput, //TODO: After every click it should scan if this not empty and if it filled and has the correct answers
         seconds: 0,
         lastMoves: [],
     };
-    const state = { ...headlessState, wrap: el };
+    const state = {
+        ...headlessState,
+        wrap: el,
+        rerender: render,
+        addDimensionsCssVarsTo: undefined,
+    };
     return state;
 };
 export function Sudoku({ el, cells, solutions, }) {

@@ -1,4 +1,3 @@
-import { render } from "./render";
 import { getCells } from "./sudoku.algo";
 import { addNewValue, isInitialed, isPaused, isPlaying } from "./utils";
 /**
@@ -23,7 +22,7 @@ export function panelEvents(state) {
         }
         else {
         }
-        render(state);
+        state.rerender(state);
     });
     const restart = nav.querySelector("#restart");
     restart.addEventListener("pointerdown", () => {
@@ -50,7 +49,7 @@ export function panelEvents(state) {
                 state.duplicates = new Map();
             }
         });
-        render(state);
+        state.rerender(state);
     });
     const showHint = nav.querySelector("#hint");
     showHint.addEventListener("pointerdown", () => {
@@ -68,9 +67,9 @@ export function panelEvents(state) {
             const last = state.lastMoves.length - 1;
             state.originCell.set(state.lastMoves[last], "0");
             state.cells.set(state.lastMoves[last], "0");
-            state.lastMoves = state.lastMoves.filter((r) => r != state.lastMoves[last]);
+            state.lastMoves = state.lastMoves.filter((r) => r !== state.lastMoves[last]);
             state.duplicates.clear();
-            render(state);
+            state.rerender(state);
         }
     });
     const timer = nav.querySelector("#timer");
@@ -90,53 +89,57 @@ export function panelEvents(state) {
     const easyBtn = sidePanel.querySelector(".easy-btn");
     if (easyBtn) {
         easyBtn.addEventListener("pointerdown", () => {
+            const DIFFICULTY = 47;
             state.cells = new Map();
             state.solutions = new Map();
-            render(state);
-            const cells = getCells(37);
+            state.rerender(state);
+            const cells = getCells(DIFFICULTY);
             state.cells = cells.cells;
             state.originCell = cells.cells;
             state.solutions = cells.solutions;
-            render(state);
+            state.rerender(state);
         });
     }
     const mediumBtn = sidePanel.querySelector(".medium-btn");
     if (mediumBtn) {
+        const DIFFICULTY = 47;
         mediumBtn.addEventListener("pointerdown", () => {
             state.cells = new Map();
             state.solutions = new Map();
-            render(state);
-            const cells = getCells(47);
+            state.rerender(state);
+            const cells = getCells(DIFFICULTY);
             state.cells = cells.cells;
             state.originCell = cells.cells;
             state.solutions = cells.solutions;
-            render(state);
+            state.rerender(state);
         });
     }
     const hardBTN = sidePanel.querySelector(".hard-btn");
     if (hardBTN) {
+        const DIFFICULTY = 67;
         hardBTN.addEventListener("pointerdown", () => {
             state.cells = new Map();
             state.solutions = new Map();
-            render(state);
-            const cells = getCells(57);
+            state.rerender(state);
+            const cells = getCells(DIFFICULTY);
             state.cells = cells.cells;
             state.originCell = cells.cells;
             state.solutions = cells.solutions;
-            render(state);
+            state.rerender(state);
         });
     }
     const expertBtn = sidePanel.querySelector(".expert-btn");
     if (expertBtn) {
+        const DIFFICULTY = 67;
         expertBtn.addEventListener("pointerdown", () => {
             state.cells = new Map();
             state.solutions = new Map();
-            render(state);
-            const cells = getCells(67);
+            state.rerender(state);
+            const cells = getCells(DIFFICULTY);
             state.cells = cells.cells;
             state.originCell = cells.cells;
             state.solutions = cells.solutions;
-            render(state);
+            state.rerender(state);
         });
     }
     return state;

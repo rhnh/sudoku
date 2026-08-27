@@ -28,4 +28,6 @@ export declare function createElement<K extends keyof HTMLElementTagNameMap>({ t
     tag: K;
     className: string;
 } & Record<string, string>): HTMLElementTagNameMap[K];
-export declare const createButton: ({}: {}) => void;
+export declare const createButton: ({ className, ...rest }: {
+    className: string;
+} & Record<string, string>) => HTMLButtonElement;

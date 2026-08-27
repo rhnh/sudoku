@@ -1,34 +1,35 @@
-import {BTN_NAMES, FILES, RANKS, TOTAL_FILE} from "./constants"
-import {renderBoard} from "./render"
-import {State, CellElement} from "./state"
-import {
-  type Cells,
-  type Key,
-  type Position,
-  type Value,
-  type BaseKey,
-  type Buttons,
+import {BOARD_SIZE, BTN_NAMES, FILES, RANKS, TOTAL_FILE} from "./constants"
+import type {State, TypeCellElement} from "./state"
+import type {
+  BaseKey,
+  Buttons,
+  Cells,
   Digits,
-  Rank,
   GameState,
+  Key,
+  Position,
+  Rank,
+  Value,
 } from "./types"
 
 export const keyToPosition = (k: Key): Position => [
+  // oxlint-disable-next-line no-magic-numbers
   k.charCodeAt(0) - 97,
+  // oxlint-disable-next-line no-magic-numbers
   k.charCodeAt(1) - 49,
 ]
 
 export const getKeys = () => {
   let i = 0
-  return FILES.map((f) =>
-    RANKS.map((r) => {
+  return FILES.flatMap((f) =>
+    RANKS.flatMap((r) => {
       const row = Math.floor(i / 9)
       const col = i % 9
       const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1
       i++
       return `${f}${r}${block}` as Key
     }),
-  ).flat()
+  )
 }
 
 function getDuplicateKeys(map: Cells): Key[] {
@@ -53,21 +54,17 @@ function getDuplicateKeys(map: Cells): Key[] {
 
 export const getDuplicates =
   (state: State) => (f: (key: Key, noZero: boolean) => Cells) =>
-    getKeys()
-      .map((key) =>
-        getDuplicateKeys(f(key, true))
-          .map((r) => {
-            if (r) {
-              const value = state.cells.get(r) as Value
-              state.duplicates.set(r, `${value}`)
-            } else {
-              state.duplicates.delete(r)
-            }
-            return state.duplicates
-          })
-          .flat(),
-      )
-      .flat()
+    getKeys().flatMap((key) =>
+      getDuplicateKeys(f(key, true)).flatMap((r) => {
+        if (r) {
+          const value = state.cells.get(r) as Value
+          state.duplicates.set(r, `${value}`)
+        } else {
+          state.duplicates.delete(r)
+        }
+        return state.duplicates
+      }),
+    )
 
 export const getAllDuplicates = (state: State) => {
   getDuplicates(state)(getRow(state))
@@ -93,7 +90,6 @@ export const addNewValue = (state: State, value: Value) => {
 
   state.highlight = getCommons(state)(state.targetKey)
   getAllDuplicates(state)
-  renderBoard(state)
 }
 
 export const positionToKey = (p: Position): Key | undefined => {
@@ -158,14 +154,14 @@ export const getSquareNr = (n: number) => {
 
 export const getElementByKey =
   (state: State) =>
-  (key: Key): CellElement | null => {
+  (key: Key): TypeCellElement | null => {
     const {board} = state
-    let el = board.firstChild as CellElement
+    let el = board.firstChild as TypeCellElement
     while (el) {
       if (el.dataset.key?.startsWith(key)) {
         return el
       }
-      el = el.nextSibling as CellElement
+      el = el.nextSibling as TypeCellElement
     }
     return null
   }
@@ -187,14 +183,14 @@ export const allDigits = FILES.map((f, i) => `${f}${i + 1}` as Key)
 
 export function getDigitFromPosition(pos: Position): Key | undefined {
   const k = (pos[1] + pos[0]) as number
-  return pos.every((x) => x >= 0 && x <= 9) ? allDigits[k] : undefined
+  return pos.every((x) => x >= 0 && x <= BOARD_SIZE) ? allDigits[k] : undefined
 }
 
 export const getPositionKeyAtDom =
   (bounds: DOMRectReadOnly) =>
   (pos: Position, xSize = 9, ySize = 9): Position => {
-    let file = Math.floor((xSize * (pos[0] - bounds.left)) / bounds.width)
-    let rank = Math.floor((ySize * (pos[1] - bounds.top)) / bounds.height)
+    const file = Math.floor((xSize * (pos[0] - bounds.left)) / bounds.width)
+    const rank = Math.floor((ySize * (pos[1] - bounds.top)) / bounds.height)
     return file >= 0 && file < xSize && rank >= 0 && rank <= ySize
       ? [file, rank]
       : [-1, -1]
@@ -241,6 +237,7 @@ export const removeNotes =
   (state: State, key: Key) =>
   (value: Value): State => {
     const commons = getCommons(state)(key)
+    // oxlint-disable-next-line no-unused-vars
     for (const [k, _] of commons) {
       for (const [key, values] of state.notes) {
         if (k === key) {
@@ -282,16 +279,18 @@ export const resizeObserver =
 export function updateBounds(s: State): void {
   const bounds = s.wrap.getBoundingClientRect()
   const container = s.container
-  let width =
+  const RANDOM_RATIO = 18 //TODO improve this function later
+  const width =
     Math.floor(bounds.width * window.devicePixelRatio) /
       window.devicePixelRatio -
-    bounds.width / 18
+    bounds.width / RANDOM_RATIO
 
   container.style.width = width + "px"
   container.style.height = width + "px"
   // container.style.aspectRatio = "1 / 1"
   s.bounds.clear()
 }
+
 export function getDigits() {
   const m: Digits = new Map()
   allDigits.map((k, i) => {

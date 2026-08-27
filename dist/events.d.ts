@@ -1,4 +1,4 @@
-import { State } from "./state";
+import type { State } from "./state";
 import type { Key, MouchEvent } from "./types";
 export declare const events: (state: State) => State;
 export declare const resetDraggingElement: (state: State) => void;

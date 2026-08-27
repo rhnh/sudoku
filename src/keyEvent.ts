@@ -1,7 +1,7 @@
 import {addNote} from "./notes"
-import {renderBoard} from "./render"
-import {State} from "./state"
-import {Value} from "./types"
+import {renderBoard} from "./renderBoard"
+import type {State} from "./state"
+import type {Value} from "./types"
 import {addNewValue, isInitialed, isPlaying} from "./utils"
 
 export function keyEvents(state: State): State {

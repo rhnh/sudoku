@@ -1,14 +1,14 @@
 import {addNote} from "./notes"
-import {renderBoard} from "./render"
-import {State} from "./state"
-import type {Key, Rank, Value, Position, MouchEvent} from "./types"
+import {renderBoard} from "./renderBoard"
+import type {State} from "./state"
+import type {Key, MouchEvent, Position, Rank, Value} from "./types"
 
 import {
-  getPositionKeyAtDom,
-  getKeyFromPosition,
-  getElementByKey,
-  getCommons,
   addNewValue,
+  getCommons,
+  getElementByKey,
+  getKeyFromPosition,
+  getPositionKeyAtDom,
   isPlaying,
 } from "./utils"
 
@@ -38,8 +38,8 @@ const getKey =
     const position = getPositionKeyAtDom(state.bounds())([x, y])
     return getKeyFromPosition(position)
   }
+
 const selectedEmptySquare = (state: State) => (e: MouchEvent, key: Key) => {
-  //don't drag this square
   if (e.ctrlKey) {
     state.selected = [...new Set(state.selected), key]
   } else {
@@ -126,6 +126,7 @@ export const pointerup =
     if (state.isDragging && state.draggingElement) {
       resetDraggingElement(state)
       addNoteOrValue(state)
+      renderBoard(state)
     }
     stopDragging(state)
     renderBoard(state)
@@ -135,14 +136,16 @@ export const pointerup =
 const moveDraggingElement = (state: State) => (position: Position) => {
   const [x, y] = position
   const p = state.draggingElement?.firstChild as unknown as HTMLElement
+  const RATIO_1 = 2
+  const RATIO_2 = 3
   if (state.draggingElement && p) {
     p.classList.add("dragging")
     p.style.position = "absolute"
     p.style.transform = `translate(${
       x -
       state.draggingElement?.getBoundingClientRect().left -
-      state.draggingElement?.getBoundingClientRect().width / 2
-    }px, ${y - state.draggingElement?.getBoundingClientRect().top - state.draggingElement?.getBoundingClientRect().height / 3}px)`
+      state.draggingElement?.getBoundingClientRect().width / RATIO_1
+    }px, ${y - state.draggingElement?.getBoundingClientRect().top - state.draggingElement?.getBoundingClientRect().height / RATIO_2}px)`
   }
 }
 

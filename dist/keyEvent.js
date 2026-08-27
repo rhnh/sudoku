@@ -1,5 +1,5 @@
 import { addNote } from "./notes";
-import { renderBoard } from "./render";
+import { renderBoard } from "./renderBoard";
 import { addNewValue, isInitialed, isPlaying } from "./utils";
 export function keyEvents(state) {
     const { ctrlBTNSection: nav } = state;

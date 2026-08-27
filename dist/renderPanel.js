@@ -34,22 +34,22 @@ export function createSideLayout() {
         tag: "button",
         className: "easy-btn btn rotate-btn",
     });
-    easy.innerHTML = `●○○○<span class="tooltiptext">Tooltip text</span>`;
+    easy.innerHTML = `●○○○<span class="tooltip-text">Tooltip text</span>`;
     const medium = createElement({
         tag: "button",
         className: "medium-btn btn rotate-btn level-btn",
     });
-    medium.innerHTML = `●●○○<span class="tooltiptext">Tooltip text</span>`;
+    medium.innerHTML = `●●○○<span class="tooltip-text">Tooltip text</span>`;
     const hard = createElement({
         tag: "button",
         className: "hard-btn btn rotate-btn level-btn",
     });
-    hard.innerHTML = `●●●○<span class="tooltiptext">Tooltip text</span>`;
+    hard.innerHTML = `●●●○<span class="tooltip-text">Tooltip text</span>`;
     const expert = createElement({
         tag: "button",
         className: "expert-btn btn rotate-btn level-btn",
     });
-    expert.innerHTML = `●●●●<span class="tooltiptext">Tooltip text</span>`;
+    expert.innerHTML = `●●●●<span class="tooltip-text">Tooltip text</span>`;
     const setting = createElement({
         tag: "button",
         className: "setting-btn btn rotate-btn level-btn",

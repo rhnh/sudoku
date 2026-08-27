@@ -6,6 +6,7 @@
  * @param num
  * @returns
  */
+import { BOARD_SIZE } from "./constants";
 import { getKeys, positionToKey } from "./utils";
 // https://www.geeksforgeeks.org/dsa/program-sudoku-generator/
 // JavaScript program to generate a valid sudoku
@@ -23,7 +24,7 @@ function unUsedInBox(grid, rowStart, colStart, num) {
     return true;
 }
 // Fill a 3x3 matrix
-// Assign valid random numbers to the 3x3 subgrid
+// Assign valid random numbers to the 3x3 sub-grid
 function fillBox(grid, row, col) {
     let num;
     for (let i = 0; i < 3; i++) {
@@ -66,7 +67,8 @@ function checkIfSafe(grid, i, j, num) {
 // Fill the diagonal 3x3 matrices
 // The diagonal blocks are filled to simplify the process
 function fillDiagonal(grid) {
-    for (let i = 0; i < 9; i += 3) {
+    const RATIO = 3;
+    for (let i = 0; i < BOARD_SIZE; i += RATIO) {
         // Fill each 3x3 sub-grid diagonally
         fillBox(grid, i, i);
     }
@@ -75,7 +77,7 @@ function fillDiagonal(grid) {
 // Recursively fill the remaining cells with valid numbers
 function fillRemaining(grid, i, j) {
     // If we've reached the end of the grid
-    if (i === 9) {
+    if (i === BOARD_SIZE) {
         return true;
     }
     // Move to next row when current row is finished
@@ -87,7 +89,7 @@ function fillRemaining(grid, i, j) {
         return fillRemaining(grid, i, j + 1);
     }
     // Try numbers 1-9 in current cell
-    for (let num = 1; num <= 9; num++) {
+    for (let num = 1; num <= BOARD_SIZE; num++) {
         if (checkIfSafe(grid, i, j, num)) {
             grid[i][j] = num;
             if (fillRemaining(grid, i, j + 1)) {
@@ -103,13 +105,9 @@ function fillRemaining(grid, i, j) {
 function removeKDigits(grid, k) {
     const removed = new Map();
     while (k > 0) {
-        // Pick a random cell
-        let cellId = Math.floor(Math.random() * 81);
-        // Get the row index
-        let i = Math.floor(cellId / 9);
-        // Get the column index
-        let j = cellId % 9;
-        // Remove the digit if the cell is not already empty
+        const cellId = Math.floor(Math.random() * BOARD_SIZE * BOARD_SIZE);
+        const i = Math.floor(cellId / BOARD_SIZE);
+        const j = cellId % BOARD_SIZE;
         if (grid[i][j] !== 0) {
             removed.set(positionToKey([i, j]), grid[i][j]);
             // Empty the cell
@@ -123,9 +121,9 @@ function removeKDigits(grid, k) {
 // Generate a Sudoku grid with K empty cells
 export function sudokuGenerator(k) {
     // Initialize an empty 9x9 grid
-    let grid = new Array(9)
+    const grid = Array.from({ length: BOARD_SIZE })
         .fill(0)
-        .map(() => new Array(9).fill(0));
+        .map(() => Array.from({ length: BOARD_SIZE }).fill(0));
     // Fill the diagonal 3x3 matrices
     fillDiagonal(grid);
     // Fill the remaining blocks in the grid
@@ -140,10 +138,11 @@ export const getCells = (emptyCells) => {
     const solutions = sudokuGenerated.solution;
     getKeys().forEach((key, i) => {
         // Calculate square number (1–9)
-        const row = Math.floor(i / 9);
-        const col = i % 9;
-        const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1;
-        let k = key.replace(/.$/, `${block}`);
+        const row = Math.floor(i / BOARD_SIZE);
+        const col = i % BOARD_SIZE;
+        const RATIO = 3;
+        const block = Math.floor(row / RATIO) * RATIO + Math.floor(col / RATIO) + 1;
+        const k = key.replace(/.$/, `${block}`);
         cells.set(k, `${sudoku[i]}`);
     });
     return { cells, solutions };
