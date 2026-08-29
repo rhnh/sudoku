@@ -3,7 +3,7 @@ import type {State, TypeCellElement} from "./state"
 import type {
   BaseKey,
   Buttons,
-  Cells,
+  Squares,
   Digits,
   GameState,
   Key,
@@ -32,7 +32,7 @@ export const getKeys = () => {
   )
 }
 
-function getDuplicateKeys(map: Cells): Key[] {
+function getDuplicateKeys(map: Squares): Key[] {
   const valueMap = new Map()
   const result: Key[] = []
 
@@ -53,7 +53,7 @@ function getDuplicateKeys(map: Cells): Key[] {
 }
 
 export const getDuplicates =
-  (state: State) => (f: (key: Key, noZero: boolean) => Cells) =>
+  (state: State) => (f: (key: Key, noZero: boolean) => Squares) =>
     getKeys().flatMap((key) =>
       getDuplicateKeys(f(key, true)).flatMap((r) => {
         if (r) {
@@ -111,12 +111,12 @@ export const getCellBy =
 
 export const getRow =
   (state: State) =>
-  (key: Key, noZero = false): Cells =>
+  (key: Key, noZero = false): Squares =>
     getCellBy(state)(key, noZero)(0)
 
 export const getColumn =
   (state: State) =>
-  (key: Key, noZero = false): Cells =>
+  (key: Key, noZero = false): Squares =>
     getCellBy(state)(key, noZero)(1)
 
 export const getSquare =
@@ -131,7 +131,7 @@ export const getSquare =
  */
 export const getCommons =
   (state: State) =>
-  (key: Key, noZero = false): Cells =>
+  (key: Key, noZero = false): Squares =>
     new Map([
       ...getRow(state)(key, noZero),
       ...getColumn(state)(key, noZero),

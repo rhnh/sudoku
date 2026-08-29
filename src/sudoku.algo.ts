@@ -8,7 +8,7 @@
  */
 
 import {BOARD_SIZE} from "./constants"
-import type {Cells, Key, Value} from "./types"
+import type {Squares, Key, Value} from "./types"
 import {getKeys, positionToKey} from "./utils"
 
 // https://www.geeksforgeeks.org/dsa/program-sudoku-generator/
@@ -168,8 +168,8 @@ export function sudokuGenerator(k: number) {
 
 export const getCells = (
   emptyCells: number,
-): {cells: Cells; solutions: Map<Key, Value>} => {
-  const cells: Cells = new Map()
+): {cells: Squares; solutions: Map<Key, Value>} => {
+  const cells: Squares = new Map()
   const sudokuGenerated = sudokuGenerator(emptyCells)
   const sudoku = sudokuGenerated.grid.flat()
   const solutions = sudokuGenerated.solution

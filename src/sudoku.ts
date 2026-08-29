@@ -3,7 +3,7 @@ import {keyEvents} from "./keyEvent"
 import {Box} from "./lib"
 import {render, renderBase} from "./render"
 import type {HeadlessState, State} from "./state"
-import type {Cells, Key, Value} from "./types"
+import type {Squares, Key, Value} from "./types"
 import {getButtonKeys, getDigits} from "./utils"
 
 import "./assets/base.style.css"
@@ -18,8 +18,8 @@ export const initState = ({
   solutions,
 }: {
   el: HTMLElement
-  cells: Cells
-  solutions: Cells
+  cells: Squares
+  solutions: Squares
 }): State => {
   const userInput = new Map()
   const userInputKeys = [...solutions.keys()]
@@ -59,7 +59,7 @@ export function Sudoku({
   solutions,
 }: {
   el: HTMLElement
-  cells: Cells
+  cells: Squares
   solutions: Map<Key, Value>
 }) {
   return Box(initState({el, cells, solutions}))

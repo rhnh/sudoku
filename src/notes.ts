@@ -1,6 +1,6 @@
 import {BOARD_SIZE} from "./constants"
 import type {State, TypeCellElement} from "./state"
-import type {Rank, Value} from "./types"
+import type {Value} from "./types"
 import {getElementByKey, getSquareNr} from "./utils"
 
 export const addNote = (state: State) => (value: Value) => {
@@ -18,7 +18,7 @@ export const addNote = (state: State) => (value: Value) => {
       }
     } else {
       if (state.cells.get(selectedKey) !== "0") return
-      const set = new Set<Rank>([value])
+      const set = new Set<Value>([value])
 
       state.notes.set(selectedKey, set)
     }

@@ -2,32 +2,31 @@ import type {Memo} from "./lib"
 
 import type {
   Buttons,
-  Cells,
+  Squares,
   Digits,
   GameState,
   Key,
   Notes,
-  Rank,
   Value,
 } from "./types"
 
 export interface HeadlessState {
   gameState: GameState
-  cells: Cells
-  originCell: Cells
+  cells: Squares
+  originCell: Squares
   notes: Notes
   digits: Digits
   selected: Key[]
   buttons: Buttons
   isNote: boolean
-  draggingValue?: Rank
+  draggingValue?: Value
   isDragging: boolean
   isHold: boolean
-  highlight: Cells
-  duplicates: Cells
+  highlight: Squares
+  duplicates: Squares
   targetKey?: Key
-  solutions: Cells
-  userInput: Cells
+  solutions: Squares
+  userInput: Squares
   seconds: number
   lastMoves: Key[]
 }
