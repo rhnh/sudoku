@@ -16,6 +16,7 @@
   text-overflow: ellipsis;
   transition: all 0.14s ease-out;
   white-space: nowrap;
+  background-color: var(--light2);
 }
 .btn:hover {
   box-shadow: 4px 4px 0 #000;
