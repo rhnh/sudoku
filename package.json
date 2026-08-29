@@ -24,7 +24,7 @@
     "format": "prettier --write .",
     "check-format": "prettier --check .",
     "bundle": "esbuild src/sudoku.ts --bundle --format=esm  --loader:.svg=dataurl --outfile=dist/sudoku.min.js --minify",
-    "dev": "esbuild src/sudoku.ts --bundle --format=esm  --loader:.svg=dataurl --outfile=dev/sudoku.js --watch",
+    "dev": "$npm_execpath run bundle -- --watch",
     "dist": "$npm_execpath run compile && $npm_execpath run bundle",
     "test": "vitest run",
     "test:watch": "vitest",
