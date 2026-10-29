@@ -7,9 +7,9 @@
  * @returns
  */
 
-import {BOARD_SIZE} from "./constants"
-import type {Squares, Key, Value} from "./types"
-import {getKeys, positionToKey} from "./utils"
+import { BOARD_SIZE } from "./constants";
+import type { Key, Squares, Value } from "./types";
+import { getKeyFromPosition, getKeys } from "./utils";
 
 // https://www.geeksforgeeks.org/dsa/program-sudoku-generator/
 
@@ -27,24 +27,24 @@ function unUsedInBox(
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
       if (grid[rowStart + i][colStart + j] === num) {
-        return false
+        return false;
       }
     }
   }
-  return true
+  return true;
 }
 
 // Fill a 3x3 matrix
 // Assign valid random numbers to the 3x3 sub-grid
 function fillBox(grid: number[][], row: number, col: number) {
-  let num
+  let num;
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
       do {
         // Generate a random number between 1 and 9
-        num = Math.floor(Math.random() * 9) + 1
-      } while (!unUsedInBox(grid, row, col, num))
-      grid[row + i][col + j] = num
+        num = Math.floor(Math.random() * 9) + 1;
+      } while (!unUsedInBox(grid, row, col, num));
+      grid[row + i][col + j] = num;
     }
   }
 }
@@ -54,10 +54,10 @@ function fillBox(grid: number[][], row: number, col: number) {
 function unUsedInRow(grid: number[][], i: number, num: number) {
   for (let j = 0; j < 9; j++) {
     if (grid[i][j] === num) {
-      return false
+      return false;
     }
   }
-  return true
+  return true;
 }
 
 // Check if it's safe to put num in column j
@@ -65,10 +65,10 @@ function unUsedInRow(grid: number[][], i: number, num: number) {
 function unUsedInCol(grid: number[][], j: number, num: number) {
   for (let i = 0; i < 9; i++) {
     if (grid[i][j] === num) {
-      return false
+      return false;
     }
   }
-  return true
+  return true;
 }
 
 // Check if it's safe to put num in the cell (i, j)
@@ -78,16 +78,16 @@ function checkIfSafe(grid: number[][], i: number, j: number, num: number) {
     unUsedInRow(grid, i, num) &&
     unUsedInCol(grid, j, num) &&
     unUsedInBox(grid, i - (i % 3), j - (j % 3), num)
-  )
+  );
 }
 
 // Fill the diagonal 3x3 matrices
 // The diagonal blocks are filled to simplify the process
 function fillDiagonal(grid: number[][]) {
-  const RATIO = 3
+  const RATIO = 3;
   for (let i = 0; i < BOARD_SIZE; i += RATIO) {
     // Fill each 3x3 sub-grid diagonally
-    fillBox(grid, i, i)
+    fillBox(grid, i, i);
   }
 }
 
@@ -96,92 +96,92 @@ function fillDiagonal(grid: number[][]) {
 function fillRemaining(grid: number[][], i: number, j: number) {
   // If we've reached the end of the grid
   if (i === BOARD_SIZE) {
-    return true
+    return true;
   }
 
   // Move to next row when current row is finished
   if (j === 9) {
-    return fillRemaining(grid, i + 1, 0)
+    return fillRemaining(grid, i + 1, 0);
   }
 
   // Skip if cell is already filled
   if (grid[i][j] !== 0) {
-    return fillRemaining(grid, i, j + 1)
+    return fillRemaining(grid, i, j + 1);
   }
 
   // Try numbers 1-9 in current cell
   for (let num = 1; num <= BOARD_SIZE; num++) {
     if (checkIfSafe(grid, i, j, num)) {
-      grid[i][j] = num
+      grid[i][j] = num;
       if (fillRemaining(grid, i, j + 1)) {
-        return true
+        return true;
       }
-      grid[i][j] = 0
+      grid[i][j] = 0;
     }
   }
 
-  return false
+  return false;
 }
 
 // Remove K digits randomly from the grid
 // This will create a Sudoku puzzle by removing digits
 function removeKDigits(grid: number[][], k: number) {
-  const removed = new Map()
+  const removed = new Map();
   while (k > 0) {
-    const cellId = Math.floor(Math.random() * BOARD_SIZE * BOARD_SIZE)
+    const cellId = Math.floor(Math.random() * BOARD_SIZE * BOARD_SIZE);
 
-    const i = Math.floor(cellId / BOARD_SIZE)
+    const i = Math.floor(cellId / BOARD_SIZE);
 
-    const j = cellId % BOARD_SIZE
+    const j = cellId % BOARD_SIZE;
 
     if (grid[i][j] !== 0) {
-      removed.set(positionToKey([i, j]), grid[i][j])
+      removed.set(getKeyFromPosition([i, j]), grid[i][j]);
       // Empty the cell
-      grid[i][j] = 0
+      grid[i][j] = 0;
 
       // Decrease the count of digits to remove
-      k--
+      k--;
     }
   }
-  return removed
+  return removed;
 }
 
 // Generate a Sudoku grid with K empty cells
 export function sudokuGenerator(k: number) {
   // Initialize an empty 9x9 grid
-  const grid = Array.from({length: BOARD_SIZE})
+  const grid = Array.from({ length: BOARD_SIZE })
     .fill(0)
     .map(() =>
-      Array.from({length: BOARD_SIZE}).fill(0),
-    ) as unknown as number[][]
+      Array.from({ length: BOARD_SIZE }).fill(0),
+    ) as unknown as number[][];
 
   // Fill the diagonal 3x3 matrices
-  fillDiagonal(grid)
+  fillDiagonal(grid);
 
   // Fill the remaining blocks in the grid
-  fillRemaining(grid, 0, 0)
+  fillRemaining(grid, 0, 0);
 
   // Remove K digits randomly to create the puzzle
 
-  return {grid, solution: removeKDigits(grid, k)}
+  return { grid, solution: removeKDigits(grid, k) };
 }
 
-export const getCells = (
+export const generateCells = (
   emptyCells: number,
-): {cells: Squares; solutions: Map<Key, Value>} => {
-  const cells: Squares = new Map()
-  const sudokuGenerated = sudokuGenerator(emptyCells)
-  const sudoku = sudokuGenerated.grid.flat()
-  const solutions = sudokuGenerated.solution
+): { cells: Squares; solutions: Squares } => {
+  const cells: Squares = new Map();
+  const sudokuGenerated = sudokuGenerator(emptyCells);
+  const sudoku = sudokuGenerated.grid.flat();
+  const solutions = sudokuGenerated.solution as Squares;
 
   getKeys().forEach((key, i) => {
     // Calculate square number (1–9)
-    const row = Math.floor(i / BOARD_SIZE)
-    const col = i % BOARD_SIZE
-    const RATIO = 3
-    const block = Math.floor(row / RATIO) * RATIO + Math.floor(col / RATIO) + 1
-    const k = key.replace(/.$/, `${block}`) as Key
-    cells.set(k, `${sudoku[i]}` as Value)
-  })
-  return {cells, solutions}
-}
+    const row = Math.floor(i / BOARD_SIZE);
+    const col = i % BOARD_SIZE;
+    const RATIO = 3;
+    const block = Math.floor(row / RATIO) * RATIO + Math.floor(col / RATIO) + 1;
+    const k = key.replace(/.$/, `${block}`) as Key;
+    cells.set(k, `${sudoku[i]}` as Value);
+  });
+  return { cells, solutions };
+};

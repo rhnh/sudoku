@@ -1,54 +1,111 @@
-import {Box, id, memo} from "./lib"
-import {createNumPad, numPadEvents} from "./numpad"
-import {panelEvents} from "./panelEvents"
-import {renderBoard} from "./renderBoard"
-import {createSideLayout, renderBTNSection, renderTimer} from "./renderPanel"
-import type {State} from "./state"
-import {resizeObserver, updateBounds} from "./utils"
+import { renderNotes, renderSquares, updateSquares } from "./board";
+import { configureElements, initButtons } from "./config";
+import { Box, id, updateBounds } from "./lib";
+import { boardMouseEvent } from "./boardMouseEvents";
+import type { RootedState, State } from "./state";
+import { renderGrid } from "./svg";
+import { renderTimer } from "./renderTimer.ts";
+import { renderThemeModal } from "./renderThemeModal";
+import { renderDigits } from "./renderDigits";
+import { renderIdleMode } from "./renderIdleMode";
+import { renderInfo } from "./renderInfoModal";
+import { renderPlayMode } from "./renderPlayMode";
+import { renderZenMode } from "./renderZenMode";
+import { renderSettings } from "./renderSettingsModal";
+import { boardKeyEvents } from "./boardKeyEvents";
 
-export function renderNavPanel(state: State): State {
-  const {ctrlBTNSection: nav} = state
+export const renderSidebar = (state: State): State => {
+  const { panel } = state;
+  panel.replaceChildren();
+  return Box(state)
+    .map(renderTimer)
+    .map(renderIdleMode)
+    .map(renderPlayMode)
+    .map(renderDigits)
+    .map(renderZenMode)
+    .map(renderThemeModal)
+    .map(renderInfo)
+    .map(renderSettings)
+    .fold(id);
+};
 
-  updateBounds(state)
+export const renderBase = (state: RootedState): State => {
+  const next = Object.assign(state, {
+    ...configureElements(state),
+    ...initButtons(),
+    updateBoard: (s: State) => {
+      updateSquares(s);
+      renderNotes(s);
+      return s;
+    },
+    updateBounds,
+    hardRerender: (s: State) => hardRerender(s),
+  }) as State;
 
-  state.ctrlBTNSection.innerHTML = ""
+  resizeObserver(next);
+  return next;
+};
 
-  nav.appendChild(renderTimer(state))
-  nav.appendChild(renderBTNSection(state))
+export const hardRerender = (state: State): State => {
+  state.root.replaceChildren();
+  return Box(state).map(render).map(updateSquares).fold(id);
+};
 
-  return state
-}
+export const render = (state: State): State => {
+  console.log(
+    `render: function
+    gameState: ${state.gameState},
+    overlay: ${state.overlay},
+  `,
+  );
 
-export function renderBase(state: State): State {
-  const container = document.createElement("container")
+  return Box(state)
+    .map(renderBase)
+    .map(renderSquares)
+    .map(boardMouseEvent)
+    .map(boardKeyEvents)
+    .map(renderGrid)
+    .map(renderSidebar)
+    .fold(id);
+};
 
-  const board = document.createElement("board")
+export const resizeObserver2 = (state: State) => {
+  if (state.observer) return state.observer; // never create twice
 
-  container.appendChild(board)
-  const {aside, nav, numPad} = createSideLayout()
-  state.wrap.dataset.theme = ""
-  state.wrap.append(container)
-  state.wrap.appendChild(aside)
-  const bounds = memo(() => container.getBoundingClientRect())
+  let lastWidth = -1;
+  let lastHeight = -1;
 
-  state = {
-    ...state,
-    board,
-    numpadSection: numPad,
-    bounds,
-    container,
-    sidePanel: aside,
-    ctrlBTNSection: nav,
-  }
-  resizeObserver(state)({render: state.rerender, updateBounds})
-  return state
-}
+  const observer = new ResizeObserver(([entry]) => {
+    const { width, height } = entry.contentRect;
+    if (width === lastWidth && height === lastHeight) return;
+    lastWidth = width;
+    lastHeight = height;
 
-export const render = (state: State): State =>
-  Box(state).map(renderBoard).map(renderSidePanel).fold(id)
+    requestAnimationFrame(() => {
+      if (!state.container) return;
+      state.updateBounds(state);
+      state.root.replaceChildren();
+      render(state);
+    });
+  });
 
-export const renderSidePanel = (state: State) =>
-  Box(state).map(renderNumpad).map(renderNavPanel).map(panelEvents).fold(id)
-
-export const renderNumpad = (state: State): State =>
-  Box(createNumPad(state)).map(numPadEvents).fold(id)
+  observer.observe(state.root);
+  state.observer = observer;
+  return observer;
+};
+const resizeObserver = (state: State) => {
+  const observerCallback: ResizeObserverCallback = (
+    entries: ResizeObserverEntry[],
+  ) => {
+    window.requestAnimationFrame((): void | undefined => {
+      if (!Array.isArray(entries) || !entries.length) {
+        return;
+      }
+      if (state.container) {
+        state.updateBounds(state);
+        renderGrid(state);
+      }
+    });
+  };
+  new ResizeObserver(observerCallback).observe(state.root);
+};

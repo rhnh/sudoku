@@ -6,12 +6,12 @@
  * @param num
  * @returns
  */
-import type { Cells, Key, Value } from "./types";
+import type { Squares } from "./types";
 export declare function sudokuGenerator(k: number): {
     grid: number[][];
     solution: Map<any, any>;
 };
-export declare const getCells: (emptyCells: number) => {
-    cells: Cells;
-    solutions: Map<Key, Value>;
+export declare const generateCells: (emptyCells: number) => {
+    cells: Squares;
+    solutions: Squares;
 };

@@ -37,13 +37,30 @@ export function createSvg({ tag, className, ...rest }) {
  * @param Html Tag
  * @returns - a SVG
  */
-export function createElement({ tag, className, ...rest }) {
+export function createElement({ tag, classname: className, ...rest }) {
     const el = document.createElement(tag);
-    className.split(" ").forEach((name) => el.classList.add(name));
+    className
+        .trim()
+        .split(" ")
+        .forEach((name) => el.classList.add(name));
     Object.entries(rest).forEach(([name, value]) => {
         el.setAttribute(name, value);
     });
     return el;
 }
-export const createButton = ({ className, ...rest }) => createElement({ tag: "button", className, ...rest });
+export const createButton = ({ className, ...rest }) => createElement({ tag: "button", classname: className, ...rest });
+export function updateBounds(s) {
+    const width = s.root.getBoundingClientRect().width;
+    s.container.style.width = `${width}px`;
+    s.container.style.height = `${width}px`;
+    s.bounds.clear();
+}
+export const formatTime = (totalSeconds) => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    //https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
+    const pad = (n) => n.toString().padStart(2, "0");
+    return `${pad(minutes)}:${pad(seconds)}`;
+};
+export const getItems = (items) => (...values) => items.filter((item) => values.includes(item));
 //# sourceMappingURL=lib.js.map

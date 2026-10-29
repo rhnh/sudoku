@@ -7,7 +7,7 @@
  * @returns
  */
 import { BOARD_SIZE } from "./constants";
-import { getKeys, positionToKey } from "./utils";
+import { getKeyFromPosition, getKeys } from "./utils";
 // https://www.geeksforgeeks.org/dsa/program-sudoku-generator/
 // JavaScript program to generate a valid sudoku
 // with k empty cells
@@ -109,7 +109,7 @@ function removeKDigits(grid, k) {
         const i = Math.floor(cellId / BOARD_SIZE);
         const j = cellId % BOARD_SIZE;
         if (grid[i][j] !== 0) {
-            removed.set(positionToKey([i, j]), grid[i][j]);
+            removed.set(getKeyFromPosition([i, j]), grid[i][j]);
             // Empty the cell
             grid[i][j] = 0;
             // Decrease the count of digits to remove
@@ -131,7 +131,7 @@ export function sudokuGenerator(k) {
     // Remove K digits randomly to create the puzzle
     return { grid, solution: removeKDigits(grid, k) };
 }
-export const getCells = (emptyCells) => {
+export const generateCells = (emptyCells) => {
     const cells = new Map();
     const sudokuGenerated = sudokuGenerator(emptyCells);
     const sudoku = sudokuGenerated.grid.flat();

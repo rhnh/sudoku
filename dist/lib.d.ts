@@ -1,3 +1,4 @@
+import type { State } from "./state";
 export type Box<T> = {
     map: <U>(fn: (x: T) => U) => Box<U>;
     fold: <R>(fn: (x: T) => R) => R;
@@ -24,10 +25,13 @@ export declare function createSvg<K extends keyof SVGElementTagNameMap>({ tag, c
  * @param Html Tag
  * @returns - a SVG
  */
-export declare function createElement<K extends keyof HTMLElementTagNameMap>({ tag, className, ...rest }: {
+export declare function createElement<K extends keyof HTMLElementTagNameMap>({ tag, classname: className, ...rest }: {
     tag: K;
-    className: string;
+    classname: string;
 } & Record<string, string>): HTMLElementTagNameMap[K];
 export declare const createButton: ({ className, ...rest }: {
     className: string;
 } & Record<string, string>) => HTMLButtonElement;
+export declare function updateBounds(s: State): void;
+export declare const formatTime: (totalSeconds: number) => string;
+export declare const getItems: <T>(items: readonly T[]) => (...values: T[]) => T[];

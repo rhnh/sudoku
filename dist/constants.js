@@ -1,28 +1,41 @@
-export const TOTAL_FILE = 9;
-export const TOTAL_RANK = TOTAL_FILE;
 export const RANKS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 export const FILES = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
-export const BOARD_SIZE = TOTAL_FILE;
-export const GAME_STATE = [
-    "isInitialed",
-    "isPaused",
-    "isPlaying",
-    "isOvered",
+export const GAME_STATES = [
+    "play",
+    "idle",
+    "over",
+    "initial",
+    "pause",
+    "customize",
+    "idle-info",
 ];
-export const BTN_NAMES = [
-    "start",
-    "restart",
-    "remove",
-    "note",
-    "hint",
-    "undo",
+export const themes = [
+    "gruvbox",
+    "cobolt2",
+    "paper",
+    "dracula",
+    "monokai",
+    "dracula-light",
 ];
-export const buttonLabels = new Map();
-buttonLabels.set("start", '<i class="fa-solid fa-play"></i>');
-buttonLabels.set("restart", '<i class="fa-solid fa-arrows-rotate"></i>');
-buttonLabels.set("remove", `<i class="fa-solid fa-x"></i>`);
-buttonLabels.set("note", '<i class="fa-solid fa-pen"></i>');
-buttonLabels.set("hint", `<i class="fa-solid fa-eye"></i>`);
-buttonLabels.set("undo", `<i class="fa-solid fa-arrow-rotate-left"></i>`);
-buttonLabels.set("pause", `<Si class="fa-solid fa-pause"></i>`);
+export const modes = ["zen-mode"];
+export const BOARD_SIZE = 9;
+export const PLAY_MODE_BTNS = [
+    "sudoku-play",
+    "sudoku-pause",
+    "sudoku-restart",
+    "sudoku-remove",
+    "sudoku-note",
+    "sudoku-hint",
+    "sudoku-undo",
+    "sudoku-zen",
+];
+export const IDLE_MODE_BTNS = [
+    "sudoku-play",
+    "sudoku-restart",
+    "sudoku-themes",
+    "sudoku-zen",
+    "sudoku-info",
+];
+export const LEVELS = ["1", "2", "3", "4"];
+export const DIGITS = RANKS;
 //# sourceMappingURL=constants.js.map

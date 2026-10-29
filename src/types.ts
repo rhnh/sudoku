@@ -1,22 +1,46 @@
-import type {BTN_NAMES, FILES, GAME_STATE, RANKS} from "./constants"
+import type {
+  FILES,
+  GAME_STATES,
+  LEVELS,
+  modes,
+  OVERLAYS,
+  PLAY_MODE_BTNS,
+  RANKS,
+  themes,
+} from "./constants";
 
-export type File = (typeof FILES)[number]
-export type Rank = (typeof RANKS)[number]
-export type Position = [number, number]
-export type BaseKey = `${File}${Rank}`
-export type MouchEvent = MouseEvent | TouchEvent
+export type Rank = (typeof RANKS)[number];
+export type File = (typeof FILES)[number];
+export type GameState = (typeof GAME_STATES)[number];
+export type Overlay = (typeof OVERLAYS)[number];
+export type Theme = (typeof themes)[number];
+export type Mode = (typeof modes)[number];
+export type BaseKey = `${File}${Rank}`;
 
-export type ButtonTexts = (typeof BTN_NAMES)[number]
+export type Key = `${BaseKey}${Rank}`;
+export type Position = [number, number];
 
-export type Buttons = Map<Key, ButtonTexts>
-export type Note = `${BaseKey}${Rank}`
-export type Notes = Map<Key, Set<Value>>
-export type Key = `${BaseKey}${Rank}`
+export type Value = Rank | "0";
+export type Digit = Value;
+export type Squares = Map<Key, Value>;
+export type Notes = Map<Key, Set<Value>>;
 
-export type GameState = (typeof GAME_STATE)[number]
+export interface Memo<A> {
+  (): A;
+  clear: () => void;
+}
 
-export type Value = Rank | "0"
+export type MouchEvent = MouseEvent | TouchEvent;
 
-export type Squares = Map<Key, Value>
+export type PlayModeButtons = (typeof PLAY_MODE_BTNS)[number];
 
-export type Digits = Map<BaseKey, Value>
+export type LevelButtons = (typeof LEVELS)[number];
+
+export type Button = LevelButtons | PlayModeButtons | Digit;
+
+export type Buttons<k extends Button> = Set<k>;
+
+export interface ButtonElement extends HTMLButtonElement {
+  key: Key;
+  value: Value;
+}

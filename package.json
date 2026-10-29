@@ -1,15 +1,9 @@
 {
   "name": "sudoku",
-  "version": "1.0.3",
-  "description": "a sudoku game",
-  "license": "GPL-3.0-or-later",
-  "main": "dist/sudoku.min.js",
-  "types": "sudoku.d.ts",
-  "exports": {
-    ".": "./dist/sudoku.js",
-    "./assets/*": "./assets/*",
-    "./*": "./dist/*.js"
-  },
+  "version": "1.0.0",
+  "files": [
+    "dist"
+  ],
   "typesVersions": {
     "*": {
       "*": [
@@ -17,36 +11,46 @@
       ]
     }
   },
+  "types": "dist/sudoku.d.ts",
+  "description": "sudoku created by rhnh",
+  "main": "dist/sudoku.min.js",
   "scripts": {
     "prepare": "$npm_execpath run compile",
     "compile": "tsc --sourceMap --declaration",
-    "lint": "eslint src/*.ts",
-    "format": "prettier --write .",
-    "check-format": "prettier --check .",
-    "bundle": "esbuild src/sudoku.ts --bundle --format=esm  --loader:.svg=dataurl --outfile=dist/sudoku.min.js --minify",
-    "dev": "$npm_execpath run bundle -- --watch",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt",
+    "check-format": "oxfmt --check",
     "dist": "$npm_execpath run compile && $npm_execpath run bundle",
     "test": "vitest run",
     "test:watch": "vitest",
-    "deploy": "gh-pages -d dist"
+    "build": "esbuild  src/sudoku.ts --bundle --format=esm --outfile=dist/sudoku.min.js --loader:.eot=file --loader:.woff=file --loader:.woff2=file --loader:.ttf=file --loader:.svg=file",
+    "dev": "$npm_execpath run build --watch"
   },
-  "files": [
-    "dist"
-  ],
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "esbuild": "^0.27.3",
-    "eslint": "^10.0.2",
-    "jsdom": "^28.1.0",
-    "prettier": "^3.8.1",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.56.1",
-    "vitest": "^4.0.18"
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.15.0",
+      "onFail": "download"
+    }
   },
+  "packageManager": "pnpm@12.15.0",
+  "type": "module",
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^7.2.0"
+    "esbuild": "^0.28.2",
+    "jsdom": "^30.1.3",
+    "oxfmt": "^0.74.0",
+    "oxlint": "^1.89.0",
+    "oxlint-plugin-golden": "^0.1.2",
+    "oxlint-tsgolint": "^7.0.2005",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
   },
-  "publishConfig": {
-    "registry": "http://localhost:4873"
+  "repository": "https://github.com/rhnh/sudoku",
+  "devDependencies": {
+    "madge": "^8.0.0"
   }
 }

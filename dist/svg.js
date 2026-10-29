@@ -26,6 +26,23 @@ const drawLines = ({ isHorizontal = false, svg, size, }) => {
     for (let i = 0; i <= BOARD_SIZE; i++) {
         const x = i * cellHeight;
         const isThick = i % 3 === 0;
+        if (isThick)
+            continue;
+        const line = svg.appendChild(drawLine({
+            x1: isHorizontal ? 0 : x,
+            y1: isHorizontal ? x : 0,
+            x2: isHorizontal ? size : x,
+            y2: isHorizontal ? x : size,
+            key: `key-${isHorizontal ? "h" : "v"}-${i}`,
+            className: "s-lines",
+        }));
+        line.classList.add(isThick ? "s-thick" : "s-thin");
+    }
+    for (let i = 0; i <= BOARD_SIZE; i++) {
+        const x = i * cellHeight;
+        const isThick = i % 3 === 0;
+        if (!isThick)
+            continue;
         const line = svg.appendChild(drawLine({
             x1: isHorizontal ? 0 : x,
             y1: isHorizontal ? x : 0,
@@ -37,8 +54,11 @@ const drawLines = ({ isHorizontal = false, svg, size, }) => {
         line.classList.add(isThick ? "s-thick" : "s-thin");
     }
 };
-export function drawBackground(state) {
-    const { bounds, board } = state;
+export const drawHorizontalLines = ({ svg, size, }) => drawLines({ isHorizontal: true, svg, size });
+export const drawVerticalLines = ({ svg, size, }) => drawLines({ isHorizontal: false, svg, size });
+export function renderGrid(state) {
+    const { bounds, grid } = state;
+    grid.replaceChildren();
     const { width, height } = bounds();
     const svg = createSvg({
         tag: "svg",
@@ -46,8 +66,10 @@ export function drawBackground(state) {
         width: `${width}`,
         height: `${height}`,
     });
-    drawLines({ isHorizontal: true, svg, size: height });
-    drawLines({ isHorizontal: false, svg, size: height });
-    board.appendChild(svg);
+    const size = height;
+    drawHorizontalLines({ svg, size });
+    drawVerticalLines({ svg, size });
+    grid.appendChild(svg);
+    return state;
 }
 //# sourceMappingURL=svg.js.map

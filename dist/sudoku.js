@@ -1,47 +1,44 @@
-import { events } from "./events";
-import { keyEvents } from "./keyEvent";
+import { setApi } from "./api";
 import { Box } from "./lib";
-import { render, renderBase } from "./render";
-import { getButtonKeys, getDigits } from "./utils";
-import "./assets/base.style.css";
+import { renderBase } from "./render";
+import "./assets/themes.style.css";
+import "./assets/style.css";
+import "./assets/icon-fonts.css";
 import "./assets/media-queries.css";
-import "./assets/btn.css";
-export { getCells } from "./sudoku.algo";
-export const initState = ({ el, cells, solutions, }) => {
-    const userInput = new Map();
-    const userInputKeys = [...solutions.keys()];
-    userInputKeys.map((r) => userInput.set(r, "0"));
+import { renderSquares } from "./board";
+import { boardMouseEvent } from "./board-mouse-events";
+import { boardKeyEvents } from "./boardEvents";
+import { renderGrid } from "./svg";
+import { renderSidebar } from "./renderSidebar";
+export { generateCells } from "./sudoku.algo";
+export const sudoku = ({ root, levelEasy = 37, currentTheme = "monokai", squares, solutions, }) => {
+    if (!root)
+        throw new Error("No Element found");
     const headlessState = {
-        gameState: "isInitialed",
-        cells: new Map(cells),
-        originCell: new Map(cells),
-        selected: [],
-        digits: getDigits(),
-        notes: new Map(),
-        buttons: getButtonKeys(),
-        isNote: false,
-        isDragging: false,
-        isHold: false,
-        highlight: new Map(),
+        currentLevel: levelEasy,
+        currentTheme,
+        gameState: "idle",
+        squares,
+        readonlySquares: new Map(squares),
+        highlightedSquares: new Map(),
         duplicates: new Map(),
         solutions,
-        userInput, //TODO: After every click it should scan if this not empty and if it filled and has the correct answers
+        notes: new Map(),
+        isNote: false,
+        isZenMode: false,
         seconds: 0,
         lastMoves: [],
+        selectedSquares: [],
+        isMuted: false,
     };
-    const state = {
-        ...headlessState,
-        wrap: el,
-        rerender: render,
-        addDimensionsCssVarsTo: undefined,
-    };
-    return state;
-};
-export function Sudoku({ el, cells, solutions, }) {
-    return Box(initState({ el, cells, solutions }))
+    const state = { root, ...headlessState };
+    return Box(state)
         .map(renderBase)
-        .map(render)
-        .map(events)
-        .map(keyEvents);
-}
+        .map(renderSquares)
+        .map(boardMouseEvent)
+        .map(boardKeyEvents)
+        .map(renderGrid)
+        .map(renderSidebar)
+        .fold(setApi);
+};
 //# sourceMappingURL=sudoku.js.map

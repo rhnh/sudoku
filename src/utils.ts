@@ -1,128 +1,160 @@
-import {BOARD_SIZE, BTN_NAMES, FILES, RANKS, TOTAL_FILE} from "./constants"
-import type {State, TypeCellElement} from "./state"
 import type {
-  BaseKey,
+  Button,
   Buttons,
-  Squares,
-  Digits,
-  GameState,
   Key,
+  Memo,
+  Notes,
   Position,
-  Rank,
+  Squares,
   Value,
-} from "./types"
+} from "./types";
+import { BOARD_SIZE, FILES, RANKS } from "./constants";
+import type { SquareElement, State } from "./state";
+import { createElement } from "./lib";
 
-export const keyToPosition = (k: Key): Position => [
-  // oxlint-disable-next-line no-magic-numbers
+export const getPositionFromKey = (k: Key): Position => [
   k.charCodeAt(0) - 97,
-  // oxlint-disable-next-line no-magic-numbers
   k.charCodeAt(1) - 49,
-]
-
-export const getKeys = () => {
-  let i = 0
+];
+export const getKeyFromPosition = (p: Position): Key | undefined => {
+  const keys = getKeys();
+  return p.every((x) => x >= 0 && x <= 8) ? keys[9 * p[0] + p[1]] : undefined;
+};
+export const getKeys = (): Key[] => {
+  let i = 0;
   return FILES.flatMap((f) =>
     RANKS.flatMap((r) => {
-      const row = Math.floor(i / 9)
-      const col = i % 9
-      const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1
-      i++
-      return `${f}${r}${block}` as Key
+      const row = Math.floor(i / 9);
+      const col = i % 9;
+      const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1;
+      i++;
+      return `${f}${r}${block}` as Key;
     }),
-  )
-}
+  );
+};
 
-function getDuplicateKeys(map: Squares): Key[] {
-  const valueMap = new Map()
-  const result: Key[] = []
+export function getKeysWithSameValue(squares: Squares): Key[] {
+  const valueMap = new Map<Value, Key[]>();
+  const keys: Key[] = [];
 
-  for (const [key, value] of map.entries()) {
-    if (!valueMap.has(value)) {
-      valueMap.set(value, [])
-    }
-    valueMap.get(value).push(key)
+  for (const [key, value] of squares.entries()) {
+    const existingKeys = valueMap.get(value) ?? [];
+    existingKeys.push(key);
+    valueMap.set(value, existingKeys);
   }
 
-  for (const values of valueMap.values()) {
-    if (values.length > 1) {
-      result.push(...values)
+  for (const key of valueMap.values()) {
+    if (key.length > 1) {
+      keys.push(...key);
     }
   }
 
-  return result
+  return keys;
+}
+export function updateBounds(s: State): void {
+  const bounds = s.root.getBoundingClientRect();
+
+  const size =
+    Math.floor(bounds.width * window.devicePixelRatio) /
+    window.devicePixelRatio;
+
+  s.container.style.width = `${size}px`;
+  s.container.style.height = `${size}px`;
+
+  s.bounds.clear();
 }
 
-export const getDuplicates =
-  (state: State) => (f: (key: Key, noZero: boolean) => Squares) =>
-    getKeys().flatMap((key) =>
-      getDuplicateKeys(f(key, true)).flatMap((r) => {
-        if (r) {
-          const value = state.cells.get(r) as Value
-          state.duplicates.set(r, `${value}`)
-        } else {
-          state.duplicates.delete(r)
-        }
-        return state.duplicates
-      }),
-    )
-
-export const getAllDuplicates = (state: State) => {
-  getDuplicates(state)(getRow(state))
-  getDuplicates(state)(getColumn(state))
-  getDuplicates(state)(getSquare(state))
-}
-
-export const addNewValue = (state: State, value: Value) => {
-  state.duplicates = new Map()
-  if (!state.targetKey) return
-  state.selected.map((s) => {
-    if (state.originCell.get(s) !== "0" && state.originCell.get(s)) return
-    removeNotes(state)(state.targetKey as Key)
-    state.cells.set(s, `${value}`)
-    state.lastMoves.push(s)
-    state.userInput.set(s, `${value}`)
-    if (hasCompleted(state)) {
-      state.gameState = "isOvered"
-    }
-  })
-
-  state.highlight = getCommons(state)(state.targetKey)
-  getAllDuplicates(state)
-}
-
-export const positionToKey = (p: Position): Key | undefined => {
-  const keys = getKeys()
-  return p.every((x) => x >= 0 && x <= 8) ? keys[9 * p[0] + p[1]] : undefined
-}
-
-export const getCellBy =
+/**
+ * Adds new number. It check if is readonly square
+ * @param state
+ * @returns
+ */
+export const addUserInput =
   (state: State) =>
-  (key: Key, noZero = false) =>
-  (n: number) => {
-    const s = new Map()
-    for (const [k, v] of state.cells) {
-      if (k[n] === key[n]) {
-        if (noZero && v === "0") continue
-        s.set(k, v)
+  (key: Key) =>
+  (value: Value): Squares => {
+    const { squares: userInput, readonlySquares } = state;
+    if (readonlySquares.get(key) === "0") {
+      userInput.set(key, value);
+      state.lastMoves.push(key);
+    }
+
+    return userInput;
+  };
+
+/**
+ * This function add a new to the state.notes.
+ * if the note is already in the list. It removes it, otherwise it adds it.
+ * @param state
+ * @returns
+ */
+export const addNote =
+  (state: State) =>
+  (key: Key) =>
+  (value: Value): Notes => {
+    const values = state.notes.get(key) ?? new Set<Value>();
+    if (!values.delete(value)) values.add(value);
+
+    if (values.size === 0) state.notes.delete(key);
+    else state.notes.set(key, values);
+
+    return state.notes;
+  };
+
+export const removeAllNotes =
+  (state: State) =>
+  (key: Key): void => {
+    state.notes.set(key, new Set());
+  };
+
+export const removingAllRelatedNotes =
+  (state: State) => (key: Key) => (value: Value) => {
+    const allRelatedKeys = getCommons(state)(key);
+
+    // oxlint-disable-next-line no-unused-vars
+    for (const [k, _] of allRelatedKeys) {
+      const notes = state.notes.get(k);
+
+      if (notes?.has(value)) {
+        notes.delete(value);
       }
     }
-    return s
-  }
+  };
 
-export const getRow =
+export const getPositionFromBound =
   (state: State) =>
-  (key: Key, noZero = false): Squares =>
-    getCellBy(state)(key, noZero)(0)
+  (p: Position): Position => {
+    const x = (state.bounds().width * p[0]) / BOARD_SIZE;
+    const y = (state.bounds().height * p[1]) / BOARD_SIZE;
+    return [x, y];
+  };
 
-export const getColumn =
-  (state: State) =>
-  (key: Key, noZero = false): Squares =>
-    getCellBy(state)(key, noZero)(1)
+export const isEmptySquare = (state: State) => (k: Key) =>
+  state.squares.get(k) === "0";
 
-export const getSquare =
+export const getElementByKey =
   (state: State) =>
-  (key: Key, noZero = false) =>
-    getCellBy(state)(key, noZero)(2)
+  (key: Key): SquareElement | null => {
+    const { board } = state;
+    let el = board.firstChild as SquareElement;
+    while (el) {
+      if (el.dataset.key?.startsWith(key)) {
+        return el;
+      }
+      el = el.nextSibling as SquareElement;
+    }
+    return null;
+  };
+
+export const getPositionKeyAtDom =
+  (bounds: DOMRectReadOnly) =>
+  (pos: Position, xSize = 9, ySize = 9): Position => {
+    const file = Math.floor((xSize * (pos[0] - bounds.left)) / bounds.width);
+    const rank = Math.floor((ySize * (pos[1] - bounds.top)) / bounds.height);
+    return file >= 0 && file < xSize && rank >= 0 && rank <= ySize
+      ? [file, rank]
+      : [-1, -1];
+  };
 
 /**
  * returns related squares
@@ -132,184 +164,132 @@ export const getSquare =
 export const getCommons =
   (state: State) =>
   (key: Key, noZero = false): Squares =>
-    new Map([
-      ...getRow(state)(key, noZero),
-      ...getColumn(state)(key, noZero),
-      ...getSquare(state)(key, noZero),
-    ])
-
-export const getPositionFromBound = (state: State, p: Position): Position => {
-  const x = (state.bounds().width * p[0]) / TOTAL_FILE
-  const y = (state.bounds().height * p[1]) / TOTAL_FILE
-  return [x, y]
-}
+    new Map<Key, Value>([
+      ...getSquareRow(state)(key, noZero),
+      ...getSquareColumn(state)(key, noZero),
+      ...getSquareSquare(state)(key, noZero),
+    ]);
 
 export const getSquareNr = (n: number) => {
-  const x = Math.ceil(n / 3)
-  const y = ((n - 1) % 3) + 1
-  return [x, y]
-}
+  const x = Math.ceil(n / 3);
+  const y = ((n - 1) % 3) + 1;
+  return [x, y];
+};
 
-export const getElementByKey =
-  (state: State) =>
-  (key: Key): TypeCellElement | null => {
-    const {board} = state
-    let el = board.firstChild as TypeCellElement
-    while (el) {
-      if (el.dataset.key?.startsWith(key)) {
-        return el
-      }
-      el = el.nextSibling as TypeCellElement
+export const getDuplicates =
+  (state: State) => (f: (key: Key, noZero: boolean) => Squares) =>
+    getKeys().forEach((key) =>
+      getDuplicateKeys(f(key, true)).forEach((k) =>
+        state.duplicates.set(k, `${state.squares.get(k)}` as Value),
+      ),
+    );
+
+export const setDuplicates = (state: State): State => {
+  state.duplicates.clear();
+  getDuplicates(state)(getSquareRow(state));
+  getDuplicates(state)(getSquareColumn(state));
+  getDuplicates(state)(getSquareSquare(state));
+  return state;
+};
+
+function getDuplicateKeys(squares: Squares): Key[] {
+  const valueMap = new Map();
+  const result: Key[] = [];
+
+  for (const [key, value] of squares.entries()) {
+    if (!valueMap.has(value)) {
+      valueMap.set(value, []);
     }
-    return null
+    valueMap.get(value).push(key);
   }
 
-export const createCellElement =
-  (tagName: keyof HTMLElementTagNameMap | "Cell" | "Note") =>
-  (k: Key, v: Value, isReadOnly = false) => {
-    const cellElem = document.createElement(tagName)
-    cellElem.dataset.key = k
-    cellElem.dataset.value = v
-    cellElem.dataset.isReadOnly = `${isReadOnly}`
+  for (const values of valueMap.values()) {
+    if (values.length > 1) {
+      result.push(...values);
+    }
   }
 
-export function getKeyFromPosition(pos: Position): Key | undefined {
-  const k = (9 * pos[0] + pos[1]) as number
-  return pos.every((x) => x >= 0 && x <= 9) ? getKeys()[k] : undefined
-}
-export const allDigits = FILES.map((f, i) => `${f}${i + 1}` as Key)
-
-export function getDigitFromPosition(pos: Position): Key | undefined {
-  const k = (pos[1] + pos[0]) as number
-  return pos.every((x) => x >= 0 && x <= BOARD_SIZE) ? allDigits[k] : undefined
+  return result;
 }
 
-export const getPositionKeyAtDom =
-  (bounds: DOMRectReadOnly) =>
-  (pos: Position, xSize = 9, ySize = 9): Position => {
-    const file = Math.floor((xSize * (pos[0] - bounds.left)) / bounds.width)
-    const rank = Math.floor((ySize * (pos[1] - bounds.top)) / bounds.height)
-    return file >= 0 && file < xSize && rank >= 0 && rank <= ySize
-      ? [file, rank]
-      : [-1, -1]
-  }
+export const getSquareRow =
+  (state: State) =>
+  (key: Key, noZero = false): Squares =>
+    getSquaresBy(state)(key, noZero)(0);
 
-export const getButtonKeys = () => {
-  const buttonKeys = getKeys()
-  const m: Buttons = new Map()
-  BTN_NAMES.map((b, i) => {
-    const k = buttonKeys[i]
+export const getSquareColumn =
+  (state: State) =>
+  (key: Key, noZero = false): Squares =>
+    getSquaresBy(state)(key, noZero)(1);
 
-    m.set(k, b)
-  })
-
-  return m
-}
-
-export const hasCompleted = (state: State) => {
-  const {userInput, solutions} = state
-  const keySolutions = solutions.keys()
-  let result = false
-  for (const k of keySolutions) {
-    if (userInput.get(k) === "0") return false
-    else result = true
-  }
-  return result
-}
-
-export const formatTime = (totalSeconds: number): string => {
-  const minutes = Math.floor(totalSeconds / 60)
-  const seconds = totalSeconds % 60
-  //https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
-  const pad = (n: number) => n.toString().padStart(2, "0")
-  return `${pad(minutes)}:${pad(seconds)}`
-}
+export const getSquareSquare =
+  (state: State) =>
+  (key: Key, noZero = false) =>
+    getSquaresBy(state)(key, noZero)(2);
 
 /**
- * When new value is enter should give all the notes that are value in highlighted
+ * A square represented by {File}{Rank}{Rank} e.g a11
+ * a = row
+ * 1  = column
+ * 1 = square
+ *
  * @param state
- * @param key
  * @returns
  */
-export const removeNote =
-  (state: State, key: Key) =>
-  (value: Value): State => {
-    const commons = getCommons(state)(key)
-    // oxlint-disable-next-line no-unused-vars
-    for (const [k, _] of commons) {
-      for (const [key, values] of state.notes) {
-        if (k === key) {
-          if (values.has(value)) {
-            state.notes.set(k, values)
-          }
-        }
+export const getSquaresBy =
+  (state: State) =>
+  (key: Key, noZero = false) =>
+  (n: number) => {
+    const s = new Map();
+    for (const [k, v] of state.squares) {
+      if (k[n] === key[n]) {
+        if (noZero && v === "0") continue;
+        s.set(k, v);
       }
     }
+    return s;
+  };
 
-    return state
-  }
-export const removeNotes = (state: State) => (key: Key) => {
-  const commons = getCommons(state)(key)
-  // oxlint-disable-next-line no-unused-vars
-  for (const [k, _] of commons) {
-    // oxlint-disable-next-line no-unused-vars
-    for (const [key, _] of state.notes) {
-      if (k === key) state.notes.set(k, new Set())
+export const createButtons = <T extends Button>({
+  buttons,
+  classname,
+  section,
+  bounds,
+  isFixedSized = false,
+  hasId = false,
+  width,
+  height,
+}: {
+  buttons: Buttons<T> | any;
+  classname: string;
+  bounds: Memo<DOMRectReadOnly>;
+  section: HTMLElement;
+  isFixedSized?: boolean;
+  hasId?: boolean;
+  width?: number;
+  height?: number;
+}): HTMLElement => {
+  for (const v of buttons) {
+    const btn = createElement({
+      tag: "button",
+      classname: `${classname} btn-${v}`,
+      id: hasId ? v : "",
+    });
+
+    btn.dataset.key = v;
+
+    if (isFixedSized) {
+      btn.style.height = `${bounds().height / BOARD_SIZE}px`;
+      btn.style.width = `${bounds().width / BOARD_SIZE}px`;
     }
-  }
-}
-export const resizeObserver =
-  (state: State) =>
-  ({
-    render,
-    updateBounds,
-  }: {
-    updateBounds: (state: State) => void
-    render: (state: State) => State
-  }) => {
-    const observerCallback: ResizeObserverCallback = (
-      entries: ResizeObserverEntry[],
-    ) => {
-      window.requestAnimationFrame((): void | undefined => {
-        if (!Array.isArray(entries) || !entries.length) {
-          return
-        }
-        if (state.container) {
-          updateBounds(state)
-          render(state)
-        }
-      })
+    if (width && height) {
+      btn.style.height = `${height}px`;
+      btn.style.width = `${width}px`;
     }
-    new ResizeObserver(observerCallback).observe(state.wrap)
+
+    const i = createElement({ tag: "i", classname: `icon-fonts icon-${v}` });
+    btn.appendChild(i);
+    section.append(btn);
   }
-
-export function updateBounds(s: State): void {
-  const bounds = s.wrap.getBoundingClientRect()
-  const container = s.container
-  const RANDOM_RATIO = 18 //TODO improve this function later
-  const width =
-    Math.floor(bounds.width * window.devicePixelRatio) /
-      window.devicePixelRatio -
-    bounds.width / RANDOM_RATIO
-
-  container.style.width = width + "px"
-  container.style.height = width + "px"
-  // container.style.aspectRatio = "1 / 1"
-  s.bounds.clear()
-}
-
-export function getDigits() {
-  const m: Digits = new Map()
-  allDigits.map((k, i) => {
-    const key: BaseKey = k as unknown as BaseKey
-    const rank: Rank = (i + 1) as unknown as Rank
-    m.set(key, rank)
-  })
-
-  return m
-}
-
-export const isPlaying = (gameState: GameState) => gameState === "isPlaying"
-export const isPaused = (gameState: GameState) => gameState === "isPaused"
-export const isOvered = (gameState: GameState) => gameState === "isOvered"
-export const isInitialed = (gameState: GameState) => gameState === "isInitialed"
+  return section;
+};

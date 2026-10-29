@@ -1,17 +1,8 @@
-import { Box } from "./lib";
-import type { State } from "./state";
-import type { Cells, Key, Value } from "./types";
-import "./assets/base.style.css";
+import { type API } from "./api";
+import { type Config } from "./config";
+import "./assets/themes.style.css";
+import "./assets/style.css";
+import "./assets/icon-fonts.css";
 import "./assets/media-queries.css";
-import "./assets/btn.css";
-export { getCells } from "./sudoku.algo";
-export declare const initState: ({ el, cells, solutions, }: {
-    el: HTMLElement;
-    cells: Cells;
-    solutions: Cells;
-}) => State;
-export declare function Sudoku({ el, cells, solutions, }: {
-    el: HTMLElement;
-    cells: Cells;
-    solutions: Map<Key, Value>;
-}): Box<State>;
+export { generateCells } from "./sudoku.algo";
+export declare const sudoku: ({ root, levelEasy, currentTheme, squares, solutions, }: Config) => API;

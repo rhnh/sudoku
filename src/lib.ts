@@ -1,35 +1,37 @@
+import type { State } from "./state";
+
 export type Box<T> = {
-  map: <U>(fn: (x: T) => U) => Box<U>
-  fold: <R>(fn: (x: T) => R) => R
-  toString: <U>(fn: (x: T) => U) => Box<U>
-}
+  map: <U>(fn: (x: T) => U) => Box<U>;
+  fold: <R>(fn: (x: T) => R) => R;
+  toString: <U>(fn: (x: T) => U) => Box<U>;
+};
 
 export const Box = <T>(value: T): Box<T> => ({
   map: (fn) => Box(fn(value)),
   fold: (fn) => fn(value),
   toString: (fn) => {
-    console.info(value)
-    return Box(fn(value))
+    console.info(value);
+    return Box(fn(value));
   },
-})
+});
 
 export interface Memo<A> {
-  (): A
-  clear: () => void
+  (): A;
+  clear: () => void;
 }
 
-export const id = <T>(x: T) => x
+export const id = <T>(x: T) => x;
 
 export function memo<A>(f: () => A): Memo<A> {
-  let v: A | undefined
+  let v: A | undefined;
   const ret = (): A => {
-    if (v === undefined) v = f()
-    return v
-  }
+    if (v === undefined) v = f();
+    return v;
+  };
   ret.clear = () => {
-    v = undefined
-  }
-  return ret
+    v = undefined;
+  };
+  return ret;
 }
 
 /**
@@ -42,15 +44,15 @@ export function createSvg<K extends keyof SVGElementTagNameMap>({
   className,
   ...rest
 }: {
-  tag: K
-  className: string
+  tag: K;
+  className: string;
 } & Record<string, string>): SVGElementTagNameMap[K] {
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", tag)
-  className.split(" ").forEach((name) => svg.classList.add(name))
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  className.split(" ").forEach((name) => svg.classList.add(name));
   Object.entries(rest).forEach(([name, value]) => {
-    svg.setAttribute(name, value)
-  })
-  return svg
+    svg.setAttribute(name, value);
+  });
+  return svg;
 }
 
 /**
@@ -60,25 +62,50 @@ export function createSvg<K extends keyof SVGElementTagNameMap>({
  */
 export function createElement<K extends keyof HTMLElementTagNameMap>({
   tag,
-  className,
+  classname: className,
   ...rest
 }: {
-  tag: K
-  className: string
+  tag: K;
+  classname: string;
 } & Record<string, string>): HTMLElementTagNameMap[K] {
-  const el = document.createElement(tag)
-  className.split(" ").forEach((name) => el.classList.add(name))
+  const el = document.createElement(tag);
+  className
+    .trim()
+    .split(" ")
+    .forEach((name) => el.classList.add(name));
 
   Object.entries(rest).forEach(([name, value]) => {
-    el.setAttribute(name, value)
-  })
-  return el
+    el.setAttribute(name, value);
+  });
+  return el;
 }
 
 export const createButton = ({
   className,
   ...rest
 }: {
-  className: string
+  className: string;
 } & Record<string, string>) =>
-  createElement({tag: "button", className, ...rest})
+  createElement({ tag: "button", classname: className, ...rest });
+
+export function updateBounds(s: State): void {
+  const width = s.root.getBoundingClientRect().width;
+
+  s.container.style.width = `${width}px`;
+  s.container.style.height = `${width}px`;
+
+  s.bounds.clear();
+}
+
+export const formatTime = (totalSeconds: number): string => {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  //https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${pad(minutes)}:${pad(seconds)}`;
+};
+
+export const getItems =
+  <T>(items: readonly T[]) =>
+  (...values: T[]): T[] =>
+    items.filter((item) => values.includes(item));

@@ -1,0 +1,161 @@
+[data-theme='gruvbox'] {
+  --primary-color: #fbf1c7;
+  --primary-color-dark: #ebdbb2;
+  --primary-color-light: #b9ab90;
+
+  --secondary-color: #928374;
+  --secondary-color-dark: #1d2021d0;
+  --secondary-color-light: #50494563;
+
+  --accent-bright: #fabd2f;
+  --accent-color: #fe8019;
+  --accent-color-dark: #d79921;
+  --accent-color-light: #fe801967;
+  --accent-color-error: #fb4934;
+}
+
+[data-theme='cobolt2'] {
+  --primary-color: #ffffff;
+  --primary-color-dark: #ffffff;
+  --primary-color-light: #e1efff;
+
+  --secondary-color: #8fa8c0;
+  --secondary-color-dark: #122738d0;
+  --secondary-color-light: #1f466263;
+
+  --accent-bright: #ffc600;
+  --accent-color: #ff9d00;
+  --accent-color-dark: #0088ff;
+  --accent-color-light: #ff9d0067;
+  --accent-color-error: #ff628c;
+}
+
+[data-theme='omni'] {
+  --primary-color: #e1e1e6; /* Default text */
+  --primary-color: #e1e1e6; /* Default text */
+  --primary-color-dark: #ffffff; /* Brighter/emphasis text */
+  --primary-color-light: #988bc7; /* Comment/muted (soft violet) */
+
+  --secondary-color: #b392f0; /* Purple - classes/types */
+  --secondary-color-dark: #191622; /* Omni background */
+  --secondary-color-light: #41414d80; /* Selection color */
+
+  --accent-bright: #ff79c6; /* Pink - keywords */
+  --accent-color: #78d1e1; /* Cyan - support/regex */
+  --accent-color-dark: #e9f284; /* Yellow - functions */
+  --accent-color-light: #78d1e167;
+  --accent-color-error: #e96379; /* Red - errors */
+}
+
+[data-theme='dracula'] {
+  --primary-color: #f8f8f2;
+  --primary-color-dark: #f8f8f2;
+  --primary-color-light: #e2e2dc;
+
+  --secondary-color: #6272a4;
+  --secondary-color-dark: #21222cd0;
+  --secondary-color-light: #44475a63;
+
+  --accent-bright: #bd93f9;
+  --accent-color: #ff79c6;
+  --accent-color-dark: #a77de6;
+  --accent-color-light: #ff79c667;
+  --accent-color-error: #ff5555;
+}
+
+[data-theme='monokai'] {
+  --primary-color: #f8f8f2;
+  --primary-color-dark: #f8f8f2;
+  --primary-color-light: #cfcfc2;
+
+  --secondary-color: #75715e;
+  --secondary-color-dark: #1e1f1cd0;
+  --secondary-color-light: #3e3d3263;
+
+  --accent-bright: #a6e22e;
+  --accent-color: #e6db74;
+  --accent-color-dark: #fd971f;
+  --accent-color-light: #e6db7467;
+  --accent-color-error: #f92672;
+}
+[data-theme='paper'] {
+  /* Light theme: soft ink on warm cream paper */
+  --primary-color: #ffffff;
+  --primary-color-dark: #a3a3a3d0;
+  --primary-color-light: #d6d6d633;
+
+  --secondary-color: #2f2c28;
+  --secondary-color-dark: #817897;
+  --secondary-color-light: #b5b5b5;
+
+  --accent-bright: #acabab;
+  --accent-color: #514f4f;
+  --accent-color-dark: #464646;
+  --accent-color-light: #ffffff3d;
+  --accent-color-error: #918f8f;
+}
+
+[data-theme='nord-light'] {
+  --primary-color: #2e3440; /* nord0 - text becomes dark */
+  --primary-color-dark: #3b4252; /* nord1 */
+  --primary-color-light: #4c566a; /* nord3 */
+
+  --secondary-color: #81a1c1; /* nord9 - frost blue stays */
+  --secondary-color-dark: #eceff4d0; /* nord6 - light background overlay */
+  --secondary-color-light: #d8dee963; /* nord4 */
+
+  --accent-bright: #88c0d0; /* nord8 */
+  --accent-color: #8fbcbb; /* nord7 */
+  --accent-color-dark: #5e81ac; /* nord10 */
+  --accent-color-light: #88c0d067;
+  --accent-color-error: #bf616a; /* nord11 - red */
+}
+
+[data-theme='tokyo-night'] {
+  --primary-color: #261930; /* Purple - classes/fields */
+  --primary-color-dark: #faf6ecd0; /* Warm light background overlay */
+  --primary-color-light: #5d6182; /* Selection (Darcula blue, lightened) */
+
+  --secondary-color: #5a5f93; /* Default text */
+  --secondary-color-dark: #a13abd; /* Slightly softer */
+  --secondary-color-light: #ad86b8; /* Comment/muted (Darcula gray) */
+
+  --accent-bright: #66045a; /* Orange - keywords */
+  --accent-color: #1b7f83; /* Teal - support/regex */
+  --accent-color-dark: #8e089a; /* Gold - functions */
+  --accent-color-light: #1b7f8367;
+  --accent-color-error: #23175a; /* Red - errors */
+  --accent-color-error: #8e089a; /* Red - errors */
+}
+
+[data-theme='tokyo-night-light'] {
+  --primary-color: #343b58; /* Main foreground */
+  --primary-color-dark: #4c505e; /* Muted text */
+  --primary-color-light: #6c6e75; /* Comments/subtle */
+
+  --secondary-color: #2e7de9; /* Primary blue */
+  --secondary-color-dark: #e1e2e7d0; /* Light background overlay */
+  --secondary-color-light: #d5d6db63; /* Panel background */
+
+  --accent-bright: #9854f1; /* Secondary purple */
+  --accent-color: #b15c00; /* Accent orange */
+  --accent-color-dark: #8f5e15; /* Darker yellow/orange */
+  --accent-color-light: #b15c0067;
+  --accent-color-error: #f52a65; /* Error red */
+}
+
+[data-theme='dracula-light'] {
+  --primary-color: #1f1f1f; /* Default text */
+  --primary-color-dark: #050505; /* Slightly softer */
+  --primary-color-light: #6c664b; /* Comment/muted */
+
+  --secondary-color: #644ac9; /* Purple - classes/types */
+  --secondary-color-dark: #fffbebd0; /* Cream background overlay */
+  --secondary-color-light: #cfcfde63; /* Selection color */
+
+  --accent-bright: #a3144d; /* Pink - keywords */
+  --accent-color: #036a96; /* Cyan - support/regex */
+  --accent-color-dark: #846e15; /* Yellow - functions */
+  --accent-color-light: #036a9667;
+  --accent-color-error: #cb3a2a; /* Red - errors */
+}

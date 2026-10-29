@@ -1,8 +1,10 @@
-export declare const TOTAL_FILE = 9;
-export declare const TOTAL_RANK = 9;
 export declare const RANKS: readonly ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 export declare const FILES: readonly ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+export declare const GAME_STATES: readonly ["play", "idle", "over", "initial", "pause", "customize", "idle-info"];
+export declare const themes: readonly ["gruvbox", "cobolt2", "paper", "dracula", "monokai", "dracula-light"];
+export declare const modes: readonly ["zen-mode"];
 export declare const BOARD_SIZE = 9;
-export declare const GAME_STATE: readonly ["isInitialed", "isPaused", "isPlaying", "isOvered"];
-export declare const BTN_NAMES: readonly ["start", "restart", "remove", "note", "hint", "undo"];
-export declare const buttonLabels: Map<any, any>;
+export declare const PLAY_MODE_BTNS: readonly ["sudoku-play", "sudoku-pause", "sudoku-restart", "sudoku-remove", "sudoku-note", "sudoku-hint", "sudoku-undo", "sudoku-zen"];
+export declare const IDLE_MODE_BTNS: readonly ["sudoku-play", "sudoku-restart", "sudoku-themes", "sudoku-zen", "sudoku-info"];
+export declare const LEVELS: readonly ["1", "2", "3", "4"];
+export declare const DIGITS: readonly ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
