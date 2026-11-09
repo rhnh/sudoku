@@ -1,4 +1,4 @@
-import type { Buttons, Digit, GameState, Key, LevelButtons, Memo, Notes, PlayModeButtons, Squares, Theme, Value } from "./types";
+import type { Buttons, Digit, GameState, Key, LevelButtons, Memo, Notes, Overlay, PlayModeButtons, Squares, Theme, Value } from './types';
 export interface DraggingElement {
     isDragging: boolean;
     sourceValue: Value;
@@ -55,10 +55,13 @@ export interface HeadlessState {
     seconds: number;
     lastMoves: Key[];
     isMuted: boolean;
+    isModalOn: boolean;
+    keyListenerBound: boolean;
+    overlay?: Overlay;
+    observer?: ResizeObserver;
 }
 export interface State extends SudokuBaseElements, Partial<DraggingElement>, HeadlessState, AllButtons {
     updateBoard: (state: State) => State;
-    rerender: (state: State) => State;
     hardRerender: (state: State) => State;
     updateBounds(state: State): void;
 }

@@ -6,27 +6,27 @@ export const configurePanelElements = () => {
         tag: "section",
         classname: "sudoku-timer",
     });
-    const utilsElement = createElement({
+    const idleModeSection = createElement({
         tag: "section",
-        classname: "sudoku-utils",
+        classname: "sudoku-idle--mode",
     });
     const digitElement = createElement({
         tag: "section",
         classname: "sudoku-digits",
     });
-    const controlsElement = createElement({
+    const playModeSection = createElement({
         tag: "section",
-        classname: "sudoku-controls",
+        classname: "sudoku-play--mode",
     });
     const customizationElement = createElement({
         tag: "section",
-        classname: "sudoku-controls",
+        classname: "sudoku-customization",
     });
     return {
         panel,
-        idleModeSection: utilsElement,
+        idleModeSection,
         digitElement,
-        playModeSection: controlsElement,
+        playModeSection,
         timerElement,
         customizationElement,
     };
@@ -53,23 +53,26 @@ export const configureBoardElements = () => {
 };
 export const configureElements = (state) => {
     const { root } = state;
+    const wrapper = createElement({ tag: "section", classname: "wrapper" });
     root.dataset.theme = state.currentTheme;
     const container = createElement({
         tag: "section",
         classname: "sudoku-container",
     });
-    const { panel, idleModeSection: utilsElement, digitElement, playModeSection: controlsElement, timerElement, customizationElement, } = configurePanelElements();
+    const { panel, idleModeSection, digitElement, playModeSection, timerElement, customizationElement, } = configurePanelElements();
     state = { ...state, ...configurePanelElements() };
     const { board, grid, squaresElement } = configureBoardElements();
-    root.appendChild(container);
-    container.append(board, panel);
+    wrapper.appendChild(container);
+    wrapper.appendChild(panel);
+    container.append(board);
+    root.appendChild(wrapper);
     const bounds = memo(() => container.getBoundingClientRect());
     const base = {
         root,
         panel,
-        idleModeSection: utilsElement,
+        idleModeSection,
         digitElement,
-        playModeSection: controlsElement,
+        playModeSection,
         timerElement,
         board,
         grid,

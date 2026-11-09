@@ -1,8 +1,9 @@
-import { sudoku } from "./sudoku";
-import { generateCells } from "./sudoku.algo";
-const root = document.getElementById("app");
+import { read } from './sen';
+import { sudoku } from './sudoku';
+import { generateCells } from './sudoku.algo';
+const root = document.getElementById('app');
 if (!root) {
-    throw new Error("root not found");
+    throw new Error('root not found');
 }
 const { cells, solutions } = generateCells(37);
 sudoku({
@@ -10,7 +11,9 @@ sudoku({
     squares: cells,
     root,
     levelEasy: 1,
-    currentTheme: "gruvbox",
+    currentTheme: 'gruvbox',
     maxWidth: 500,
 });
+const r = read('123/234/123');
+console.log(r);
 //# sourceMappingURL=main.js.map

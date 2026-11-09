@@ -1,4 +1,4 @@
-import type { State } from "./state";
+import type { State } from './state';
 export type Box<T> = {
     map: <U>(fn: (x: T) => U) => Box<U>;
     fold: <R>(fn: (x: T) => R) => R;

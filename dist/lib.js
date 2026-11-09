@@ -1,7 +1,8 @@
 export const Box = (value) => ({
-    map: (fn) => Box(fn(value)),
-    fold: (fn) => fn(value),
-    toString: (fn) => {
+    map: fn => Box(fn(value)),
+    fold: fn => fn(value),
+    toString: fn => {
+        console.log('here your value');
         console.info(value);
         return Box(fn(value));
     },
@@ -25,8 +26,8 @@ export function memo(f) {
  * @returns - a SVG
  */
 export function createSvg({ tag, className, ...rest }) {
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", tag);
-    className.split(" ").forEach((name) => svg.classList.add(name));
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    className.split(' ').forEach(name => svg.classList.add(name));
     Object.entries(rest).forEach(([name, value]) => {
         svg.setAttribute(name, value);
     });
@@ -41,14 +42,14 @@ export function createElement({ tag, classname: className, ...rest }) {
     const el = document.createElement(tag);
     className
         .trim()
-        .split(" ")
-        .forEach((name) => el.classList.add(name));
+        .split(' ')
+        .forEach(name => el.classList.add(name));
     Object.entries(rest).forEach(([name, value]) => {
         el.setAttribute(name, value);
     });
     return el;
 }
-export const createButton = ({ className, ...rest }) => createElement({ tag: "button", classname: className, ...rest });
+export const createButton = ({ className, ...rest }) => createElement({ tag: 'button', classname: className, ...rest });
 export function updateBounds(s) {
     const width = s.root.getBoundingClientRect().width;
     s.container.style.width = `${width}px`;
@@ -59,8 +60,8 @@ export const formatTime = (totalSeconds) => {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     //https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
-    const pad = (n) => n.toString().padStart(2, "0");
+    const pad = (n) => n.toString().padStart(2, '0');
     return `${pad(minutes)}:${pad(seconds)}`;
 };
-export const getItems = (items) => (...values) => items.filter((item) => values.includes(item));
+export const getItems = (items) => (...values) => items.filter(item => values.includes(item));
 //# sourceMappingURL=lib.js.map

@@ -11,7 +11,7 @@ export const timer = (state) => {
         return state;
     const timer = document.createElement("section");
     const height = state.bounds().width / BOARD_SIZE;
-    const width = height * 2;
+    const width = height * 3;
     timer.style.width = `${width}px`;
     timer.style.height = `${height}px`;
     timer.classList.add("timer");

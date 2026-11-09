@@ -1,7 +1,7 @@
 import { renderNotes, updateSquares } from "./board";
 import { BOARD_SIZE } from "./constants";
 import { Box, createElement, id } from "./lib";
-import { zenModeEvent } from "./renderIdleMode";
+import { infoEvent, themeEvent, zenModeEvent } from "./renderIdleMode";
 import { isPaused, isPlaying } from "./state";
 import { setDuplicates } from "./utils";
 export const renderPlayMode = (state) => isPlaying(state.gameState) || isPaused(state.gameState)
@@ -14,33 +14,38 @@ export const renderPlayMode = (state) => isPlaying(state.gameState) || isPaused(
         .map(revealHintEvent)
         .map(undoEvent)
         .map(zenModeEvent)
+        .map(infoEvent)
+        .map(themeEvent)
         .fold(id)
     : state;
 export const playMode = (state) => {
     const section = createElement({
         tag: "section",
-        classname: "section-controls",
+        classname: "section-play--mode",
     });
-    state.playButtons.forEach((label) => {
+    state.playButtons.forEach((sudokuLabel) => {
         const height = state.bounds().width / BOARD_SIZE;
         const width = height;
-        if (hasResumed(state.gameState)(label) || hasPaused(state.gameState)(label))
-            return;
+        // if (sudokuLabel === "sudoku-restart") return sudokuLabel;
+        if (hasResumed(state.gameState)(sudokuLabel) ||
+            hasPaused(state.gameState)(sudokuLabel))
+            return sudokuLabel;
         const btn = createElement({
             tag: "button",
-            classname: `sudoku-btns sudoku-btns-${label} ${label}`,
+            classname: `sudoku-btns sudoku-btns-${sudokuLabel} ${sudokuLabel}`,
         });
         if (!btn)
             return state;
-        if (state.isNote && label === "sudoku-note") {
+        if (state.isNote && sudokuLabel === "sudoku-note") {
             btn.classList.add("pressed-note");
         }
-        const l = label.slice("sudoku-".length);
-        const i = createElement({ tag: "i", classname: `icon-${l}` });
+        const label = sudokuLabel.slice("sudoku-".length);
+        const i = createElement({ tag: "i", classname: `icon-${label}` });
         btn.appendChild(i);
         btn.style.width = `${width}px`;
         btn.style.aspectRatio = "1/1";
         section.appendChild(btn);
+        return sudokuLabel;
     });
     state.playModeSection.appendChild(section);
     return state;
@@ -115,6 +120,7 @@ export const undoEvent = (state) => {
                     .map(updateSquares)
                     .fold(id);
             }
+            return state;
         });
     return state;
 };

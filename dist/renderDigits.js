@@ -15,7 +15,10 @@ export const renderDigitsButtons = (state) => {
     state.digitElement = digitElement;
     const width = state.bounds().width / BOARD_SIZE;
     for (const v of state.digits) {
-        const btn = createElement({ tag: "button", classname: "digit btn" });
+        const btn = createElement({
+            tag: "button",
+            classname: "digit btn sudoku-btns",
+        });
         btn.style.width = `${width}px`;
         btn.style.aspectRatio = `1 / 1`;
         btn.dataset.value = v;

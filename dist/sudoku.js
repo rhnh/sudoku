@@ -1,23 +1,24 @@
-import { setApi } from "./api";
-import { Box } from "./lib";
-import { renderBase } from "./render";
-import "./assets/themes.style.css";
-import "./assets/style.css";
-import "./assets/icon-fonts.css";
-import "./assets/media-queries.css";
-import { renderSquares } from "./board";
-import { boardMouseEvent } from "./board-mouse-events";
-import { boardKeyEvents } from "./boardEvents";
-import { renderGrid } from "./svg";
-import { renderSidebar } from "./renderSidebar";
-export { generateCells } from "./sudoku.algo";
-export const sudoku = ({ root, levelEasy = 37, currentTheme = "monokai", squares, solutions, }) => {
+import './assets/themes.style.css';
+import './assets/style.css';
+import './assets/icon-fonts.css';
+import './assets/media-queries.css';
+import { setApi } from './api';
+import { renderSquares } from './board';
+import { boardKeyEvents } from './boardKeyEvents';
+import { boardMouseEvent } from './boardMouseEvents';
+import { Box } from './lib';
+import { renderBase, renderSidebar } from './render';
+import { renderGrid } from './svg';
+export { generateCells } from './sudoku.algo';
+export const sudoku = ({ root, levelEasy = 37, currentTheme = 'monokai', squares, solutions, }) => {
     if (!root)
-        throw new Error("No Element found");
+        throw new Error('No Element found');
+    squares = new Map();
+    solutions = new Map();
     const headlessState = {
         currentLevel: levelEasy,
         currentTheme,
-        gameState: "idle",
+        gameState: 'idle',
         squares,
         readonlySquares: new Map(squares),
         highlightedSquares: new Map(),
@@ -30,6 +31,8 @@ export const sudoku = ({ root, levelEasy = 37, currentTheme = "monokai", squares
         lastMoves: [],
         selectedSquares: [],
         isMuted: false,
+        isModalOn: false,
+        keyListenerBound: false,
     };
     const state = { root, ...headlessState };
     return Box(state)

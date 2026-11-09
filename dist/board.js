@@ -49,11 +49,13 @@ export function updateSquares(state) {
         square.style.width = `${squareSize}px`;
         square.dataset.value = `${v}`;
         if (state.isNote) {
+            square.classList.add("square-note--mode");
         }
         else {
             if (square.firstChild) {
                 square.firstChild.textContent = v === "0" ? "" : `${v}`;
             }
+            square.classList.remove("square-note--mode");
         }
         if (state.duplicates.get(k) && state.duplicates.get(k) !== "0") {
             square.classList.add("duplicates");

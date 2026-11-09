@@ -1,49 +1,43 @@
-import { renderNotes, renderSquares, updateSquares } from "./board";
-import { boardKeyEvents } from "./boardEvents";
-import { configureElements, initButtons } from "./config";
-import { Box, id, updateBounds } from "./lib";
-import { boardMouseEvent } from "./board-mouse-events";
-import { renderGrid } from "./svg";
-import { renderTimer } from "./renderTimer.ts";
-import { renderCustomization } from "./renderCustomization";
-import { renderDigits } from "./renderDigits";
-import { renderIdleMode } from "./renderIdleMode";
-import { renderInfo } from "./renderInfo";
-import { renderPlayMode } from "./renderPlayMode";
-import { renderZenMode } from "./renderZenMode";
+import { renderNotes, renderSquares, updateSquares } from './board';
+import { boardKeyEvents } from './boardKeyEvents';
+import { boardMouseEvent } from './boardMouseEvents';
+import { configureElements, initButtons } from './config';
+import { Box, id, updateBounds } from './lib';
+import { renderDigits } from './renderDigits';
+import { renderIdleMode } from './renderIdleMode';
+import { renderInfo } from './renderInfoModal';
+import { renderPlayMode } from './renderPlayMode';
+import { renderSettings } from './renderSettingsModal';
+import { renderThemeModal } from './renderThemeModal';
+import { renderTimer } from './renderTimer.ts';
+import { renderZenMode } from './renderZenMode';
+import { renderGrid } from './svg';
 export const renderSidebar = (state) => {
     const { panel } = state;
     panel.replaceChildren();
-    state.root.appendChild(panel);
     return Box(state)
         .map(renderTimer)
         .map(renderIdleMode)
         .map(renderPlayMode)
         .map(renderDigits)
         .map(renderZenMode)
-        .map(renderCustomization)
+        .map(renderThemeModal)
         .map(renderInfo)
+        .map(renderSettings)
         .fold(id);
 };
 export const renderBase = (state) => {
-    const next = {
-        ...state,
+    const next = Object.assign(state, {
         ...configureElements(state),
         ...initButtons(),
-        updateBoard: (state) => {
-            updateSquares(state);
-            renderNotes(state);
-            return state;
+        updateBoard: (s) => {
+            updateSquares(s);
+            renderNotes(s);
+            return s;
         },
         updateBounds,
-        rerender: (state) => {
-            state.root.replaceChildren();
-            render(state);
-            return state;
-        },
-        hardRerender: (state) => hardRerender(state), // <-- add
-    };
-    // resizeObserver(next)({ render: render, updateBounds: updateBounds });
+        hardRerender: (s) => hardRerender(s),
+    });
     resizeObserver(next);
     return next;
 };
@@ -52,7 +46,10 @@ export const hardRerender = (state) => {
     return Box(state).map(render).map(updateSquares).fold(id);
 };
 export const render = (state) => {
-    console.log(state.gameState, "gameState", "render");
+    console.log(`render: function
+    gameState: ${state.gameState},
+    overlay: ${state.overlay},
+  `);
     return Box(state)
         .map(renderBase)
         .map(renderSquares)
@@ -63,19 +60,29 @@ export const render = (state) => {
         .fold(id);
 };
 export const resizeObserver2 = (state) => {
-    const observer = new ResizeObserver(() => {
+    if (state.observer)
+        return state.observer; // never create twice
+    let lastWidth = -1;
+    let lastHeight = -1;
+    const observer = new ResizeObserver(([entry]) => {
+        const { width, height } = entry.contentRect;
+        if (width === lastWidth && height === lastHeight)
+            return;
+        lastWidth = width;
+        lastHeight = height;
         requestAnimationFrame(() => {
-            if (state.container) {
-                state.updateBounds(state);
-                state.root.replaceChildren();
-                render(state);
-            }
+            if (!state.container)
+                return;
+            state.updateBounds(state);
+            state.root.replaceChildren();
+            render(state);
         });
     });
     observer.observe(state.root);
+    state.observer = observer;
     return observer;
 };
-export const resizeObserver = (state) => {
+const resizeObserver = (state) => {
     const observerCallback = (entries) => {
         window.requestAnimationFrame(() => {
             if (!Array.isArray(entries) || !entries.length) {

@@ -11,7 +11,7 @@ import type {
   Squares,
   Theme,
   Value,
-} from "./types";
+} from './types';
 
 export interface DraggingElement {
   isDragging: boolean;
@@ -53,8 +53,7 @@ export interface SudokuBoardElements {
   squaresElement: HTMLElement;
 }
 
-export interface SudokuBaseElements
-  extends SudokuBoardElements, SudokuPanelElements {
+export interface SudokuBaseElements extends SudokuBoardElements, SudokuPanelElements {
   root: HTMLElement;
   container: HTMLElement;
   maxWidth?: number;
@@ -83,21 +82,16 @@ export interface HeadlessState {
   observer?: ResizeObserver;
 }
 
-export interface State
-  extends
-    SudokuBaseElements,
-    Partial<DraggingElement>,
-    HeadlessState,
-    AllButtons {
+export interface State extends SudokuBaseElements, Partial<DraggingElement>, HeadlessState, AllButtons {
   updateBoard: (state: State) => State;
   hardRerender: (state: State) => State;
   updateBounds(state: State): void;
 }
 
-export const isIdle = (gameState: GameState) => gameState === "idle";
-export const isPaused = (gameState: GameState) => gameState === "pause";
-export const isPlaying = (gameState: GameState) => gameState === "play";
-export const isOvered = (gameState: GameState) => gameState === "over";
+export const isIdle = (gameState: GameState) => gameState === 'idle';
+export const isPaused = (gameState: GameState) => gameState === 'pause';
+export const isPlaying = (gameState: GameState) => gameState === 'play';
+export const isOvered = (gameState: GameState) => gameState === 'over';
 
 export const isZenMode = (isZenMode: boolean): boolean => !!isZenMode;
 export type RootedState = HeadlessState & { root: HTMLElement };

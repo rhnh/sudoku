@@ -8,6 +8,7 @@ export const renderIdleMode = (state) => isIdle(state.gameState)
         .map(zenModeEvent)
         .map(themeEvent)
         .map(infoEvent)
+        .map(settingEvent)
         .fold(id)
     : state;
 export const renderLevelButtons = (state) => {
@@ -16,26 +17,27 @@ export const renderLevelButtons = (state) => {
         return state;
     const width = state.bounds().width / BOARD_SIZE;
     const height = width;
-    IDLE_MODE_BTNS.forEach((label) => {
+    IDLE_MODE_BTNS.forEach((sudokuLabel) => {
         const btn = createElement({
             tag: "button",
-            classname: `sudoku-btns sudoku-btns-${label} ${label}`,
+            classname: `sudoku-btns sudoku-btns-${sudokuLabel} ${sudokuLabel}`,
         });
-        const l = label.slice("sudoku-".length);
-        const i = createElement({ tag: "i", classname: `icon-${l}` });
+        const label = sudokuLabel.slice("sudoku-".length);
+        const i = createElement({ tag: "i", classname: `icon-${label}` });
         btn.appendChild(i);
         btn.style.width = `${width}px`;
         btn.style.aspectRatio = "1/1";
+        btn.title = label;
         section.appendChild(btn);
     });
     for (const v of state.levelButtons) {
         const btn = createElement({
             tag: "button",
-            classname: `sudoku-btns ${state.isZenMode ? "zen-mode" : "mode"}`,
+            classname: `sudoku-btns ${state.isZenMode ? "zen-mode" : "normal-mode"}`,
         });
         btn.style.height = `${width}px`;
         btn.style.width = `${height}px`;
-        btn.innerHTML = v;
+        btn.innerHTML = v.toLocaleUpperCase();
         section.append(btn);
     }
     state.panel.appendChild(section);
@@ -48,7 +50,7 @@ export const playEvent = (state) => {
         return state;
     btn.addEventListener("click", () => {
         state.gameState = "play";
-        state.hardRerender(state);
+        return state.hardRerender(state);
     });
     return state;
 };
@@ -67,7 +69,8 @@ export const themeEvent = (state) => {
     const themes = state.panel.querySelector(selector);
     if (themes)
         themes.addEventListener("pointerdown", () => {
-            state.gameState = "customize";
+            state.isModalOn = true;
+            state.overlay = "theme";
             state.hardRerender(state);
         });
     return state;
@@ -77,7 +80,20 @@ export const infoEvent = (state) => {
     const info = state.panel.querySelector(selector);
     if (info) {
         info.addEventListener("click", () => {
-            state.gameState = "idle-info";
+            state.isModalOn = true;
+            state.overlay = "info";
+            state.hardRerender(state);
+        });
+    }
+    return state;
+};
+export const settingEvent = (state) => {
+    const selector = ".sudoku-setting";
+    const settings = state.panel.querySelector(selector);
+    if (settings) {
+        settings.addEventListener("click", () => {
+            state.isModalOn = true;
+            state.overlay = "settings";
             state.hardRerender(state);
         });
     }

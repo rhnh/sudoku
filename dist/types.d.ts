@@ -1,7 +1,8 @@
-import type { FILES, GAME_STATES, LEVELS, modes, PLAY_MODE_BTNS, RANKS, themes } from "./constants";
+import type { FILES, GAME_STATES, LEVELS, modes, OVERLAYS, PLAY_MODE_BTNS, RANKS, themes } from "./constants";
 export type Rank = (typeof RANKS)[number];
 export type File = (typeof FILES)[number];
 export type GameState = (typeof GAME_STATES)[number];
+export type Overlay = (typeof OVERLAYS)[number];
 export type Theme = (typeof themes)[number];
 export type Mode = (typeof modes)[number];
 export type BaseKey = `${File}${Rank}`;

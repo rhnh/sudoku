@@ -1,4 +1,4 @@
-import type { State } from "./state";
+import type { State } from './state';
 
 export type Box<T> = {
   map: <U>(fn: (x: T) => U) => Box<U>;
@@ -7,9 +7,10 @@ export type Box<T> = {
 };
 
 export const Box = <T>(value: T): Box<T> => ({
-  map: (fn) => Box(fn(value)),
-  fold: (fn) => fn(value),
-  toString: (fn) => {
+  map: fn => Box(fn(value)),
+  fold: fn => fn(value),
+  toString: fn => {
+    console.log('here your value');
     console.info(value);
     return Box(fn(value));
   },
@@ -47,8 +48,8 @@ export function createSvg<K extends keyof SVGElementTagNameMap>({
   tag: K;
   className: string;
 } & Record<string, string>): SVGElementTagNameMap[K] {
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", tag);
-  className.split(" ").forEach((name) => svg.classList.add(name));
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  className.split(' ').forEach(name => svg.classList.add(name));
   Object.entries(rest).forEach(([name, value]) => {
     svg.setAttribute(name, value);
   });
@@ -71,8 +72,8 @@ export function createElement<K extends keyof HTMLElementTagNameMap>({
   const el = document.createElement(tag);
   className
     .trim()
-    .split(" ")
-    .forEach((name) => el.classList.add(name));
+    .split(' ')
+    .forEach(name => el.classList.add(name));
 
   Object.entries(rest).forEach(([name, value]) => {
     el.setAttribute(name, value);
@@ -85,8 +86,7 @@ export const createButton = ({
   ...rest
 }: {
   className: string;
-} & Record<string, string>) =>
-  createElement({ tag: "button", classname: className, ...rest });
+} & Record<string, string>) => createElement({ tag: 'button', classname: className, ...rest });
 
 export function updateBounds(s: State): void {
   const width = s.root.getBoundingClientRect().width;
@@ -101,11 +101,11 @@ export const formatTime = (totalSeconds: number): string => {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
   //https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
-  const pad = (n: number) => n.toString().padStart(2, "0");
+  const pad = (n: number) => n.toString().padStart(2, '0');
   return `${pad(minutes)}:${pad(seconds)}`;
 };
 
 export const getItems =
   <T>(items: readonly T[]) =>
   (...values: T[]): T[] =>
-    items.filter((item) => values.includes(item));
+    items.filter(item => values.includes(item));

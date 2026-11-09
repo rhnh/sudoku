@@ -1,18 +1,18 @@
-import { renderNotes, renderSquares, updateSquares } from "./board";
-import { configureElements, initButtons } from "./config";
-import { Box, id, updateBounds } from "./lib";
-import { boardMouseEvent } from "./boardMouseEvents";
-import type { RootedState, State } from "./state";
-import { renderGrid } from "./svg";
-import { renderTimer } from "./renderTimer.ts";
-import { renderThemeModal } from "./renderThemeModal";
-import { renderDigits } from "./renderDigits";
-import { renderIdleMode } from "./renderIdleMode";
-import { renderInfo } from "./renderInfoModal";
-import { renderPlayMode } from "./renderPlayMode";
-import { renderZenMode } from "./renderZenMode";
-import { renderSettings } from "./renderSettingsModal";
-import { boardKeyEvents } from "./boardKeyEvents";
+import { renderNotes, renderSquares, updateSquares } from './board';
+import { boardKeyEvents } from './boardKeyEvents';
+import { boardMouseEvent } from './boardMouseEvents';
+import { configureElements, initButtons } from './config';
+import { Box, id, updateBounds } from './lib';
+import { renderDigits } from './renderDigits';
+import { renderIdleMode } from './renderIdleMode';
+import { renderInfo } from './renderInfoModal';
+import { renderPlayMode } from './renderPlayMode';
+import { renderSettings } from './renderSettingsModal';
+import { renderThemeModal } from './renderThemeModal';
+import { renderTimer } from './renderTimer.ts';
+import { renderZenMode } from './renderZenMode';
+import type { RootedState, State } from './state';
+import { renderGrid } from './svg';
 
 export const renderSidebar = (state: State): State => {
   const { panel } = state;
@@ -94,9 +94,7 @@ export const resizeObserver2 = (state: State) => {
   return observer;
 };
 const resizeObserver = (state: State) => {
-  const observerCallback: ResizeObserverCallback = (
-    entries: ResizeObserverEntry[],
-  ) => {
+  const observerCallback: ResizeObserverCallback = (entries: ResizeObserverEntry[]) => {
     window.requestAnimationFrame((): void | undefined => {
       if (!Array.isArray(entries) || !entries.length) {
         return;

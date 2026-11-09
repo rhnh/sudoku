@@ -1,30 +1,30 @@
-import { type API, setApi } from "./api";
-import { type Config } from "./config";
-import { Box } from "./lib";
-import { renderBase, renderSidebar } from "./render";
-import { type HeadlessState } from "./state";
-import "./assets/themes.style.css";
-import "./assets/style.css";
-import "./assets/icon-fonts.css";
-import "./assets/media-queries.css";
-import { renderSquares } from "./board";
-import { boardMouseEvent } from "./boardMouseEvents";
-import { boardKeyEvents } from "./boardKeyEvents";
-import { renderGrid } from "./svg";
-export { generateCells } from "./sudoku.algo";
+import './assets/themes.style.css';
+import './assets/style.css';
+import './assets/icon-fonts.css';
+import './assets/media-queries.css';
+
+import { type API, setApi } from './api';
+import { renderSquares } from './board';
+import { boardKeyEvents } from './boardKeyEvents';
+import { boardMouseEvent } from './boardMouseEvents';
+import { type Config } from './config';
+import { Box } from './lib';
+import { renderBase, renderSidebar } from './render';
+import { type HeadlessState } from './state';
+import { renderGrid } from './svg';
+export { generateCells } from './sudoku.algo';
 export const sudoku = ({
   root,
   levelEasy = 37,
-  currentTheme = "monokai",
+  currentTheme = 'monokai',
   squares,
   solutions,
 }: Config): API => {
-  if (!root) throw new Error("No Element found");
-
+  if (!root) throw new Error('No Element found');
   const headlessState: HeadlessState = {
     currentLevel: levelEasy,
     currentTheme,
-    gameState: "idle",
+    gameState: 'idle',
     squares,
     readonlySquares: new Map(squares),
     highlightedSquares: new Map(),
