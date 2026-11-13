@@ -1,5 +1,5 @@
 import { Box, id } from './lib';
-import { Squares } from './types';
+import type { Squares } from './types';
 import { getKeys } from './utils';
 
 /**
@@ -11,6 +11,7 @@ import { getKeys } from './utils';
  * space. The 2nd row has 1 7 6 and four empty space and then the 2 and the 9
  *
  * */
+/**
 export const convertSenToSquares = (sen: string): Squares => {
   console.log('sen', sen);
   const value: string[] = sen
@@ -22,7 +23,7 @@ export const convertSenToSquares = (sen: string): Squares => {
   }
   return new Map();
 };
-
+*/
 export const hasValidLength = (str: string[]) => str.every(s => s.length === 9);
 
 export const read = (sen: string): Squares => {
@@ -32,9 +33,10 @@ export const read = (sen: string): Squares => {
       return sen.split('/');
     })
     .map(sens => {
+      console.log(sens);
       const r = sens.map(sen => {
         return sen.replaceAll(
-          /#(\d)(\d*)/g,
+          /[#0.](\d)(\d*)/g,
           (_: string, n: string, rest: string) => '0'.repeat(Number(n)) + rest,
         );
       });
@@ -76,7 +78,8 @@ export const read = (sen: string): Squares => {
       const keys = getKeys();
       const jnput = input.map(r => r.split(''));
       const jalues = jnput[0].map((_, colIndex) => input.map(row => row[colIndex]));
-      let values = jalues.flat();
+      const values = jalues.flat();
+
       keys.forEach((key, i) => {
         const value = values[i];
         squares.set(key, value);

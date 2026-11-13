@@ -16,7 +16,7 @@ export { generateCells } from './sudoku.algo';
 export const sudoku = ({
   root,
   levelEasy = 37,
-  currentTheme = 'monokai',
+  currentTheme = 'dracula',
   squares,
   solutions,
 }: Config): API => {

@@ -16,9 +16,12 @@ export const settings = (state: State): State => {
 
 function main(): HTMLElement {
   const el = createElement({ tag: 'section', classname: 'setting-main' });
+  const h3 = createElement({ tag: 'h3', classname: 'setting-main-desc' });
+  h3.innerText = 'add:8#36#33/4#28#13#21/7#32#36/#16#428#1/#3419#25/#48#279 ';
   const input = createElement({ tag: 'input', classname: 'fen-text' });
   const btn = createElement({ tag: 'button', classname: 'fen-text' });
   btn.innerHTML = 'submit';
+  el.appendChild(h3);
   el.appendChild(input);
   el.appendChild(btn);
   return el;
