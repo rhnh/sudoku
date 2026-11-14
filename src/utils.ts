@@ -1,29 +1,17 @@
-import type {
-  Button,
-  Buttons,
-  Key,
-  Memo,
-  Notes,
-  Position,
-  Squares,
-  Value,
-} from "./types";
-import { BOARD_SIZE, FILES, RANKS } from "./constants";
-import type { SquareElement, State } from "./state";
-import { createElement } from "./lib";
+import { BOARD_SIZE, FILES, RANKS } from './constants';
+import { createElement } from './lib';
+import type { SquareElement, State } from './state';
+import type { Button, Buttons, Key, Memo, Notes, Position, Squares, Value } from './types';
 
-export const getPositionFromKey = (k: Key): Position => [
-  k.charCodeAt(0) - 97,
-  k.charCodeAt(1) - 49,
-];
+export const getPositionFromKey = (k: Key): Position => [k.charCodeAt(0) - 97, k.charCodeAt(1) - 49];
 export const getKeyFromPosition = (p: Position): Key | undefined => {
   const keys = getKeys();
-  return p.every((x) => x >= 0 && x <= 8) ? keys[9 * p[0] + p[1]] : undefined;
+  return p.every(x => x >= 0 && x <= 8) ? keys[9 * p[0] + p[1]] : undefined;
 };
 export const getKeys = (): Key[] => {
   let i = 0;
-  return FILES.flatMap((f) =>
-    RANKS.flatMap((r) => {
+  return FILES.flatMap(f =>
+    RANKS.flatMap(r => {
       const row = Math.floor(i / 9);
       const col = i % 9;
       const block = Math.floor(row / 3) * 3 + Math.floor(col / 3) + 1;
@@ -54,9 +42,7 @@ export function getKeysWithSameValue(squares: Squares): Key[] {
 export function updateBounds(s: State): void {
   const bounds = s.root.getBoundingClientRect();
 
-  const size =
-    Math.floor(bounds.width * window.devicePixelRatio) /
-    window.devicePixelRatio;
+  const size = Math.floor(bounds.width * window.devicePixelRatio) / window.devicePixelRatio;
 
   s.container.style.width = `${size}px`;
   s.container.style.height = `${size}px`;
@@ -74,7 +60,7 @@ export const addUserInput =
   (key: Key) =>
   (value: Value): Squares => {
     const { squares: userInput, readonlySquares } = state;
-    if (readonlySquares.get(key) === "0") {
+    if (readonlySquares.get(key) === '0') {
       userInput.set(key, value);
       state.lastMoves.push(key);
     }
@@ -107,19 +93,18 @@ export const removeAllNotes =
     state.notes.set(key, new Set());
   };
 
-export const removingAllRelatedNotes =
-  (state: State) => (key: Key) => (value: Value) => {
-    const allRelatedKeys = getCommons(state)(key);
+export const removingAllRelatedNotes = (state: State) => (key: Key) => (value: Value) => {
+  const allRelatedKeys = getCommons(state)(key);
 
-    // oxlint-disable-next-line no-unused-vars
-    for (const [k, _] of allRelatedKeys) {
-      const notes = state.notes.get(k);
+  // oxlint-disable-next-line no-unused-vars
+  for (const [k, _] of allRelatedKeys) {
+    const notes = state.notes.get(k);
 
-      if (notes?.has(value)) {
-        notes.delete(value);
-      }
+    if (notes?.has(value)) {
+      notes.delete(value);
     }
-  };
+  }
+};
 
 export const getPositionFromBound =
   (state: State) =>
@@ -129,8 +114,7 @@ export const getPositionFromBound =
     return [x, y];
   };
 
-export const isEmptySquare = (state: State) => (k: Key) =>
-  state.squares.get(k) === "0";
+export const isEmptySquare = (state: State) => (k: Key) => state.squares.get(k) === '0';
 
 export const getElementByKey =
   (state: State) =>
@@ -151,9 +135,7 @@ export const getPositionKeyAtDom =
   (pos: Position, xSize = 9, ySize = 9): Position => {
     const file = Math.floor((xSize * (pos[0] - bounds.left)) / bounds.width);
     const rank = Math.floor((ySize * (pos[1] - bounds.top)) / bounds.height);
-    return file >= 0 && file < xSize && rank >= 0 && rank <= ySize
-      ? [file, rank]
-      : [-1, -1];
+    return file >= 0 && file < xSize && rank >= 0 && rank <= ySize ? [file, rank] : [-1, -1];
   };
 
 /**
@@ -176,13 +158,10 @@ export const getSquareNr = (n: number) => {
   return [x, y];
 };
 
-export const getDuplicates =
-  (state: State) => (f: (key: Key, noZero: boolean) => Squares) =>
-    getKeys().forEach((key) =>
-      getDuplicateKeys(f(key, true)).forEach((k) =>
-        state.duplicates.set(k, `${state.squares.get(k)}` as Value),
-      ),
-    );
+export const getDuplicates = (state: State) => (f: (key: Key, noZero: boolean) => Squares) =>
+  getKeys().forEach(key =>
+    getDuplicateKeys(f(key, true)).forEach(k => state.duplicates.set(k, `${state.squares.get(k)}` as Value)),
+  );
 
 export const setDuplicates = (state: State): State => {
   state.duplicates.clear();
@@ -243,7 +222,7 @@ export const getSquaresBy =
     const s = new Map();
     for (const [k, v] of state.squares) {
       if (k[n] === key[n]) {
-        if (noZero && v === "0") continue;
+        if (noZero && v === '0') continue;
         s.set(k, v);
       }
     }
@@ -271,9 +250,9 @@ export const createButtons = <T extends Button>({
 }): HTMLElement => {
   for (const v of buttons) {
     const btn = createElement({
-      tag: "button",
+      tag: 'button',
       classname: `${classname} btn-${v}`,
-      id: hasId ? v : "",
+      id: hasId ? v : '',
     });
 
     btn.dataset.key = v;
@@ -287,7 +266,7 @@ export const createButtons = <T extends Button>({
       btn.style.width = `${width}px`;
     }
 
-    const i = createElement({ tag: "i", classname: `icon-fonts icon-${v}` });
+    const i = createElement({ tag: 'i', classname: `icon-fonts icon-${v}` });
     btn.appendChild(i);
     section.append(btn);
   }

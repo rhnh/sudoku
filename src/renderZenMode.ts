@@ -1,16 +1,11 @@
-import { BOARD_SIZE, PLAY_MODE_BTNS } from "./constants";
-import { Box, createElement, getItems, id } from "./lib";
-import { zenModeEvent } from "./renderIdleMode";
-import {
-  removeEvent,
-  revealHintEvent,
-  setNoteEvent,
-  undoEvent,
-} from "./renderPlayMode";
-import type { State } from "./state";
+import { BOARD_SIZE, PLAY_MODE_BTNS } from './constants';
+import { Box, createElement, getItems, id } from './lib';
+import { zenModeEvent } from './renderIdleMode';
+import { removeEvent, revealHintEvent, setNoteEvent, undoEvent } from './renderPlayMode';
+import type { State } from './state';
 
 export const renderZenMode = (state: State): State =>
-  state.gameState === "play" && state.isZenMode
+  state.gameState === 'play' && state.isZenMode
     ? Box(state)
         .map(zenMode)
         .map(zenModeEvent)
@@ -23,29 +18,29 @@ export const renderZenMode = (state: State): State =>
 
 export const zenMode = (state: State): State => {
   const labels = getItems(PLAY_MODE_BTNS)(
-    "sudoku-zen",
-    "sudoku-hint",
-    "sudoku-note",
-    "sudoku-undo",
-    "sudoku-remove",
+    'sudoku-zen',
+    'sudoku-hint',
+    'sudoku-note',
+    'sudoku-undo',
+    'sudoku-remove',
   );
   const section = createElement({
-    tag: "section",
-    classname: "zen-mode-section",
+    tag: 'section',
+    classname: 'zen-mode-section',
   });
-  labels.forEach((label) => {
+  labels.forEach(label => {
     const height = state.bounds().width / BOARD_SIZE;
     const width = height;
     const btn = createElement({
-      tag: "button",
+      tag: 'button',
       classname: `sudoku-btns zen-btn ${label}`,
     });
-    const l = label.slice("sudoku-".length);
+    const l = label.slice('sudoku-'.length);
     btn.style.width = `${width}px`;
-    btn.style.aspectRatio = "1/1";
+    btn.style.aspectRatio = '1/1';
     btn.title = l;
     const i = createElement({
-      tag: "i",
+      tag: 'i',
       classname: `icon-${l}`,
     });
     btn.appendChild(i);

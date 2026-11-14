@@ -1,5 +1,5 @@
-import type { State } from "./state";
-import type { Theme } from "./types";
+import type { State } from './state';
+import type { Theme } from './types';
 
 export interface API {
   setTheme: (theme: Theme) => void;

@@ -7,9 +7,9 @@
  * @returns
  */
 
-import { BOARD_SIZE } from "./constants";
-import type { Key, Squares, Value } from "./types";
-import { getKeyFromPosition, getKeys } from "./utils";
+import { BOARD_SIZE } from './constants';
+import type { Key, Squares, Value } from './types';
+import { getKeyFromPosition, getKeys } from './utils';
 
 // https://www.geeksforgeeks.org/dsa/program-sudoku-generator/
 
@@ -18,12 +18,7 @@ import { getKeyFromPosition, getKeys } from "./utils";
 
 // Returns false if given 3x3 block contains num
 // Ensure the number is not used in the box
-function unUsedInBox(
-  grid: number[][],
-  rowStart: number,
-  colStart: number,
-  num: number,
-) {
+function unUsedInBox(grid: number[][], rowStart: number, colStart: number, num: number) {
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
       if (grid[rowStart + i][colStart + j] === num) {
@@ -75,9 +70,7 @@ function unUsedInCol(grid: number[][], j: number, num: number) {
 // Ensure num is not used in row, column, or box
 function checkIfSafe(grid: number[][], i: number, j: number, num: number) {
   return (
-    unUsedInRow(grid, i, num) &&
-    unUsedInCol(grid, j, num) &&
-    unUsedInBox(grid, i - (i % 3), j - (j % 3), num)
+    unUsedInRow(grid, i, num) && unUsedInCol(grid, j, num) && unUsedInBox(grid, i - (i % 3), j - (j % 3), num)
   );
 }
 
@@ -151,9 +144,7 @@ export function sudokuGenerator(k: number) {
   // Initialize an empty 9x9 grid
   const grid = Array.from({ length: BOARD_SIZE })
     .fill(0)
-    .map(() =>
-      Array.from({ length: BOARD_SIZE }).fill(0),
-    ) as unknown as number[][];
+    .map(() => Array.from({ length: BOARD_SIZE }).fill(0)) as unknown as number[][];
 
   // Fill the diagonal 3x3 matrices
   fillDiagonal(grid);
@@ -166,9 +157,7 @@ export function sudokuGenerator(k: number) {
   return { grid, solution: removeKDigits(grid, k) };
 }
 
-export const generateCells = (
-  emptyCells: number,
-): { cells: Squares; solutions: Squares } => {
+export const generateCells = (emptyCells: number): { cells: Squares; solutions: Squares } => {
   const cells: Squares = new Map();
   const sudokuGenerated = sudokuGenerator(emptyCells);
   const sudoku = sudokuGenerated.grid.flat();

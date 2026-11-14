@@ -1,6 +1,6 @@
-import { BOARD_SIZE, IDLE_MODE_BTNS } from "./constants";
-import { Box, createElement, id } from "./lib";
-import { isIdle, type State } from "./state";
+import { BOARD_SIZE, IDLE_MODE_BTNS } from './constants';
+import { Box, createElement, id } from './lib';
+import { isIdle, type State } from './state';
 
 export const renderIdleMode = (state: State): State =>
   isIdle(state.gameState)
@@ -16,26 +16,26 @@ export const renderIdleMode = (state: State): State =>
 
 export const renderLevelButtons = (state: State): State => {
   const section = state.idleModeSection;
-  if (state.gameState !== "idle") return state;
+  if (state.gameState !== 'idle') return state;
   const width = state.bounds().width / BOARD_SIZE;
   const height = width;
-  IDLE_MODE_BTNS.forEach((sudokuLabel) => {
+  IDLE_MODE_BTNS.forEach(sudokuLabel => {
     const btn = createElement({
-      tag: "button",
+      tag: 'button',
       classname: `sudoku-btns sudoku-btns-${sudokuLabel} ${sudokuLabel}`,
     });
-    const label = sudokuLabel.slice("sudoku-".length);
-    const i = createElement({ tag: "i", classname: `icon-${label}` });
+    const label = sudokuLabel.slice('sudoku-'.length);
+    const i = createElement({ tag: 'i', classname: `icon-${label}` });
     btn.appendChild(i);
     btn.style.width = `${width}px`;
-    btn.style.aspectRatio = "1/1";
+    btn.style.aspectRatio = '1/1';
     btn.title = label;
     section.appendChild(btn);
   });
   for (const v of state.levelButtons) {
     const btn = createElement({
-      tag: "button",
-      classname: `sudoku-btns ${state.isZenMode ? "zen-mode" : "normal-mode"}`,
+      tag: 'button',
+      classname: `sudoku-btns ${state.isZenMode ? 'zen-mode' : 'normal-mode'}`,
     });
     btn.style.height = `${width}px`;
     btn.style.width = `${height}px`;
@@ -48,21 +48,21 @@ export const renderLevelButtons = (state: State): State => {
 };
 
 export const playEvent = (state: State): State => {
-  const selector = ".sudoku-play";
+  const selector = '.sudoku-play';
   const btn = state.panel.querySelector<HTMLButtonElement>(selector);
   if (!btn) return state;
-  btn.addEventListener("click", () => {
-    state.gameState = "play";
+  btn.addEventListener('click', () => {
+    state.gameState = 'play';
     return state.hardRerender(state);
   });
   return state;
 };
 
 export const zenModeEvent = (state: State): State => {
-  const selector = ".sudoku-zen";
+  const selector = '.sudoku-zen';
   const zen = state.panel.querySelector<HTMLButtonElement>(selector);
   if (zen)
-    zen.addEventListener("pointerdown", () => {
+    zen.addEventListener('pointerdown', () => {
       state.isZenMode = !state.isZenMode;
       state.hardRerender(state);
     });
@@ -71,12 +71,12 @@ export const zenModeEvent = (state: State): State => {
 };
 
 export const themeEvent = (state: State): State => {
-  const selector = ".sudoku-themes";
+  const selector = '.sudoku-themes';
   const themes = state.panel.querySelector<HTMLButtonElement>(selector);
   if (themes)
-    themes.addEventListener("pointerdown", () => {
+    themes.addEventListener('pointerdown', () => {
       state.isModalOn = true;
-      state.overlay = "theme";
+      state.overlay = 'theme';
       state.hardRerender(state);
     });
 
@@ -84,12 +84,12 @@ export const themeEvent = (state: State): State => {
 };
 
 export const infoEvent = (state: State): State => {
-  const selector = ".sudoku-info";
+  const selector = '.sudoku-info';
   const info = state.panel.querySelector<HTMLButtonElement>(selector);
   if (info) {
-    info.addEventListener("click", () => {
+    info.addEventListener('click', () => {
       state.isModalOn = true;
-      state.overlay = "info";
+      state.overlay = 'info';
       state.hardRerender(state);
     });
   }
@@ -98,13 +98,13 @@ export const infoEvent = (state: State): State => {
 };
 
 export const settingEvent = (state: State): State => {
-  const selector = ".sudoku-setting";
+  const selector = '.sudoku-setting';
   const settings = state.panel.querySelector<HTMLButtonElement>(selector);
 
   if (settings) {
-    settings.addEventListener("click", () => {
+    settings.addEventListener('click', () => {
       state.isModalOn = true;
-      state.overlay = "settings";
+      state.overlay = 'settings';
       state.hardRerender(state);
     });
   }

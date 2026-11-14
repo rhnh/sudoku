@@ -21,7 +21,7 @@
     "lint:fix": "oxlint --fix",
     "format": "oxfmt",
     "check-format": "oxfmt --check",
-    "dist": "$npm_execpath run compile && $npm_execpath run bundle",
+    "dist": "$npm_execpath run compile && $npm_execpath run build",
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "esbuild  src/sudoku.ts --bundle --format=esm --outfile=dist/sudoku.min.js --loader:.eot=file --loader:.woff=file --loader:.woff2=file --loader:.ttf=file --loader:.svg=file",

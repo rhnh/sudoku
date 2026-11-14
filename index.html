@@ -1,35 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sudoku</title>
+    <link rel="stylesheet" href="./dist/sudoku.min.css" />
+    <style>
+      #root {
+        max-width: 600px;
+        margin-inline: auto;
+      }
+    </style>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sudoku</title>
-  <link rel="stylesheet" href="./dist/sudoku.min.css">
-  <style>
-    #root {
-      max-width: 600px;
-      margin-inline: auto;
-    }
-  </style>
-</head>
+  <body>
+    <div id="root"></div>
+    <script type="module">
+      import { sudoku, generateCells } from './dist/sudoku.min.js';
+      const { cells, solutions } = generateCells(37);
 
-<body>
-  <div id="root"></div>
-  <script type="module">
-    import { sudoku, generateCells } from "./dist/sudoku.min.js"
-    const { cells, solutions } = generateCells(37);
-
-    const root = document.getElementById('root')
-    sudoku({
-      root, solutions,
-      squares: cells,
-      root,
-      levelEasy: 1,
-      currentTheme: "monokai",
-      maxWidth: 500,
-    })
-  </script>
-</body>
-
+      const root = document.getElementById('root');
+      sudoku({
+        root,
+        solutions,
+        squares: cells,
+        root,
+        levelEasy: 1,
+        currentTheme: 'monokai',
+        maxWidth: 500,
+      });
+    </script>
+  </body>
 </html>

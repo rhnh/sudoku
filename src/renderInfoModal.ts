@@ -1,25 +1,23 @@
-import { shortcutKeysArray } from "./constants";
-import { Box, createElement, id } from "./lib";
-import { modal } from "./modal";
-import type { State } from "./state";
+import { shortcutKeysArray } from './constants';
+import { Box, createElement, id } from './lib';
+import { modal } from './modal';
+import type { State } from './state';
 
 export const renderInfo = (state: State): State =>
-  state.isModalOn && state.overlay === "info"
-    ? Box(state).map(info).map(event).fold(id)
-    : state;
+  state.isModalOn && state.overlay === 'info' ? Box(state).map(info).map(event).fold(id) : state;
 
 export const info = (state: State): State => {
-  const content = createElement({ tag: "section", classname: "content" });
+  const content = createElement({ tag: 'section', classname: 'content' });
   content.appendChild(main());
   return modal(state)(content);
 };
 
 export const event = (state: State): State => {
-  const selector = ".sudoku-close";
+  const selector = '.sudoku-close';
   const info = state.board.querySelector<HTMLButtonElement>(selector);
 
   if (info) {
-    info.addEventListener("click", () => {
+    info.addEventListener('click', () => {
       state.isModalOn = false;
       state.overlay = undefined;
       state.hardRerender(state);
@@ -30,12 +28,11 @@ export const event = (state: State): State => {
 };
 
 const main = (): HTMLElement => {
-  const m = createElement({ tag: "section", classname: "main" });
+  const m = createElement({ tag: 'section', classname: 'main' });
   const shortcutKeys = new Map<string, string>(shortcutKeysArray);
-  let sKeys = "";
+  let sKeys = '';
 
-  for (const [k, v] of shortcutKeys)
-    sKeys += `<tr><td><kbd>${k}</kbd></td><td>${v}</tr></tr>`;
+  for (const [k, v] of shortcutKeys) sKeys += `<tr><td><kbd>${k}</kbd></td><td>${v}</tr></tr>`;
 
   m.innerHTML = `<h3 class='h3'>How to Play Sudoku</h3>
   <p>

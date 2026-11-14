@@ -1,14 +1,9 @@
-import { renderNotes, updateSquares } from "./board";
-import { BOARD_SIZE } from "./constants";
-import { Box, createElement, id } from "./lib";
-import { isPlaying, type State } from "./state";
-import type { Key, Value } from "./types";
-import {
-  addNote,
-  addUserInput,
-  removingAllRelatedNotes,
-  setDuplicates,
-} from "./utils";
+import { renderNotes, updateSquares } from './board';
+import { BOARD_SIZE } from './constants';
+import { Box, createElement, id } from './lib';
+import { isPlaying, type State } from './state';
+import type { Key, Value } from './types';
+import { addNote, addUserInput, removingAllRelatedNotes, setDuplicates } from './utils';
 
 export const renderDigits = (state: State): State =>
   !isPlaying(state.gameState) || state.isZenMode
@@ -18,15 +13,15 @@ export const renderDigits = (state: State): State =>
 export const renderDigitsButtons = (state: State): State => {
   const { bounds } = state;
   const digitElement = createElement({
-    tag: "section",
-    classname: "sudoku-digits",
+    tag: 'section',
+    classname: 'sudoku-digits',
   });
   state.digitElement = digitElement;
   const width = state.bounds().width / BOARD_SIZE;
   for (const v of state.digits) {
     const btn = createElement({
-      tag: "button",
-      classname: "digit btn sudoku-btns",
+      tag: 'button',
+      classname: 'digit btn sudoku-btns',
     });
     btn.style.width = `${width}px`;
     btn.style.aspectRatio = `1 / 1`;
@@ -42,8 +37,8 @@ export const renderDigitsButtons = (state: State): State => {
 
 export const digitEvents = (state: State): State => {
   const digits = state.digitElement;
-  digits.querySelectorAll(`button`).forEach((btn) => {
-    btn.addEventListener("click", () => {
+  digits.querySelectorAll(`button`).forEach(btn => {
+    btn.addEventListener('click', () => {
       state.selectedSquares.map((key: Key) => {
         const value: Value = btn.dataset.value as Value;
         if (!value) return;
@@ -53,11 +48,7 @@ export const digitEvents = (state: State): State => {
           removingAllRelatedNotes(state)(key)(value);
           addUserInput(state)(key)(value);
         }
-        Box(state)
-          .map(setDuplicates)
-          .map(updateSquares)
-          .map(renderNotes)
-          .fold(id);
+        Box(state).map(setDuplicates).map(updateSquares).map(renderNotes).fold(id);
       });
     });
   });

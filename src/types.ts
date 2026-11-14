@@ -1,13 +1,4 @@
-import type {
-  FILES,
-  GAME_STATES,
-  LEVELS,
-  modes,
-  OVERLAYS,
-  PLAY_MODE_BTNS,
-  RANKS,
-  themes,
-} from "./constants";
+import type { FILES, GAME_STATES, LEVELS, modes, OVERLAYS, PLAY_MODE_BTNS, RANKS, themes } from './constants';
 
 export type Rank = (typeof RANKS)[number];
 export type File = (typeof FILES)[number];
@@ -20,7 +11,7 @@ export type BaseKey = `${File}${Rank}`;
 export type Key = `${BaseKey}${Rank}`;
 export type Position = [number, number];
 
-export type Value = Rank | "0";
+export type Value = Rank | '0';
 export type Digit = Value;
 export type Squares = Map<Key, Value>;
 export type Notes = Map<Key, Set<Value>>;

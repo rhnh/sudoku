@@ -1,13 +1,13 @@
-import { DIGITS, LEVELS, PLAY_MODE_BTNS } from "./constants";
-import { createElement, memo } from "./lib";
+import { DIGITS, LEVELS, PLAY_MODE_BTNS } from './constants';
+import { createElement, memo } from './lib';
 import type {
   AllButtons,
   RootedState,
   SudokuBaseElements,
   SudokuBoardElements,
   SudokuPanelElements,
-} from "./state";
-import { type Squares, type Theme } from "./types";
+} from './state';
+import { type Squares, type Theme } from './types';
 
 export interface Config {
   root: HTMLElement;
@@ -22,31 +22,31 @@ export interface Config {
 }
 
 export const configurePanelElements = (): SudokuPanelElements => {
-  const panel = createElement({ tag: "section", classname: "sudoku-panel" });
+  const panel = createElement({ tag: 'section', classname: 'sudoku-panel' });
 
   const timerElement = createElement({
-    tag: "section",
-    classname: "sudoku-timer",
+    tag: 'section',
+    classname: 'sudoku-timer',
   });
 
   const idleModeSection = createElement({
-    tag: "section",
-    classname: "sudoku-idle--mode",
+    tag: 'section',
+    classname: 'sudoku-idle--mode',
   });
 
   const digitElement = createElement({
-    tag: "section",
-    classname: "sudoku-digits",
+    tag: 'section',
+    classname: 'sudoku-digits',
   });
 
   const playModeSection = createElement({
-    tag: "section",
-    classname: "sudoku-play--mode",
+    tag: 'section',
+    classname: 'sudoku-play--mode',
   });
 
   const customizationElement = createElement({
-    tag: "section",
-    classname: "sudoku-customization",
+    tag: 'section',
+    classname: 'sudoku-customization',
   });
 
   return {
@@ -61,17 +61,17 @@ export const configurePanelElements = (): SudokuPanelElements => {
 
 export const configureBoardElements = (): SudokuBoardElements => {
   const board = createElement({
-    tag: "section",
-    classname: "sudoku-board",
+    tag: 'section',
+    classname: 'sudoku-board',
   });
   const grid = createElement({
-    tag: "section",
-    classname: "sudoku-grid",
+    tag: 'section',
+    classname: 'sudoku-grid',
   });
 
   const squaresElement = createElement({
-    tag: "section",
-    classname: "sudoku-squares",
+    tag: 'section',
+    classname: 'sudoku-squares',
   });
 
   board.append(grid, squaresElement);
@@ -85,20 +85,14 @@ export const configureBoardElements = (): SudokuBoardElements => {
 export const configureElements = (state: RootedState): SudokuBaseElements => {
   const { root } = state;
 
-  const wrapper = createElement({ tag: "section", classname: "wrapper" });
+  const wrapper = createElement({ tag: 'section', classname: 'wrapper' });
   root.dataset.theme = state.currentTheme;
   const container = createElement({
-    tag: "section",
-    classname: "sudoku-container",
+    tag: 'section',
+    classname: 'sudoku-container',
   });
-  const {
-    panel,
-    idleModeSection,
-    digitElement,
-    playModeSection,
-    timerElement,
-    customizationElement,
-  } = configurePanelElements();
+  const { panel, idleModeSection, digitElement, playModeSection, timerElement, customizationElement } =
+    configurePanelElements();
   state = { ...state, ...configurePanelElements() };
 
   const { board, grid, squaresElement } = configureBoardElements();
