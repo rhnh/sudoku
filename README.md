@@ -6,7 +6,7 @@
 
 | Keys                 | function                |
 | -------------------- | ----------------------- |
-| n                    | toggle notes            |
+| n or + sign          | toggle notes            |
 | u                    | Undo the last move      |
 | Backspace/Delete/0   | Delete a number         |
 | 1-9                  | Number 1 to 9           |
