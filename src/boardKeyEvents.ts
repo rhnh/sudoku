@@ -52,7 +52,6 @@ const ARROWS: Record<string, [number, number]> = {
 const onKeyDown =
   (state: State) =>
   (e: KeyboardEvent): State => {
-    e.preventDefault();
     if (e.metaKey || e.altKey || e.repeat) return state;
     if (e.repeat) return state;
 

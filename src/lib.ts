@@ -25,10 +25,7 @@ export const id = <T>(x: T) => x;
 
 export function memo<A>(f: () => A): Memo<A> {
   let v: A | undefined;
-  const ret = (): A => {
-    if (v === undefined) v = f();
-    return v;
-  };
+  const ret = (): A => (v ??= f());
   ret.clear = () => {
     v = undefined;
   };

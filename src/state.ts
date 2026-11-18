@@ -93,5 +93,5 @@ export const isPaused = (gameState: GameState) => gameState === 'pause';
 export const isPlaying = (gameState: GameState) => gameState === 'play';
 export const isOvered = (gameState: GameState) => gameState === 'over';
 
-export const isZenMode = (isZenMode: boolean): boolean => !!isZenMode;
+export const isZenMode = (isZenMode: boolean): boolean => isZenMode ?? false;
 export type RootedState = HeadlessState & { root: HTMLElement };
