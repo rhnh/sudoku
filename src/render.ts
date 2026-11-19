@@ -82,6 +82,7 @@ const resizeObserver = (state: State): void => {
       if (!state.container || !state.root.isConnected) return;
       state.updateBounds(state);
       updateSquares(state);
+      state.hardRerender(state);
       renderGrid(state);
     });
   };
