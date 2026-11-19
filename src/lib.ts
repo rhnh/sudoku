@@ -85,15 +85,6 @@ export const createButton = ({
   className: string;
 } & Record<string, string>) => createElement({ tag: 'button', classname: className, ...rest });
 
-export function updateBounds(s: State): void {
-  const width = s.root.getBoundingClientRect().width;
-
-  s.container.style.width = `${width}px`;
-  s.container.style.height = `${width}px`;
-
-  s.bounds.clear();
-}
-
 export const formatTime = (totalSeconds: number): string => {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
