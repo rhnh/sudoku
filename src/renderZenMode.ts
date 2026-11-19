@@ -3,6 +3,7 @@ import { Box, createElement, getItems, id } from './lib';
 import { zenModeEvent } from './renderIdleMode';
 import { removeEvent, revealHintEvent, setNoteEvent, undoEvent } from './renderPlayMode';
 import type { State } from './state';
+import type { Key } from './types';
 
 export const renderZenMode = (state: State): State =>
   state.gameState === 'play' && state.isZenMode
@@ -17,6 +18,8 @@ export const renderZenMode = (state: State): State =>
     : state;
 
 export const zenMode = (state: State): State => {
+  const defaultSelected: Key = 'e55';
+  state.selectedSquares = [defaultSelected];
   const labels = getItems(PLAY_MODE_BTNS)(
     'sudoku-zen',
     'sudoku-hint',

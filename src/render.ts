@@ -2,7 +2,7 @@ import { renderNotes, renderSquares, updateSquares } from './board';
 import { boardKeyEvents } from './boardKeyEvents';
 import { boardMouseEvent } from './boardMouseEvents';
 import { configureElements, initButtons } from './config';
-import { Box, id, updateBounds } from './lib';
+import { Box, id } from './lib';
 import { renderDigits } from './renderDigits';
 import { renderIdleMode } from './renderIdleMode';
 import { renderInfo } from './renderInfoModal';
@@ -13,6 +13,7 @@ import { renderTimer } from './renderTimer.ts';
 import { renderZenMode } from './renderZenMode';
 import type { RootedState, State } from './state';
 import { renderGrid } from './svg';
+import { updateBounds } from './utils';
 
 export const renderSidebar = (state: State): State => {
   const { panel } = state;
