@@ -10,11 +10,7 @@ export const Box = (value) => ({
 export const id = (x) => x;
 export function memo(f) {
     let v;
-    const ret = () => {
-        if (v === undefined)
-            v = f();
-        return v;
-    };
+    const ret = () => (v ?? (v = f()));
     ret.clear = () => {
         v = undefined;
     };
@@ -50,12 +46,6 @@ export function createElement({ tag, classname: className, ...rest }) {
     return el;
 }
 export const createButton = ({ className, ...rest }) => createElement({ tag: 'button', classname: className, ...rest });
-export function updateBounds(s) {
-    const width = s.root.getBoundingClientRect().width;
-    s.container.style.width = `${width}px`;
-    s.container.style.height = `${width}px`;
-    s.bounds.clear();
-}
 export const formatTime = (totalSeconds) => {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;

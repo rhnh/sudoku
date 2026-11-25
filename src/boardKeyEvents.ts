@@ -84,13 +84,21 @@ const onKeyDown =
 
       state.hardRerender(state);
     }
-    if (e.ctrlKey && input === 's') {
+    if (input === 's') {
       state.isModalOn = !state.isModalOn;
 
       state.overlay = 'settings';
 
       state.hardRerender(state);
     }
+
+    if (input === 'x') {
+      const randomTheme = state.themes[Math.floor(Math.random() * state.themes.length)];
+      state.currentTheme = randomTheme;
+
+      state.hardRerender(state);
+    }
+
     if (input === 't') {
       state.isModalOn = !state.isModalOn;
 

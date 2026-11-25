@@ -8,11 +8,13 @@ import { renderSquares } from './board';
 import { boardKeyEvents } from './boardKeyEvents';
 import { boardMouseEvent } from './boardMouseEvents';
 import { type Config } from './config';
+import { themes } from './constants';
 import { Box } from './lib';
 import { renderBase, renderSidebar } from './render';
 import { type HeadlessState } from './state';
 import { renderGrid } from './svg';
 export { generateCells } from './sudoku.algo';
+
 export const sudoku = ({
   root,
   levelEasy = 37,
@@ -22,6 +24,7 @@ export const sudoku = ({
 }: Config): API => {
   if (!root) throw new Error('No Element found');
   const headlessState: HeadlessState = {
+    themes,
     currentLevel: levelEasy,
     currentTheme,
     gameState: 'idle',

@@ -40,7 +40,6 @@ const ARROWS = {
     s: [0, 1],
 };
 const onKeyDown = (state) => (e) => {
-    e.preventDefault();
     if (e.metaKey || e.altKey || e.repeat)
         return state;
     if (e.repeat)
