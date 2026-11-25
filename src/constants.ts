@@ -46,5 +46,7 @@ export const shortcutKeysArray: [string, string][] = [
   ['i', 'Show info'],
   ['Arrows Keys and WASD', 'Move around the board'],
   ['Ctrl+Click', 'Select multiple squares'],
-  ['Ctrl+s', 'Should FEN Input'],
+  ['f', 'Should FEN Input'],
+  ['t', 'show themes'],
+  ['x', 'switch random themes'],
 ];

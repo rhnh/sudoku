@@ -1,4 +1,3 @@
-import type { State } from './state';
 export type Box<T> = {
     map: <U>(fn: (x: T) => U) => Box<U>;
     fold: <R>(fn: (x: T) => R) => R;
@@ -32,6 +31,5 @@ export declare function createElement<K extends keyof HTMLElementTagNameMap>({ t
 export declare const createButton: ({ className, ...rest }: {
     className: string;
 } & Record<string, string>) => HTMLButtonElement;
-export declare function updateBounds(s: State): void;
 export declare const formatTime: (totalSeconds: number) => string;
 export declare const getItems: <T>(items: readonly T[]) => (...values: T[]) => T[];

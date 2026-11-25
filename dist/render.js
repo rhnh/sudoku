@@ -2,7 +2,7 @@ import { renderNotes, renderSquares, updateSquares } from './board';
 import { boardKeyEvents } from './boardKeyEvents';
 import { boardMouseEvent } from './boardMouseEvents';
 import { configureElements, initButtons } from './config';
-import { Box, id, updateBounds } from './lib';
+import { Box, id } from './lib';
 import { renderDigits } from './renderDigits';
 import { renderIdleMode } from './renderIdleMode';
 import { renderInfo } from './renderInfoModal';
@@ -12,6 +12,7 @@ import { renderThemeModal } from './renderThemeModal';
 import { renderTimer } from './renderTimer.ts';
 import { renderZenMode } from './renderZenMode';
 import { renderGrid } from './svg';
+import { updateBounds } from './utils';
 export const renderSidebar = (state) => {
     const { panel } = state;
     panel.replaceChildren();
@@ -59,41 +60,27 @@ export const render = (state) => {
         .map(renderSidebar)
         .fold(id);
 };
-export const resizeObserver2 = (state) => {
+const resizeObserver = (state) => {
     if (state.observer)
-        return state.observer; // never create twice
-    let lastWidth = -1;
-    let lastHeight = -1;
-    const observer = new ResizeObserver(([entry]) => {
-        const { width, height } = entry.contentRect;
-        if (width === lastWidth && height === lastHeight)
-            return;
-        lastWidth = width;
-        lastHeight = height;
-        requestAnimationFrame(() => {
-            if (!state.container)
+        return;
+    let frame = null;
+    const refresh = () => {
+        console.log('resize callback'); // remove once confirmed
+        if (frame !== null)
+            cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+            frame = null;
+            if (!state.container || !state.root.isConnected)
                 return;
             state.updateBounds(state);
-            state.root.replaceChildren();
-            render(state);
-        });
-    });
-    observer.observe(state.root);
-    state.observer = observer;
-    return observer;
-};
-const resizeObserver = (state) => {
-    const observerCallback = (entries) => {
-        window.requestAnimationFrame(() => {
-            if (!Array.isArray(entries) || !entries.length) {
-                return;
-            }
-            if (state.container) {
-                state.updateBounds(state);
-                renderGrid(state);
-            }
+            updateSquares(state);
+            state.hardRerender(state);
+            renderGrid(state);
         });
     };
-    new ResizeObserver(observerCallback).observe(state.root);
+    const observer = new ResizeObserver(refresh);
+    observer.observe(state.root);
+    window.addEventListener('resize', refresh); // fires on every window resize, whatever root does
+    state.observer = observer;
 };
 //# sourceMappingURL=render.js.map

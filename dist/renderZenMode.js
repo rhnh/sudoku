@@ -13,6 +13,8 @@ export const renderZenMode = (state) => state.gameState === 'play' && state.isZe
         .fold(id)
     : state;
 export const zenMode = (state) => {
+    const defaultSelected = 'e55';
+    state.selectedSquares = [defaultSelected];
     const labels = getItems(PLAY_MODE_BTNS)('sudoku-zen', 'sudoku-hint', 'sudoku-note', 'sudoku-undo', 'sudoku-remove');
     const section = createElement({
         tag: 'section',

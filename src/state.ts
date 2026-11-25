@@ -70,6 +70,7 @@ export interface HeadlessState {
   selectedSquares: Key[];
   currentLevel: number;
   currentTheme: Theme | string;
+  themes: readonly Theme[];
   gameState: GameState;
   isZenMode: boolean;
   isNote: boolean;
