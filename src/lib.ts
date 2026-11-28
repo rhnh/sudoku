@@ -1,5 +1,3 @@
-import type { State } from './state';
-
 export type Box<T> = {
   map: <U>(fn: (x: T) => U) => Box<U>;
   fold: <R>(fn: (x: T) => R) => R;
@@ -10,7 +8,6 @@ export const Box = <T>(value: T): Box<T> => ({
   map: fn => Box(fn(value)),
   fold: fn => fn(value),
   toString: fn => {
-    console.log('here your value');
     console.info(value);
     return Box(fn(value));
   },

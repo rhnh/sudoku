@@ -30,11 +30,10 @@ function main(): HTMLElement {
 export const fenEvent = (state: State): State => {
   const selector = 'button';
   const btns = state.board.querySelectorAll<HTMLButtonElement>(selector);
-  console.log(btns);
   btns.forEach(btn => {
     btn.addEventListener('click', () => {
       const input = state.board.querySelector<HTMLInputElement>('input');
-      console.log(state.squares, state.squares.size);
+      //console.log(state.squares, state.squares.size);
 
       if (input) {
         state.squares = new Map();

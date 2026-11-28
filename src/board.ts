@@ -106,7 +106,7 @@ export const renderNotes = (state: State): State => {
       const noteElm = document.createElement('span');
       noteElm.className = 'note';
       noteElm.textContent = value;
-      noteElm.style.gridRow = `${row}`;
+      noteElm.style.gridRow = `${4 - row}`; // 4-row brings the 1,2,3 to the bottom like most of numpads
       noteElm.style.gridColumn = `${col}`;
       noteElm.style.fontSize = fontSize;
       noteElm.style.display = 'flex';
