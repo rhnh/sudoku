@@ -86,6 +86,12 @@ export const addNote =
 
     return state.notes;
   };
+export const setHighlight =
+  (state: State) =>
+  (key: Key): State => {
+    state.highlightedSquares = getCommons(state)(key);
+    return state;
+  };
 
 export const removeAllNotes =
   (state: State) =>

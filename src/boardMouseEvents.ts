@@ -5,13 +5,13 @@ import type { Key, MouchEvent, Position } from './types';
 import {
   addNote,
   addUserInput,
-  getCommons,
   getKeyFromPosition,
   getPositionKeyAtDom,
   isEmptySquare,
   removeAllNotes,
   removingAllRelatedNotes,
   setDuplicates,
+  setHighlight,
 } from './utils';
 
 export const boardMouseEvent = (state: State): State => {
@@ -34,18 +34,11 @@ const pointerdown = (state: State) => (e: PointerEvent) => {
 
   selectSquareByMPosition(state)(e)(key);
 
-  state.highlightedSquares = getCommons(state)(key);
+  setHighlight(state)(key);
   updateSquares(state);
 
   return state;
 };
-
-export const setHighlight =
-  (state: State) =>
-  (key: Key): State => {
-    state.highlightedSquares = getCommons(state)(key);
-    return state;
-  };
 
 export const stopDragging = (state: State) => {
   state.sourceElement = undefined;
@@ -69,9 +62,10 @@ const pointermove = (state: State) => (e: PointerEvent) => {
     if (state.selectedSquares) state.selectedSquares = [...new Set([...state.selectedSquares, key])];
   }
 };
+
 const pointerup = (state: State) => (e: PointerEvent) => {
   if (state.isDragging) {
-    if (!state.sourceElement || !state.sourceElement.firstChild) return;
+    if (!state.sourceElement?.firstChild) return;
     state.sourceElement.style.zIndex = 'unset';
 
     const p = state.sourceElement.firstChild as HTMLParagraphElement;
@@ -83,39 +77,34 @@ const pointerup = (state: State) => (e: PointerEvent) => {
     if (!state.sourceKey) return;
     const value = state.squares.get(state.sourceKey);
     if (!value) return;
-    state.selectedSquares = [...new Set([key])];
-    if (state.readonlySquares.get(key) && state.readonlySquares.get(key) !== '0') {
+
+    if (isReadonly(state)) {
+      state.selectedSquares = [...new Set([key])];
       state.isDragging = false;
-      return;
+      renderBoard(state);
     }
+
     if (state.isNote) {
       if (state.squares.get(key) !== '0') {
+        // if the square has any value. return
         state.selectedSquares = state.selectedSquares.filter(k => key === k);
         state.isDragging = false;
+
         return state;
       }
-      if (state.squares.get(key) !== state.readonlySquares.get(key)) {
-        state.squares.set(key, '0');
-        addNote(state)(key)(value);
-        selectSquareByMPosition(state)(e)(key);
-        state.highlightedSquares = getCommons(state)(key);
 
-        Box(state).map(setDuplicates).map(renderNotes).map(updateSquares).fold(id);
-      } else {
-        addNote(state)(key)(value);
-        selectSquareByMPosition(state)(e)(key);
-        state.highlightedSquares = getCommons(state)(key);
-        Box(state).map(setDuplicates).map(renderNotes).map(updateSquares).fold(id);
-      }
+      addNote(state)(key)(value);
+      selectSquareByMPosition(state)(e)(key);
+      setHighlight(state)(key);
     } else {
+      state.selectedSquares = [];
       removeAllNotes(state)(key);
       removingAllRelatedNotes(state)(key)(value);
       addUserInput(state)(key)(value);
       selectSquareByMPosition(state)(e)(key);
-      state.highlightedSquares = getCommons(state)(key);
-
-      Box(state).map(setDuplicates).map(renderNotes).map(updateSquares).fold(id);
+      setHighlight(state)(key);
     }
+    renderBoard(state);
 
     state.isDragging = false;
   }
@@ -166,6 +155,7 @@ const getCoordinate = (e: MouseEvent | TouchEvent): Position => {
 
   return [e.clientX, e.clientY];
 };
+
 /**
  * This function selects a square. Ctrl
  * @param state returns state
@@ -192,3 +182,6 @@ export const selectSquareByMPosition = (state: State) => (e: MouchEvent) => (key
     state.isDragging = true;
   }
 };
+
+const renderBoard = (state: State) =>
+  Box(state).map(setDuplicates).map(renderNotes).map(updateSquares).fold(id);

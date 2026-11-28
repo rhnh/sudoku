@@ -8,7 +8,6 @@ export const Box = <T>(value: T): Box<T> => ({
   map: fn => Box(fn(value)),
   fold: fn => fn(value),
   toString: fn => {
-    console.log('here your value');
     console.info(value);
     return Box(fn(value));
   },

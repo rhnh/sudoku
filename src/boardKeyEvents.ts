@@ -1,10 +1,9 @@
 import { renderNotes, updateSquares } from './board';
-import { setHighlight } from './boardMouseEvents';
 import { BOARD_SIZE } from './constants';
 import { Box, id } from './lib';
 import { isPlaying, type State } from './state';
 import type { Key, Value } from './types';
-import { addNote, addUserInput, removingAllRelatedNotes, setDuplicates } from './utils';
+import { addNote, addUserInput, removingAllRelatedNotes, setDuplicates, setHighlight } from './utils';
 
 export function boardKeyEvents(state: State): State {
   if (state.keyListenerBound) return state;
@@ -27,7 +26,6 @@ export const moveSelection =
   (x: number, y: number): State => {
     const current = state.selectedSquares[0];
     if (!current) return state;
-    console.log(current[1], x, y);
     const colIdx = (COLS.indexOf(current[0]) + x + BOARD_SIZE) % BOARD_SIZE;
     const row = ((Number(current[1]) - 1 + y + BOARD_SIZE) % BOARD_SIZE) + 1;
     const next = makeKey(colIdx, row);
@@ -62,7 +60,6 @@ const onKeyDown =
       return state;
     }
     const dir = ARROWS[e.key];
-    console.log(dir, e.key);
     if (dir && isPlaying(state.gameState)) return moveSelection(state)(dir[0], dir[1]);
 
     if (input === ' ' || e.code === 'Space') {
